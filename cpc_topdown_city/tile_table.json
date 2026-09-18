@@ -1,0 +1,1727 @@
+{
+ "about": "Every tile is opaque (plain copy, pen 0 = black). 'global' = index when the sheets are loaded into one bank: roads 0..88, buildings 89..193, shadows 194..245.",
+ "tiles": [
+  {
+   "sheet": "roads",
+   "index": 0,
+   "global": 0,
+   "name": "alley_EW",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 1,
+   "global": 1,
+   "name": "alley_NS",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 2,
+   "global": 2,
+   "name": "alley_NE",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 3,
+   "global": 3,
+   "name": "alley_ES",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 4,
+   "global": 4,
+   "name": "alley_SW",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 5,
+   "global": 5,
+   "name": "alley_NW",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 6,
+   "global": 6,
+   "name": "alley_ESW",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 7,
+   "global": 7,
+   "name": "alley_NSW",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 8,
+   "global": 8,
+   "name": "alley_NEW",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 9,
+   "global": 9,
+   "name": "alley_NES",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 10,
+   "global": 10,
+   "name": "alley_NESW",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 11,
+   "global": 11,
+   "name": "alley_N",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 12,
+   "global": 12,
+   "name": "alley_E",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 13,
+   "global": 13,
+   "name": "alley_S",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 14,
+   "global": 14,
+   "name": "alley_W",
+   "tag": "road_alley"
+  },
+  {
+   "sheet": "roads",
+   "index": 15,
+   "global": 15,
+   "name": "street_EW_0_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 16,
+   "global": 16,
+   "name": "street_EW_0_1",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 17,
+   "global": 17,
+   "name": "street_NS_0_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 18,
+   "global": 18,
+   "name": "street_NS_1_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 19,
+   "global": 19,
+   "name": "street_NE_0_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 20,
+   "global": 20,
+   "name": "street_NE_1_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 21,
+   "global": 21,
+   "name": "street_NE_0_1",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 22,
+   "global": 22,
+   "name": "street_NE_1_1",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 23,
+   "global": 23,
+   "name": "street_ES_0_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 24,
+   "global": 24,
+   "name": "street_ES_1_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 25,
+   "global": 25,
+   "name": "street_ES_0_1",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 26,
+   "global": 26,
+   "name": "street_ES_1_1",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 27,
+   "global": 27,
+   "name": "street_SW_0_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 28,
+   "global": 28,
+   "name": "street_SW_1_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 29,
+   "global": 29,
+   "name": "street_SW_0_1",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 30,
+   "global": 30,
+   "name": "street_NW_0_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 31,
+   "global": 31,
+   "name": "street_NW_1_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 32,
+   "global": 32,
+   "name": "street_NW_0_1",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 33,
+   "global": 33,
+   "name": "street_NW_1_1",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 34,
+   "global": 34,
+   "name": "street_N_0_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 35,
+   "global": 35,
+   "name": "street_W_0_0",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 36,
+   "global": 36,
+   "name": "street_W_0_1",
+   "tag": "road_street"
+  },
+  {
+   "sheet": "roads",
+   "index": 37,
+   "global": 37,
+   "name": "avenue_EW_0_1",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 38,
+   "global": 38,
+   "name": "avenue_EW_0_2",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 39,
+   "global": 39,
+   "name": "avenue_NS_1_0",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 40,
+   "global": 40,
+   "name": "avenue_NS_2_0",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 41,
+   "global": 41,
+   "name": "avenue_NE_1_0",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 42,
+   "global": 42,
+   "name": "avenue_NE_0_3",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 43,
+   "global": 43,
+   "name": "avenue_NE_1_3",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 44,
+   "global": 44,
+   "name": "avenue_ES_0_0",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 45,
+   "global": 45,
+   "name": "avenue_ES_1_0",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 46,
+   "global": 46,
+   "name": "avenue_SW_2_0",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 47,
+   "global": 47,
+   "name": "avenue_SW_3_0",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 48,
+   "global": 48,
+   "name": "avenue_NW_2_3",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 49,
+   "global": 49,
+   "name": "avenue_NW_3_3",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 50,
+   "global": 50,
+   "name": "avenue_N_0_2",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 51,
+   "global": 51,
+   "name": "avenue_N_3_2",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 52,
+   "global": 52,
+   "name": "avenue_N_0_3",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 53,
+   "global": 53,
+   "name": "avenue_N_1_3",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 54,
+   "global": 54,
+   "name": "avenue_N_2_3",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 55,
+   "global": 55,
+   "name": "avenue_N_3_3",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 56,
+   "global": 56,
+   "name": "avenue_E_0_0",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 57,
+   "global": 57,
+   "name": "avenue_E_1_0",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 58,
+   "global": 58,
+   "name": "avenue_E_0_1",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 59,
+   "global": 59,
+   "name": "avenue_S_2_0",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 60,
+   "global": 60,
+   "name": "avenue_S_3_0",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 61,
+   "global": 61,
+   "name": "avenue_S_3_1",
+   "tag": "road_avenue"
+  },
+  {
+   "sheet": "roads",
+   "index": 62,
+   "global": 62,
+   "name": "street_EW_zebra_0_0",
+   "tag": "road_zebra"
+  },
+  {
+   "sheet": "roads",
+   "index": 63,
+   "global": 63,
+   "name": "street_EW_zebra_0_1",
+   "tag": "road_zebra"
+  },
+  {
+   "sheet": "roads",
+   "index": 64,
+   "global": 64,
+   "name": "street_NS_zebra_0_0",
+   "tag": "road_zebra"
+  },
+  {
+   "sheet": "roads",
+   "index": 65,
+   "global": 65,
+   "name": "street_NS_zebra_1_0",
+   "tag": "road_zebra"
+  },
+  {
+   "sheet": "roads",
+   "index": 66,
+   "global": 66,
+   "name": "avenue_EW_zebra_0_1",
+   "tag": "road_zebra"
+  },
+  {
+   "sheet": "roads",
+   "index": 67,
+   "global": 67,
+   "name": "avenue_NS_zebra_1_0",
+   "tag": "road_zebra"
+  },
+  {
+   "sheet": "roads",
+   "index": 68,
+   "global": 68,
+   "name": "street_EW+alley_N_0_0",
+   "tag": "road_junction"
+  },
+  {
+   "sheet": "roads",
+   "index": 69,
+   "global": 69,
+   "name": "street_EW+alley_S_0_1",
+   "tag": "road_junction"
+  },
+  {
+   "sheet": "roads",
+   "index": 70,
+   "global": 70,
+   "name": "street_NS+alley_E_1_0",
+   "tag": "road_junction"
+  },
+  {
+   "sheet": "roads",
+   "index": 71,
+   "global": 71,
+   "name": "street_NS+alley_W_0_0",
+   "tag": "road_junction"
+  },
+  {
+   "sheet": "roads",
+   "index": 72,
+   "global": 72,
+   "name": "avenue_EW+alley_N_0_0",
+   "tag": "road_junction"
+  },
+  {
+   "sheet": "roads",
+   "index": 73,
+   "global": 73,
+   "name": "avenue_EW+alley_S_0_3",
+   "tag": "road_junction"
+  },
+  {
+   "sheet": "roads",
+   "index": 74,
+   "global": 74,
+   "name": "avenue_NS+alley_W_0_0",
+   "tag": "road_junction"
+  },
+  {
+   "sheet": "roads",
+   "index": 75,
+   "global": 75,
+   "name": "alley_EW_manhole",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 76,
+   "global": 76,
+   "name": "alley_NS_manhole",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 77,
+   "global": 77,
+   "name": "alley_EW_drain",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 78,
+   "global": 78,
+   "name": "alley_NS_drain",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 79,
+   "global": 79,
+   "name": "street_EW_manhole_0_1",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 80,
+   "global": 80,
+   "name": "street_NS_manhole_1_0",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 81,
+   "global": 81,
+   "name": "street_EW_drain_0_1",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 82,
+   "global": 82,
+   "name": "street_NS_drain_1_0",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 83,
+   "global": 83,
+   "name": "avenue_EW_manhole_0_1",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 84,
+   "global": 84,
+   "name": "avenue_EW_manhole_0_2",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 85,
+   "global": 85,
+   "name": "avenue_NS_manhole_1_0",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 86,
+   "global": 86,
+   "name": "avenue_NS_manhole_2_0",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 87,
+   "global": 87,
+   "name": "avenue_EW_drain_0_3",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "roads",
+   "index": 88,
+   "global": 88,
+   "name": "asphalt_manhole",
+   "tag": "road_decor"
+  },
+  {
+   "sheet": "buildings",
+   "index": 0,
+   "global": 89,
+   "name": "office_roof_tl",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 1,
+   "global": 90,
+   "name": "office_roof_t",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 2,
+   "global": 91,
+   "name": "office_roof_tr",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 3,
+   "global": 92,
+   "name": "office_roof_l",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 4,
+   "global": 93,
+   "name": "office_roof_c",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 5,
+   "global": 94,
+   "name": "office_roof_r",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 6,
+   "global": 95,
+   "name": "office_roof_bl",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 7,
+   "global": 96,
+   "name": "office_roof_b",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 8,
+   "global": 97,
+   "name": "office_roof_br",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 9,
+   "global": 98,
+   "name": "office_roof_hatch",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 10,
+   "global": 99,
+   "name": "office_roof_skylight",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 11,
+   "global": 100,
+   "name": "office_roof_ac",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 12,
+   "global": 101,
+   "name": "office_front_up_l",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 13,
+   "global": 102,
+   "name": "office_front_up",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 14,
+   "global": 103,
+   "name": "office_front_up_r",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 15,
+   "global": 104,
+   "name": "office_front_ground_l",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 16,
+   "global": 105,
+   "name": "office_front_ground",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 17,
+   "global": 106,
+   "name": "office_front_ground_r",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 18,
+   "global": 107,
+   "name": "office_front_door",
+   "tag": "bld_office"
+  },
+  {
+   "sheet": "buildings",
+   "index": 19,
+   "global": 108,
+   "name": "brick_roof_tl",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 20,
+   "global": 109,
+   "name": "brick_roof_t",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 21,
+   "global": 110,
+   "name": "brick_roof_tr",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 22,
+   "global": 111,
+   "name": "brick_roof_l",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 23,
+   "global": 112,
+   "name": "brick_roof_c",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 24,
+   "global": 113,
+   "name": "brick_roof_r",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 25,
+   "global": 114,
+   "name": "brick_roof_bl",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 26,
+   "global": 115,
+   "name": "brick_roof_b",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 27,
+   "global": 116,
+   "name": "brick_roof_br",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 28,
+   "global": 117,
+   "name": "brick_roof_tank",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 29,
+   "global": 118,
+   "name": "brick_roof_chimney",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 30,
+   "global": 119,
+   "name": "brick_roof_skylight",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 31,
+   "global": 120,
+   "name": "brick_front_up_l",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 32,
+   "global": 121,
+   "name": "brick_front_up",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 33,
+   "global": 122,
+   "name": "brick_front_up_r",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 34,
+   "global": 123,
+   "name": "brick_front_ground_l",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 35,
+   "global": 124,
+   "name": "brick_front_ground",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 36,
+   "global": 125,
+   "name": "brick_front_ground_r",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 37,
+   "global": 126,
+   "name": "brick_front_door",
+   "tag": "bld_brick"
+  },
+  {
+   "sheet": "buildings",
+   "index": 38,
+   "global": 127,
+   "name": "tower_roof_tl",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 39,
+   "global": 128,
+   "name": "tower_roof_t",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 40,
+   "global": 129,
+   "name": "tower_roof_tr",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 41,
+   "global": 130,
+   "name": "tower_roof_l",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 42,
+   "global": 131,
+   "name": "tower_roof_c",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 43,
+   "global": 132,
+   "name": "tower_roof_r",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 44,
+   "global": 133,
+   "name": "tower_roof_bl",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 45,
+   "global": 134,
+   "name": "tower_roof_b",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 46,
+   "global": 135,
+   "name": "tower_roof_br",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 47,
+   "global": 136,
+   "name": "tower_roof_ac",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 48,
+   "global": 137,
+   "name": "tower_roof_dish",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 49,
+   "global": 138,
+   "name": "tower_helipad_0_0",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 50,
+   "global": 139,
+   "name": "tower_helipad_1_0",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 51,
+   "global": 140,
+   "name": "tower_helipad_0_1",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 52,
+   "global": 141,
+   "name": "tower_helipad_1_1",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 53,
+   "global": 142,
+   "name": "tower_front_up_l",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 54,
+   "global": 143,
+   "name": "tower_front_up",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 55,
+   "global": 144,
+   "name": "tower_front_up_r",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 56,
+   "global": 145,
+   "name": "tower_front_ground_l",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 57,
+   "global": 146,
+   "name": "tower_front_ground",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 58,
+   "global": 147,
+   "name": "tower_front_ground_r",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 59,
+   "global": 148,
+   "name": "tower_front_door",
+   "tag": "bld_tower"
+  },
+  {
+   "sheet": "buildings",
+   "index": 60,
+   "global": 149,
+   "name": "shed_roof_tl",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 61,
+   "global": 150,
+   "name": "shed_roof_t",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 62,
+   "global": 151,
+   "name": "shed_roof_tr",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 63,
+   "global": 152,
+   "name": "shed_roof_l",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 64,
+   "global": 153,
+   "name": "shed_roof_c",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 65,
+   "global": 154,
+   "name": "shed_roof_r",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 66,
+   "global": 155,
+   "name": "shed_roof_bl",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 67,
+   "global": 156,
+   "name": "shed_roof_b",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 68,
+   "global": 157,
+   "name": "shed_roof_br",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 69,
+   "global": 158,
+   "name": "shed_roof_skylight",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 70,
+   "global": 159,
+   "name": "shed_roof_vent",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 71,
+   "global": 160,
+   "name": "shed_front_wall_l",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 72,
+   "global": 161,
+   "name": "shed_front_wall",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 73,
+   "global": 162,
+   "name": "shed_front_wall_r",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 74,
+   "global": 163,
+   "name": "shed_front_door",
+   "tag": "bld_shed"
+  },
+  {
+   "sheet": "buildings",
+   "index": 75,
+   "global": 164,
+   "name": "park_roof_tl",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 76,
+   "global": 165,
+   "name": "park_roof_t",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 77,
+   "global": 166,
+   "name": "park_roof_tr",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 78,
+   "global": 167,
+   "name": "park_roof_l",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 79,
+   "global": 168,
+   "name": "park_roof_c",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 80,
+   "global": 169,
+   "name": "park_roof_r",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 81,
+   "global": 170,
+   "name": "park_roof_bl",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 82,
+   "global": 171,
+   "name": "park_roof_b",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 83,
+   "global": 172,
+   "name": "park_roof_br",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 84,
+   "global": 173,
+   "name": "park_tree",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 85,
+   "global": 174,
+   "name": "park_flowers",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 86,
+   "global": 175,
+   "name": "park_fountain",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 87,
+   "global": 176,
+   "name": "park_path_h",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 88,
+   "global": 177,
+   "name": "park_path_v",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 89,
+   "global": 178,
+   "name": "park_path_x",
+   "tag": "bld_park"
+  },
+  {
+   "sheet": "buildings",
+   "index": 90,
+   "global": 179,
+   "name": "house_roof_tl",
+   "tag": "bld_house"
+  },
+  {
+   "sheet": "buildings",
+   "index": 91,
+   "global": 180,
+   "name": "house_roof_tm",
+   "tag": "bld_house"
+  },
+  {
+   "sheet": "buildings",
+   "index": 92,
+   "global": 181,
+   "name": "house_roof_tr",
+   "tag": "bld_house"
+  },
+  {
+   "sheet": "buildings",
+   "index": 93,
+   "global": 182,
+   "name": "house_roof_bl",
+   "tag": "bld_house"
+  },
+  {
+   "sheet": "buildings",
+   "index": 94,
+   "global": 183,
+   "name": "house_roof_bm",
+   "tag": "bld_house"
+  },
+  {
+   "sheet": "buildings",
+   "index": 95,
+   "global": 184,
+   "name": "house_roof_br",
+   "tag": "bld_house"
+  },
+  {
+   "sheet": "buildings",
+   "index": 96,
+   "global": 185,
+   "name": "house_roof_chimney",
+   "tag": "bld_house"
+  },
+  {
+   "sheet": "buildings",
+   "index": 97,
+   "global": 186,
+   "name": "house_front_wall_l",
+   "tag": "bld_house"
+  },
+  {
+   "sheet": "buildings",
+   "index": 98,
+   "global": 187,
+   "name": "house_front_wall",
+   "tag": "bld_house"
+  },
+  {
+   "sheet": "buildings",
+   "index": 99,
+   "global": 188,
+   "name": "house_front_wall_r",
+   "tag": "bld_house"
+  },
+  {
+   "sheet": "buildings",
+   "index": 100,
+   "global": 189,
+   "name": "house_front_door",
+   "tag": "bld_house"
+  },
+  {
+   "sheet": "buildings",
+   "index": 101,
+   "global": 190,
+   "name": "plaza",
+   "tag": "ground"
+  },
+  {
+   "sheet": "buildings",
+   "index": 102,
+   "global": 191,
+   "name": "lot",
+   "tag": "ground"
+  },
+  {
+   "sheet": "buildings",
+   "index": 103,
+   "global": 192,
+   "name": "lot_bay_n",
+   "tag": "ground"
+  },
+  {
+   "sheet": "buildings",
+   "index": 104,
+   "global": 193,
+   "name": "lot_bay_s",
+   "tag": "ground"
+  },
+  {
+   "sheet": "shadows",
+   "index": 0,
+   "global": 194,
+   "name": "street_NS_0_0_sh_E_top",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 1,
+   "global": 195,
+   "name": "street_NS_0_0_sh_E",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 2,
+   "global": 196,
+   "name": "street_ES_0_1_sh_E_top",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 3,
+   "global": 197,
+   "name": "street_ES_0_1_sh_E",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 4,
+   "global": 198,
+   "name": "alley_NS_sh_E_top",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 5,
+   "global": 199,
+   "name": "alley_NS_sh_E",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 6,
+   "global": 200,
+   "name": "plaza_sh_E_top",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 7,
+   "global": 201,
+   "name": "plaza_sh_E",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 8,
+   "global": 202,
+   "name": "lot_sh_E_top",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 9,
+   "global": 203,
+   "name": "lot_sh_E",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 10,
+   "global": 204,
+   "name": "lot_bay_n_sh_E_top",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 11,
+   "global": 205,
+   "name": "lot_bay_n_sh_E",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 12,
+   "global": 206,
+   "name": "street_EW_0_0_sh_S_left",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 13,
+   "global": 207,
+   "name": "street_EW_0_0_sh_S",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 14,
+   "global": 208,
+   "name": "street_ES_1_0_sh_S_left",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 15,
+   "global": 209,
+   "name": "street_ES_1_0_sh_S",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 16,
+   "global": 210,
+   "name": "alley_EW_sh_S_left",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 17,
+   "global": 211,
+   "name": "alley_EW_sh_S",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 18,
+   "global": 212,
+   "name": "plaza_sh_S_left",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 19,
+   "global": 213,
+   "name": "plaza_sh_S",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 20,
+   "global": 214,
+   "name": "lot_sh_S_left",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 21,
+   "global": 215,
+   "name": "street_EW_0_0_sh_SE",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 22,
+   "global": 216,
+   "name": "street_ES_1_0_sh_SE",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 23,
+   "global": 217,
+   "name": "alley_EW_sh_SE",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 24,
+   "global": 218,
+   "name": "plaza_sh_SE",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 25,
+   "global": 219,
+   "name": "lot_sh_SE",
+   "tag": "shadow_common"
+  },
+  {
+   "sheet": "shadows",
+   "index": 26,
+   "global": 220,
+   "name": "street_ES_0_0_sh_E_top",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 27,
+   "global": 221,
+   "name": "street_NW_0_0_sh_SE",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 28,
+   "global": 222,
+   "name": "street_W_0_0_sh_S",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 29,
+   "global": 223,
+   "name": "park_roof_tl_sh_E_top",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 30,
+   "global": 224,
+   "name": "alley_NS_manhole_sh_E",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 31,
+   "global": 225,
+   "name": "park_roof_l_sh_E",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 32,
+   "global": 226,
+   "name": "street_N_0_0_sh_E",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 33,
+   "global": 227,
+   "name": "alley_EW_drain_sh_S",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 34,
+   "global": 228,
+   "name": "alley_NESW_sh_SE",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 35,
+   "global": 229,
+   "name": "alley_EW_manhole_sh_S",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 36,
+   "global": 230,
+   "name": "avenue_NS+alley_W_0_0_sh_SE",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 37,
+   "global": 231,
+   "name": "alley_NS_drain_sh_E",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 38,
+   "global": 232,
+   "name": "park_roof_l_sh_SE",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 39,
+   "global": 233,
+   "name": "street_NS_zebra_0_0_sh_E",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 40,
+   "global": 234,
+   "name": "street_EW_zebra_0_0_sh_S",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 41,
+   "global": 235,
+   "name": "street_EW_zebra_0_0_sh_S_left",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 42,
+   "global": 236,
+   "name": "avenue_EW+alley_N_0_0_sh_SE",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 43,
+   "global": 237,
+   "name": "street_NS_zebra_0_0_sh_E_top",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 44,
+   "global": 238,
+   "name": "street_NE_0_0_sh_E",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 45,
+   "global": 239,
+   "name": "street_SW_1_0_sh_S",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 46,
+   "global": 240,
+   "name": "alley_NS_sh_SE",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 47,
+   "global": 241,
+   "name": "alley_NE_sh_E",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 48,
+   "global": 242,
+   "name": "alley_W_sh_S",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 49,
+   "global": 243,
+   "name": "street_NS_0_0_sh_SE",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 50,
+   "global": 244,
+   "name": "lot_bay_n_sh_S_left",
+   "tag": "shadow_mockup"
+  },
+  {
+   "sheet": "shadows",
+   "index": 51,
+   "global": 245,
+   "name": "lot_bay_n_sh_S",
+   "tag": "shadow_mockup"
+  }
+ ]
+}

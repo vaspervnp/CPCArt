@@ -1,0 +1,171 @@
+{
+ "sheet": "buildings_cpc_mode0_sheet.png",
+ "tile": [
+  8,
+  16
+ ],
+ "tile_count": 105,
+ "about": "Flat roofs are 9-slices (keys tl t tr / l c r / bl b br): corners once, edges repeat, c fills the middle; any size >= 2x2. Props replace a 'c' tile (helipad is 2x2, row-major). Under the roof's bottom row put the front wall: optional 'up' rows (upper floors), then one 'ground' row; *_l / *_r are the ends, 'door' can replace any middle ground tile. House: 2 roof rows (tl tm tr / bl bm br, tm repeats) + one 'wall' row. Park: 9-slice with hedge; tree, flowers, fountain and paths replace 'c'. Fronts face south (the camera looks slightly north), so put them on the south side of a building.",
+ "styles": {
+  "office": {
+   "roof": {
+    "tl": 0,
+    "t": 1,
+    "tr": 2,
+    "l": 3,
+    "c": 4,
+    "r": 5,
+    "bl": 6,
+    "b": 7,
+    "br": 8
+   },
+   "props": {
+    "hatch": 9,
+    "skylight": 10,
+    "ac": 11
+   },
+   "front": {
+    "up_l": 12,
+    "up": 13,
+    "up_r": 14,
+    "ground_l": 15,
+    "ground": 16,
+    "ground_r": 17,
+    "door": 18
+   }
+  },
+  "brick": {
+   "roof": {
+    "tl": 19,
+    "t": 20,
+    "tr": 21,
+    "l": 22,
+    "c": 23,
+    "r": 24,
+    "bl": 25,
+    "b": 26,
+    "br": 27
+   },
+   "props": {
+    "tank": 28,
+    "chimney": 29,
+    "skylight": 30
+   },
+   "front": {
+    "up_l": 31,
+    "up": 32,
+    "up_r": 33,
+    "ground_l": 34,
+    "ground": 35,
+    "ground_r": 36,
+    "door": 37
+   }
+  },
+  "tower": {
+   "roof": {
+    "tl": 38,
+    "t": 39,
+    "tr": 40,
+    "l": 41,
+    "c": 42,
+    "r": 43,
+    "bl": 44,
+    "b": 45,
+    "br": 46
+   },
+   "props": {
+    "ac": 47,
+    "dish": 48,
+    "helipad": [
+     [
+      49,
+      50
+     ],
+     [
+      51,
+      52
+     ]
+    ]
+   },
+   "front": {
+    "up_l": 53,
+    "up": 54,
+    "up_r": 55,
+    "ground_l": 56,
+    "ground": 57,
+    "ground_r": 58,
+    "door": 59
+   }
+  },
+  "shed": {
+   "roof": {
+    "tl": 60,
+    "t": 61,
+    "tr": 62,
+    "l": 63,
+    "c": 64,
+    "r": 65,
+    "bl": 66,
+    "b": 67,
+    "br": 68
+   },
+   "props": {
+    "skylight": 69,
+    "vent": 70
+   },
+   "front": {
+    "wall_l": 71,
+    "wall": 72,
+    "wall_r": 73,
+    "door": 74
+   }
+  },
+  "park": {
+   "roof": {
+    "tl": 75,
+    "t": 76,
+    "tr": 77,
+    "l": 78,
+    "c": 79,
+    "r": 80,
+    "bl": 81,
+    "b": 82,
+    "br": 83
+   },
+   "props": {
+    "tree": 84,
+    "flowers": 85,
+    "fountain": 86,
+    "path_h": 87,
+    "path_v": 88,
+    "path_x": 89
+   },
+   "front": {}
+  },
+  "house": {
+   "roof": {
+    "tl": 90,
+    "tm": 91,
+    "tr": 92,
+    "bl": 93,
+    "bm": 94,
+    "br": 95
+   },
+   "props": {
+    "chimney": 96
+   },
+   "front": {
+    "wall_l": 97,
+    "wall": 98,
+    "wall_r": 99,
+    "door": 100
+   }
+  },
+  "ground": {
+   "plaza": 101,
+   "lot": 102,
+   "lot_bay_n": 103,
+   "lot_bay_s": 104
+  }
+ }
+}

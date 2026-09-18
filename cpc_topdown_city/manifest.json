@@ -1,0 +1,170 @@
+{
+ "set": "cpc_topdown_city",
+ "about": "GTA1-style top-down city for Amstrad CPC Mode 0. Tiles are 8x16 Mode 0 pixels (square on screen), 64 bytes each.",
+ "palette": [
+  {
+   "pen": 0,
+   "name": "Black",
+   "firmware_ink": 0,
+   "rgb": "#000000"
+  },
+  {
+   "pen": 1,
+   "name": "Blue",
+   "firmware_ink": 1,
+   "rgb": "#000080"
+  },
+  {
+   "pen": 2,
+   "name": "Grey",
+   "firmware_ink": 13,
+   "rgb": "#808080"
+  },
+  {
+   "pen": 3,
+   "name": "Bright White",
+   "firmware_ink": 26,
+   "rgb": "#FFFFFF"
+  },
+  {
+   "pen": 4,
+   "name": "Bright Yellow",
+   "firmware_ink": 24,
+   "rgb": "#FFFF00"
+  },
+  {
+   "pen": 5,
+   "name": "Yellow",
+   "firmware_ink": 12,
+   "rgb": "#808000"
+  },
+  {
+   "pen": 6,
+   "name": "Red",
+   "firmware_ink": 3,
+   "rgb": "#800000"
+  },
+  {
+   "pen": 7,
+   "name": "Bright Red",
+   "firmware_ink": 6,
+   "rgb": "#FF0000"
+  },
+  {
+   "pen": 8,
+   "name": "Orange",
+   "firmware_ink": 15,
+   "rgb": "#FF8000"
+  },
+  {
+   "pen": 9,
+   "name": "Green",
+   "firmware_ink": 9,
+   "rgb": "#008000"
+  },
+  {
+   "pen": 10,
+   "name": "Lime",
+   "firmware_ink": 21,
+   "rgb": "#80FF00"
+  },
+  {
+   "pen": 11,
+   "name": "Sky Blue",
+   "firmware_ink": 11,
+   "rgb": "#0080FF"
+  },
+  {
+   "pen": 12,
+   "name": "Pastel Blue",
+   "firmware_ink": 14,
+   "rgb": "#8080FF"
+  },
+  {
+   "pen": 13,
+   "name": "Pastel Yellow",
+   "firmware_ink": 25,
+   "rgb": "#FFFF80"
+  },
+  {
+   "pen": 14,
+   "name": "Cyan",
+   "firmware_ink": 10,
+   "rgb": "#008080"
+  },
+  {
+   "pen": 15,
+   "name": "Pink",
+   "firmware_ink": 16,
+   "rgb": "#FF8080"
+  }
+ ],
+ "sheets": [
+  {
+   "name": "roads",
+   "file": "roads_cpc_mode0_sheet.png",
+   "aseprite": "roads_cpc_mode0.aseprite",
+   "size": [
+    8,
+    16
+   ],
+   "count": 89,
+   "tags": {
+    "road_alley": 15,
+    "road_street": 22,
+    "road_avenue": 25,
+    "road_zebra": 6,
+    "road_junction": 7,
+    "road_decor": 14
+   },
+   "pieces": "road_pieces.json"
+  },
+  {
+   "name": "buildings",
+   "file": "buildings_cpc_mode0_sheet.png",
+   "aseprite": "buildings_cpc_mode0.aseprite",
+   "size": [
+    8,
+    16
+   ],
+   "count": 105,
+   "tags": {
+    "bld_office": 19,
+    "bld_brick": 19,
+    "bld_tower": 22,
+    "bld_shed": 15,
+    "bld_park": 15,
+    "bld_house": 11,
+    "ground": 4
+   },
+   "kit": "building_kit.json"
+  },
+  {
+   "name": "shadows",
+   "file": "shadows_cpc_mode0_sheet.png",
+   "aseprite": "shadows_cpc_mode0.aseprite",
+   "size": [
+    8,
+    16
+   ],
+   "count": 52,
+   "tags": {
+    "shadow_common": 26,
+    "shadow_mockup": 26
+   },
+   "table": "shadow_table.json"
+  }
+ ],
+ "memory": {
+  "tiles": 246,
+  "bytes": 15744,
+  "note": "all three sheets together fit a 1-byte tile map (256 tiles)"
+ },
+ "mockups": [
+  "mockup_city.png",
+  "mockup_screen.png",
+  "mockup_city_tilemap.aseprite",
+  "mockup_city_map.json"
+ ],
+ "notes": "Previews and mockups are drawn with 2:1 pixels. The three cars in the mockups are placeholders for scale only and are not part of the sheets. Light comes from the top-left. Regenerate everything with src/make_all.py."
+}

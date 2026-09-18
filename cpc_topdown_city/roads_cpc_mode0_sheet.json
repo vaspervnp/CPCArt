@@ -1,0 +1,823 @@
+{ "frames": [
+   {
+    "filename": "roads_cpc_mode0 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 1.aseprite",
+    "frame": { "x": 8, "y": 0, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 2.aseprite",
+    "frame": { "x": 16, "y": 0, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 3.aseprite",
+    "frame": { "x": 24, "y": 0, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 4.aseprite",
+    "frame": { "x": 32, "y": 0, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 5.aseprite",
+    "frame": { "x": 40, "y": 0, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 6.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 7.aseprite",
+    "frame": { "x": 56, "y": 0, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 8.aseprite",
+    "frame": { "x": 0, "y": 16, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 9.aseprite",
+    "frame": { "x": 8, "y": 16, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 10.aseprite",
+    "frame": { "x": 16, "y": 16, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 11.aseprite",
+    "frame": { "x": 24, "y": 16, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 12.aseprite",
+    "frame": { "x": 32, "y": 16, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 13.aseprite",
+    "frame": { "x": 40, "y": 16, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 14.aseprite",
+    "frame": { "x": 48, "y": 16, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 15.aseprite",
+    "frame": { "x": 56, "y": 16, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 16.aseprite",
+    "frame": { "x": 0, "y": 32, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 17.aseprite",
+    "frame": { "x": 8, "y": 32, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 18.aseprite",
+    "frame": { "x": 16, "y": 32, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 19.aseprite",
+    "frame": { "x": 24, "y": 32, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 20.aseprite",
+    "frame": { "x": 32, "y": 32, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 21.aseprite",
+    "frame": { "x": 40, "y": 32, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 22.aseprite",
+    "frame": { "x": 48, "y": 32, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 23.aseprite",
+    "frame": { "x": 56, "y": 32, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 24.aseprite",
+    "frame": { "x": 0, "y": 48, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 25.aseprite",
+    "frame": { "x": 8, "y": 48, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 26.aseprite",
+    "frame": { "x": 16, "y": 48, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 27.aseprite",
+    "frame": { "x": 24, "y": 48, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 28.aseprite",
+    "frame": { "x": 32, "y": 48, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 29.aseprite",
+    "frame": { "x": 40, "y": 48, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 30.aseprite",
+    "frame": { "x": 48, "y": 48, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 31.aseprite",
+    "frame": { "x": 56, "y": 48, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 32.aseprite",
+    "frame": { "x": 0, "y": 64, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 33.aseprite",
+    "frame": { "x": 8, "y": 64, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 34.aseprite",
+    "frame": { "x": 16, "y": 64, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 35.aseprite",
+    "frame": { "x": 24, "y": 64, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 36.aseprite",
+    "frame": { "x": 32, "y": 64, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 37.aseprite",
+    "frame": { "x": 40, "y": 64, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 38.aseprite",
+    "frame": { "x": 48, "y": 64, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 39.aseprite",
+    "frame": { "x": 56, "y": 64, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 40.aseprite",
+    "frame": { "x": 0, "y": 80, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 41.aseprite",
+    "frame": { "x": 8, "y": 80, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 42.aseprite",
+    "frame": { "x": 16, "y": 80, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 43.aseprite",
+    "frame": { "x": 24, "y": 80, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 44.aseprite",
+    "frame": { "x": 32, "y": 80, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 45.aseprite",
+    "frame": { "x": 40, "y": 80, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 46.aseprite",
+    "frame": { "x": 48, "y": 80, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 47.aseprite",
+    "frame": { "x": 56, "y": 80, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 48.aseprite",
+    "frame": { "x": 0, "y": 96, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 49.aseprite",
+    "frame": { "x": 8, "y": 96, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 50.aseprite",
+    "frame": { "x": 16, "y": 96, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 51.aseprite",
+    "frame": { "x": 24, "y": 96, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 52.aseprite",
+    "frame": { "x": 32, "y": 96, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 53.aseprite",
+    "frame": { "x": 40, "y": 96, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 54.aseprite",
+    "frame": { "x": 48, "y": 96, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 55.aseprite",
+    "frame": { "x": 56, "y": 96, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 56.aseprite",
+    "frame": { "x": 0, "y": 112, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 57.aseprite",
+    "frame": { "x": 8, "y": 112, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 58.aseprite",
+    "frame": { "x": 16, "y": 112, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 59.aseprite",
+    "frame": { "x": 24, "y": 112, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 60.aseprite",
+    "frame": { "x": 32, "y": 112, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 61.aseprite",
+    "frame": { "x": 40, "y": 112, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 62.aseprite",
+    "frame": { "x": 48, "y": 112, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 63.aseprite",
+    "frame": { "x": 56, "y": 112, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 64.aseprite",
+    "frame": { "x": 0, "y": 128, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 65.aseprite",
+    "frame": { "x": 8, "y": 128, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 66.aseprite",
+    "frame": { "x": 16, "y": 128, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 67.aseprite",
+    "frame": { "x": 24, "y": 128, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 68.aseprite",
+    "frame": { "x": 32, "y": 128, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 69.aseprite",
+    "frame": { "x": 40, "y": 128, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 70.aseprite",
+    "frame": { "x": 48, "y": 128, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 71.aseprite",
+    "frame": { "x": 56, "y": 128, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 72.aseprite",
+    "frame": { "x": 0, "y": 144, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 73.aseprite",
+    "frame": { "x": 8, "y": 144, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 74.aseprite",
+    "frame": { "x": 16, "y": 144, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 75.aseprite",
+    "frame": { "x": 24, "y": 144, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 76.aseprite",
+    "frame": { "x": 32, "y": 144, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 77.aseprite",
+    "frame": { "x": 40, "y": 144, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 78.aseprite",
+    "frame": { "x": 48, "y": 144, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 79.aseprite",
+    "frame": { "x": 56, "y": 144, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 80.aseprite",
+    "frame": { "x": 0, "y": 160, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 81.aseprite",
+    "frame": { "x": 8, "y": 160, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 82.aseprite",
+    "frame": { "x": 16, "y": 160, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 83.aseprite",
+    "frame": { "x": 24, "y": 160, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 84.aseprite",
+    "frame": { "x": 32, "y": 160, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 85.aseprite",
+    "frame": { "x": 40, "y": 160, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 86.aseprite",
+    "frame": { "x": 48, "y": 160, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 87.aseprite",
+    "frame": { "x": 56, "y": 160, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "roads_cpc_mode0 88.aseprite",
+    "frame": { "x": 0, "y": 176, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 8, "h": 16 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.5-dev",
+  "image": "roads_cpc_mode0_sheet.png",
+  "format": "I8",
+  "size": { "w": 64, "h": 192 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "road_alley", "from": 0, "to": 14, "direction": "forward", "color": "#000000ff" },
+   { "name": "road_street", "from": 15, "to": 36, "direction": "forward", "color": "#000000ff" },
+   { "name": "road_avenue", "from": 37, "to": 61, "direction": "forward", "color": "#000000ff" },
+   { "name": "road_zebra", "from": 62, "to": 67, "direction": "forward", "color": "#000000ff" },
+   { "name": "road_junction", "from": 68, "to": 74, "direction": "forward", "color": "#000000ff" },
+   { "name": "road_decor", "from": 75, "to": 88, "direction": "forward", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "roads_cpc_mode0", "opacity": 255, "blendMode": "normal", "cels": [{ "frame": 0, "data": "alley_EW" }, { "frame": 1, "data": "alley_NS" }, { "frame": 2, "data": "alley_NE" }, { "frame": 3, "data": "alley_ES" }, { "frame": 4, "data": "alley_SW" }, { "frame": 5, "data": "alley_NW" }, { "frame": 6, "data": "alley_ESW" }, { "frame": 7, "data": "alley_NSW" }, { "frame": 8, "data": "alley_NEW" }, { "frame": 9, "data": "alley_NES" }, { "frame": 10, "data": "alley_NESW" }, { "frame": 11, "data": "alley_N" }, { "frame": 12, "data": "alley_E" }, { "frame": 13, "data": "alley_S" }, { "frame": 14, "data": "alley_W" }, { "frame": 15, "data": "street_EW_0_0" }, { "frame": 16, "data": "street_EW_0_1" }, { "frame": 17, "data": "street_NS_0_0" }, { "frame": 18, "data": "street_NS_1_0" }, { "frame": 19, "data": "street_NE_0_0" }, { "frame": 20, "data": "street_NE_1_0" }, { "frame": 21, "data": "street_NE_0_1" }, { "frame": 22, "data": "street_NE_1_1" }, { "frame": 23, "data": "street_ES_0_0" }, { "frame": 24, "data": "street_ES_1_0" }, { "frame": 25, "data": "street_ES_0_1" }, { "frame": 26, "data": "street_ES_1_1" }, { "frame": 27, "data": "street_SW_0_0" }, { "frame": 28, "data": "street_SW_1_0" }, { "frame": 29, "data": "street_SW_0_1" }, { "frame": 30, "data": "street_NW_0_0" }, { "frame": 31, "data": "street_NW_1_0" }, { "frame": 32, "data": "street_NW_0_1" }, { "frame": 33, "data": "street_NW_1_1" }, { "frame": 34, "data": "street_N_0_0" }, { "frame": 35, "data": "street_W_0_0" }, { "frame": 36, "data": "street_W_0_1" }, { "frame": 37, "data": "avenue_EW_0_1" }, { "frame": 38, "data": "avenue_EW_0_2" }, { "frame": 39, "data": "avenue_NS_1_0" }, { "frame": 40, "data": "avenue_NS_2_0" }, { "frame": 41, "data": "avenue_NE_1_0" }, { "frame": 42, "data": "avenue_NE_0_3" }, { "frame": 43, "data": "avenue_NE_1_3" }, { "frame": 44, "data": "avenue_ES_0_0" }, { "frame": 45, "data": "avenue_ES_1_0" }, { "frame": 46, "data": "avenue_SW_2_0" }, { "frame": 47, "data": "avenue_SW_3_0" }, { "frame": 48, "data": "avenue_NW_2_3" }, { "frame": 49, "data": "avenue_NW_3_3" }, { "frame": 50, "data": "avenue_N_0_2" }, { "frame": 51, "data": "avenue_N_3_2" }, { "frame": 52, "data": "avenue_N_0_3" }, { "frame": 53, "data": "avenue_N_1_3" }, { "frame": 54, "data": "avenue_N_2_3" }, { "frame": 55, "data": "avenue_N_3_3" }, { "frame": 56, "data": "avenue_E_0_0" }, { "frame": 57, "data": "avenue_E_1_0" }, { "frame": 58, "data": "avenue_E_0_1" }, { "frame": 59, "data": "avenue_S_2_0" }, { "frame": 60, "data": "avenue_S_3_0" }, { "frame": 61, "data": "avenue_S_3_1" }, { "frame": 62, "data": "street_EW_zebra_0_0" }, { "frame": 63, "data": "street_EW_zebra_0_1" }, { "frame": 64, "data": "street_NS_zebra_0_0" }, { "frame": 65, "data": "street_NS_zebra_1_0" }, { "frame": 66, "data": "avenue_EW_zebra_0_1" }, { "frame": 67, "data": "avenue_NS_zebra_1_0" }, { "frame": 68, "data": "street_EW+alley_N_0_0" }, { "frame": 69, "data": "street_EW+alley_S_0_1" }, { "frame": 70, "data": "street_NS+alley_E_1_0" }, { "frame": 71, "data": "street_NS+alley_W_0_0" }, { "frame": 72, "data": "avenue_EW+alley_N_0_0" }, { "frame": 73, "data": "avenue_EW+alley_S_0_3" }, { "frame": 74, "data": "avenue_NS+alley_W_0_0" }, { "frame": 75, "data": "alley_EW_manhole" }, { "frame": 76, "data": "alley_NS_manhole" }, { "frame": 77, "data": "alley_EW_drain" }, { "frame": 78, "data": "alley_NS_drain" }, { "frame": 79, "data": "street_EW_manhole_0_1" }, { "frame": 80, "data": "street_NS_manhole_1_0" }, { "frame": 81, "data": "street_EW_drain_0_1" }, { "frame": 82, "data": "street_NS_drain_1_0" }, { "frame": 83, "data": "avenue_EW_manhole_0_1" }, { "frame": 84, "data": "avenue_EW_manhole_0_2" }, { "frame": 85, "data": "avenue_NS_manhole_1_0" }, { "frame": 86, "data": "avenue_NS_manhole_2_0" }, { "frame": 87, "data": "avenue_EW_drain_0_3" }, { "frame": 88, "data": "asphalt_manhole" }] }
+  ]
+ }
+}
