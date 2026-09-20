@@ -235,30 +235,74 @@ def conn_points(diameter, fw, fh):
 # Τα x είναι ζυγά (ακέραια bytes). Στοιβάζονται κάθετα: εικονίδιο τύπου πάνω,
 # μηχανήματα στη μέση, επικάλυμμα πληρότητας κάτω.
 
-MACHINE_W, MACHINE_H = 8, 12
+MACHINE_W, MACHINE_H = 12, 22      # οπτικά 24x22 — σχεδόν τετράγωνο
+MACHINE_GAP = 2
 MAX_MACHINES = 8
 
-INTERIOR = {
-    "s": {"icon": (-4, -20), "occ": (-6, 2),
-          "machines": [(-4, -11)]},
-    "m": {"icon": (-4, -36), "occ": (-6, 2),
-          "machines": [(-10, -26), (2, -26),
-                       (-10, -13), (2, -13)]},
-    "l": {"icon": (-4, -52), "occ": (-6, 12),
-          "machines": [(-10, -42), (2, -42),
-                       (-10, -29), (2, -29),
-                       (-10, -16), (2, -16),
-                       (-10, -3), (2, -3)]},
-}
+MACHINE_COUNT = {"s": 1, "m": 4, "l": 8}
+
+# Στον μεγάλο θόλο τα μηχανήματα μπαίνουν ΠΕΡΙΜΕΤΡΙΚΑ, σε κύκλο αυτής της
+# οπτικής ακτίνας, με το εικονίδιο τύπου στο κέντρο. Στον μεσαίο και τον μικρό
+# μπαίνουν στη ΜΕΣΗ, με το εικονίδιο από πάνω.
+PERIM_R = 38                       # η μέγιστη που χωράει με μηχάνημα 12x22
+
+ICON_W = ICON_H = 8
 
 
 def interior(code, fw, fh):
-    """Απόλυτες θέσεις μέσα στο πλαίσιο: (όνομα, x, y, w, h)."""
-    from icons import ICON_W, ICON_H
+    """Απόλυτες θέσεις μέσα στο πλαίσιο: (όνομα, x, y, w, h). Τα x είναι ζυγά."""
     cx, cy = fw // 2, fh // 2
-    L = INTERIOR[code]
-    out = [("icon", cx + L["icon"][0], cy + L["icon"][1], ICON_W, ICON_H),
-           ("occ", cx + L["occ"][0], cy + L["occ"][1], 12, 16)]
-    for i, (dx, dy) in enumerate(L["machines"]):
-        out.append((f"machine{i}", cx + dx, cy + dy, MACHINE_W, MACHINE_H))
+    n = MACHINE_COUNT[code]
+    out = []
+
+    if code == "l":
+        out.append(("icon", cx - ICON_W // 2, cy - ICON_H // 2, ICON_W, ICON_H))
+        for k in range(n):
+            a = math.radians(90 + k * 45)          # ξεκινά από Βορρά, δεξιόστροφα
+            vx, vy = PERIM_R * math.cos(a), -PERIM_R * math.sin(a)
+            x = int(cx + vx / 2 - MACHINE_W / 2) & ~1
+            y = int(round(cy + vy - MACHINE_H / 2))
+            out.append((f"machine{k}", x, y, MACHINE_W, MACHINE_H))
+        return out
+
+    cols = 2 if n > 1 else 1
+    rows = -(-n // cols)
+    tot = ICON_H + MACHINE_GAP + rows * MACHINE_H + (rows - 1) * MACHINE_GAP
+    top = cy - tot // 2
+    out.append(("icon", cx - ICON_W // 2, top, ICON_W, ICON_H))
+    gw = cols * MACHINE_W + (cols - 1) * MACHINE_GAP
+    gx = int(cx - gw / 2) & ~1
+    for k in range(n):
+        i, j = k % cols, k // cols
+        out.append((f"machine{k}",
+                    gx + i * (MACHINE_W + MACHINE_GAP),
+                    top + ICON_H + MACHINE_GAP + j * (MACHINE_H + MACHINE_GAP),
+                    MACHINE_W, MACHINE_H))
+    return out
+
+
+# --------------------------------------------------------------------------
+# Θέσεις αποίκων στους διαδρόμους
+# --------------------------------------------------------------------------
+# Οι άνθρωποι δεν είναι πια μέσα στον θόλο αλλά πάνω στον δακτύλιο, ανάμεσα
+# στα σημεία σύνδεσης (μετατοπισμένες κατά 22,5° ώστε να μην πέφτουν σε πόρτα).
+
+CORR_SLOTS = 8
+SLOT_W, SLOT_H = 4, 8              # ίδιο κουτί με τα σημεία σύνδεσης
+
+# Σειρά γεμίσματος: σκορπισμένη, για να μη φαίνεται ότι στοιβάζονται
+SLOT_FILL = [0, 4, 2, 6, 1, 5, 3, 7]
+
+
+def corridor_slots(diameter, fw, fh):
+    """(k, x, y) της πάνω-αριστερής γωνίας κάθε θέσης αποίκου πάνω στον δακτύλιο."""
+    cx, cy = fw / 2, fh / 2
+    r = diameter / 2 + CORRIDOR_W / 2
+    out = []
+    for k in range(CORR_SLOTS):
+        a = math.radians(22.5 + k * 45)
+        vx, vy = r * math.cos(a), -r * math.sin(a)
+        x = int(round(cx + vx / 2 - SLOT_W / 2)) & ~1
+        y = int(round(cy + vy - SLOT_H / 2))
+        out.append((k, max(0, min(fw - SLOT_W, x)), max(0, min(fh - SLOT_H, y))))
     return out

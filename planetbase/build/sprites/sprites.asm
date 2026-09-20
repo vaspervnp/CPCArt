@@ -27,11 +27,14 @@ DOME_L_SZ   equ 2048      ; bytes ανά τεταρτημόριο (mask+data)
 ICON_W      equ 4
 ICON_H      equ 8
 ICON_SIZE   equ 32          ; room_icons + type*ICON_SIZE
-OCC_W       equ 6
-OCC_H       equ 16
-OCC_SIZE    equ 96          ; occupancy + level*OCC_SIZE
-OCC_LEVELS  equ 5
-            ; οι θέσεις εικονιδίου/πληρότητας είναι στο interior_ofs
+SLOT_W      equ 2           ; θέση αποίκου στον διάδρομο
+SLOT_H      equ 8
+SLOT_SIZE   equ 16          ; bytes ανά παραλλαγή
+SLOT_STRIDE equ 32          ; κενή + με άποικο
+SLOT_BANK   equ 256         ; bytes ανά μέγεθος θόλου
+CORR_SLOTS  equ 8
+            ; corr_slot_gfx + size*SLOT_BANK + slot*SLOT_STRIDE
+            ; + (0 = κενή, SLOT_SIZE = με άποικο)
 
 CORR_H_W    equ 4
 CORR_H_H    equ 8
@@ -41,9 +44,9 @@ CORR_D_W    equ 8           ; διαγώνιο tile
 CORR_D_H    equ 16
 CORR_D_SX   equ 4           ; βήμα τοποθέτησης σε bytes
 CORR_D_SY   equ 16
-MACH_W      equ 4
-MACH_H      equ 12
-MACH_SIZE   equ 48          ; machines + type*MACH_SIZE
+MACH_W      equ 6
+MACH_H      equ 22
+MACH_SIZE   equ 132          ; machines + type*MACH_SIZE
 MACH_TYPES  equ 7           ; oxygen, iron, bioplastic, weapons, processors, robots, food
 MACH_SLOTS  equ 8           ; θέσεις ανά μέγεθος στον πίνακα
 
@@ -1566,209 +1569,744 @@ icon_airlock:
     db #03,#33,#03,#33   ; RRyyRRyy
     db #03,#03,#03,#03   ; RRRRRRRR
 
-occupancy:
+corr_slot_gfx:
 
-; occ_level0 — 12 x 16 pixels, αδιαφανές, 96 bytes
-occ_level0:
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+; slot_s_0_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_0_e:
+    db #B0,#70   ; W,,W
+    db #B0,#30   ; W,,,
+    db #B0,#30   ; W,,,
+    db #D8,#30   ; cW,,
+    db #D8,#30   ; cW,,
+    db #D8,#30   ; cW,,
+    db #D8,#30   ; cW,,
+    db #D8,#30   ; cW,,
 
-; occ_level1 — 12 x 16 pixels, αδιαφανές, 96 bytes
-occ_level1:
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#2C,#0C,#0C,#0C   ; ....Y.......
-    db #0C,#0C,#2C,#0C,#0C,#0C   ; ....Y.......
-    db #0C,#1C,#3C,#0C,#0C,#0C   ; ...YYY......
-    db #0C,#1C,#3C,#0C,#0C,#0C   ; ...YYY......
-    db #0C,#1C,#1C,#0C,#0C,#0C   ; ...Y.Y......
-    db #0C,#1C,#1C,#0C,#0C,#0C   ; ...Y.Y......
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+; slot_s_0_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_0_p:
+    db #B0,#70   ; W,,W
+    db #B4,#30   ; WY,,
+    db #B4,#30   ; WY,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #78,#38   ; YWY,
+    db #78,#38   ; YWY,
+    db #D8,#30   ; cW,,
 
-; occ_level2 — 12 x 16 pixels, αδιαφανές, 96 bytes
-occ_level2:
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#2C,#0C,#0C,#2C   ; ....Y.....Y.
-    db #0C,#0C,#2C,#0C,#0C,#2C   ; ....Y.....Y.
-    db #0C,#1C,#3C,#0C,#1C,#3C   ; ...YYY...YYY
-    db #0C,#1C,#3C,#0C,#1C,#3C   ; ...YYY...YYY
-    db #0C,#1C,#1C,#0C,#1C,#1C   ; ...Y.Y...Y.Y
-    db #0C,#1C,#1C,#0C,#1C,#1C   ; ...Y.Y...Y.Y
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#1C,#0C,#0C   ; .......Y....
-    db #0C,#0C,#0C,#1C,#0C,#0C   ; .......Y....
-    db #0C,#0C,#0C,#3C,#2C,#0C   ; ......YYY...
-    db #0C,#0C,#0C,#3C,#2C,#0C   ; ......YYY...
-    db #0C,#0C,#0C,#2C,#2C,#0C   ; ......Y.Y...
-    db #0C,#0C,#0C,#2C,#2C,#0C   ; ......Y.Y...
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+; slot_s_1_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_1_e:
+    db #30,#70   ; ,,,W
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #F0,#30   ; WW,,
+    db #CC,#B0   ; ccW,
 
-; occ_level3 — 12 x 16 pixels, αδιαφανές, 96 bytes
-occ_level3:
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#2C,#1C,#0C,#2C   ; ....Y..Y..Y.
-    db #0C,#0C,#2C,#1C,#0C,#2C   ; ....Y..Y..Y.
-    db #0C,#1C,#3C,#3C,#3C,#3C   ; ...YYYYYYYYY
-    db #0C,#1C,#3C,#3C,#3C,#3C   ; ...YYYYYYYYY
-    db #0C,#1C,#1C,#2C,#3C,#1C   ; ...Y.YY.YY.Y
-    db #0C,#1C,#1C,#2C,#3C,#1C   ; ...Y.YY.YY.Y
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #1C,#0C,#0C,#1C,#0C,#0C   ; .Y.....Y....
-    db #1C,#0C,#0C,#1C,#0C,#0C   ; .Y.....Y....
-    db #3C,#2C,#0C,#3C,#2C,#0C   ; YYY...YYY...
-    db #3C,#2C,#0C,#3C,#2C,#0C   ; YYY...YYY...
-    db #2C,#2C,#0C,#2C,#2C,#0C   ; Y.Y...Y.Y...
-    db #2C,#2C,#0C,#2C,#2C,#0C   ; Y.Y...Y.Y...
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+; slot_s_1_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_1_p:
+    db #30,#70   ; ,,,W
+    db #34,#30   ; ,Y,,
+    db #34,#30   ; ,Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #78,#38   ; YWY,
+    db #CC,#B0   ; ccW,
 
-; occ_level4 — 12 x 16 pixels, αδιαφανές, 96 bytes
-occ_level4:
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #1C,#0C,#2C,#1C,#0C,#2C   ; .Y..Y..Y..Y.
-    db #1C,#0C,#2C,#1C,#0C,#2C   ; .Y..Y..Y..Y.
-    db #3C,#3C,#3C,#3C,#3C,#3C   ; YYYYYYYYYYYY
-    db #3C,#3C,#3C,#3C,#3C,#3C   ; YYYYYYYYYYYY
-    db #2C,#3C,#1C,#2C,#3C,#1C   ; Y.YY.YY.YY.Y
-    db #2C,#3C,#1C,#2C,#3C,#1C   ; Y.YY.YY.YY.Y
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
-    db #1C,#0C,#2C,#1C,#0C,#2C   ; .Y..Y..Y..Y.
-    db #1C,#0C,#2C,#1C,#0C,#2C   ; .Y..Y..Y..Y.
-    db #3C,#3C,#3C,#3C,#3C,#3C   ; YYYYYYYYYYYY
-    db #3C,#3C,#3C,#3C,#3C,#3C   ; YYYYYYYYYYYY
-    db #2C,#3C,#1C,#2C,#3C,#1C   ; Y.YY.YY.YY.Y
-    db #2C,#3C,#1C,#2C,#3C,#1C   ; Y.YY.YY.YY.Y
-    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+; slot_s_2_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_2_e:
+    db #00,#B0   ;   W,
+    db #50,#30   ;  W,,
+    db #B0,#30   ; W,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#70   ; ,,,W
+
+; slot_s_2_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_2_p:
+    db #00,#B0   ;   W,
+    db #14,#30   ;  Y,,
+    db #B4,#30   ; WY,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #38,#38   ; Y,Y,
+    db #30,#70   ; ,,,W
+
+; slot_s_3_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_3_e:
+    db #00,#B0   ;   W,
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+    db #B0,#30   ; W,,,
+
+; slot_s_3_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_3_p:
+    db #00,#B0   ;   W,
+    db #14,#30   ;  Y,,
+    db #14,#30   ;  Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #78,#38   ; YWY,
+    db #78,#38   ; YWY,
+    db #B0,#30   ; W,,,
+
+; slot_s_4_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_4_e:
+    db #B0,#30   ; W,,,
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+    db #00,#B0   ;   W,
+
+; slot_s_4_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_4_p:
+    db #B0,#30   ; W,,,
+    db #14,#30   ;  Y,,
+    db #14,#30   ;  Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #78,#38   ; YWY,
+    db #78,#38   ; YWY,
+    db #00,#B0   ;   W,
+
+; slot_s_5_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_5_e:
+    db #30,#70   ; ,,,W
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #B0,#30   ; W,,,
+    db #50,#30   ;  W,,
+    db #00,#B0   ;   W,
+
+; slot_s_5_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_5_p:
+    db #30,#70   ; ,,,W
+    db #34,#30   ; ,Y,,
+    db #34,#30   ; ,Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #78,#38   ; YWY,
+    db #00,#B0   ;   W,
+
+; slot_s_6_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_6_e:
+    db #CC,#B0   ; ccW,
+    db #F0,#30   ; WW,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#70   ; ,,,W
+
+; slot_s_6_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_6_p:
+    db #CC,#B0   ; ccW,
+    db #B4,#30   ; WY,,
+    db #34,#30   ; ,Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #38,#38   ; Y,Y,
+    db #30,#70   ; ,,,W
+
+; slot_s_7_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_7_e:
+    db #D8,#30   ; cW,,
+    db #D8,#30   ; cW,,
+    db #D8,#30   ; cW,,
+    db #D8,#30   ; cW,,
+    db #D8,#30   ; cW,,
+    db #B0,#30   ; W,,,
+    db #B0,#30   ; W,,,
+    db #B0,#70   ; W,,W
+
+; slot_s_7_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_7_p:
+    db #D8,#30   ; cW,,
+    db #9C,#30   ; cY,,
+    db #9C,#30   ; cY,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #38,#38   ; Y,Y,
+    db #B0,#70   ; W,,W
+
+; slot_m_0_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_0_e:
+    db #30,#70   ; ,,,W
+    db #30,#70   ; ,,,W
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #B0,#30   ; W,,,
+    db #B0,#30   ; W,,,
+    db #D8,#30   ; cW,,
+    db #D8,#30   ; cW,,
+
+; slot_m_0_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_0_p:
+    db #30,#70   ; ,,,W
+    db #34,#70   ; ,Y,W
+    db #B4,#70   ; WY,W
+    db #3C,#78   ; YYYW
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #78,#38   ; YWY,
+    db #D8,#30   ; cW,,
+
+; slot_m_1_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_1_e:
+    db #30,#A0   ; ,,W 
+    db #30,#70   ; ,,,W
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #B0,#30   ; W,,,
+    db #D8,#30   ; cW,,
+
+; slot_m_1_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_1_p:
+    db #30,#A0   ; ,,W 
+    db #34,#70   ; ,Y,W
+    db #34,#30   ; ,Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #38,#38   ; Y,Y,
+    db #D8,#30   ; cW,,
+
+; slot_m_2_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_2_e:
+    db #50,#30   ;  W,,
+    db #B0,#30   ; W,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#70   ; ,,,W
+    db #30,#E4   ; ,,Wc
+
+; slot_m_2_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_2_p:
+    db #50,#30   ;  W,,
+    db #B4,#30   ; WY,,
+    db #34,#30   ; ,Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #38,#78   ; Y,YW
+    db #30,#E4   ; ,,Wc
+
+; slot_m_3_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_3_e:
+    db #B0,#30   ; W,,,
+    db #B0,#30   ; W,,,
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #30,#70   ; ,,,W
+    db #30,#70   ; ,,,W
+    db #30,#E4   ; ,,Wc
+    db #30,#E4   ; ,,Wc
+
+; slot_m_3_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_3_p:
+    db #B0,#30   ; W,,,
+    db #B4,#30   ; WY,,
+    db #B4,#70   ; WY,W
+    db #3C,#78   ; YYYW
+    db #3C,#78   ; YYYW
+    db #38,#78   ; Y,YW
+    db #38,#6C   ; Y,Yc
+    db #30,#E4   ; ,,Wc
+
+; slot_m_4_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_4_e:
+    db #30,#E4   ; ,,Wc
+    db #30,#E4   ; ,,Wc
+    db #30,#70   ; ,,,W
+    db #30,#70   ; ,,,W
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #B0,#30   ; W,,,
+    db #B0,#30   ; W,,,
+
+; slot_m_4_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_4_p:
+    db #30,#E4   ; ,,Wc
+    db #34,#E4   ; ,YWc
+    db #34,#70   ; ,Y,W
+    db #3C,#78   ; YYYW
+    db #3C,#78   ; YYYW
+    db #38,#78   ; Y,YW
+    db #38,#38   ; Y,Y,
+    db #B0,#30   ; W,,,
+
+; slot_m_5_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_5_e:
+    db #30,#E4   ; ,,Wc
+    db #30,#70   ; ,,,W
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #B0,#30   ; W,,,
+    db #50,#30   ;  W,,
+
+; slot_m_5_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_5_p:
+    db #30,#E4   ; ,,Wc
+    db #34,#70   ; ,Y,W
+    db #34,#30   ; ,Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #38,#38   ; Y,Y,
+    db #50,#30   ;  W,,
+
+; slot_m_6_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_6_e:
+    db #D8,#30   ; cW,,
+    db #B0,#30   ; W,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#70   ; ,,,W
+    db #30,#A0   ; ,,W 
+
+; slot_m_6_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_6_p:
+    db #D8,#30   ; cW,,
+    db #B4,#30   ; WY,,
+    db #34,#30   ; ,Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #38,#78   ; Y,YW
+    db #30,#A0   ; ,,W 
+
+; slot_m_7_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_7_e:
+    db #D8,#30   ; cW,,
+    db #D8,#30   ; cW,,
+    db #B0,#30   ; W,,,
+    db #B0,#30   ; W,,,
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #30,#70   ; ,,,W
+    db #30,#70   ; ,,,W
+
+; slot_m_7_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_7_p:
+    db #D8,#30   ; cW,,
+    db #9C,#30   ; cY,,
+    db #B4,#30   ; WY,,
+    db #3C,#38   ; YYY,
+    db #3C,#78   ; YYYW
+    db #38,#78   ; Y,YW
+    db #38,#78   ; Y,YW
+    db #30,#70   ; ,,,W
+
+; slot_l_0_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_0_e:
+    db #30,#A0   ; ,,W 
+    db #30,#A0   ; ,,W 
+    db #30,#70   ; ,,,W
+    db #30,#70   ; ,,,W
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+
+; slot_l_0_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_0_p:
+    db #30,#A0   ; ,,W 
+    db #34,#A0   ; ,YW 
+    db #34,#70   ; ,Y,W
+    db #3C,#78   ; YYYW
+    db #3C,#78   ; YYYW
+    db #38,#78   ; Y,YW
+    db #38,#78   ; Y,YW
+    db #B0,#70   ; W,,W
+
+; slot_l_1_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_1_e:
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #F0,#30   ; WW,,
+    db #CC,#B0   ; ccW,
+    db #0C,#D8   ; ..cW
+
+; slot_l_1_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_1_p:
+    db #30,#30   ; ,,,,
+    db #34,#30   ; ,Y,,
+    db #34,#30   ; ,Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #78,#38   ; YWY,
+    db #6C,#38   ; YcY,
+    db #0C,#D8   ; ..cW
+
+; slot_l_2_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_2_e:
+    db #50,#30   ;  W,,
+    db #B0,#30   ; W,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#70   ; ,,,W
+    db #30,#E4   ; ,,Wc
+
+; slot_l_2_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_2_p:
+    db #50,#30   ;  W,,
+    db #B4,#30   ; WY,,
+    db #34,#30   ; ,Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #38,#78   ; Y,YW
+    db #30,#E4   ; ,,Wc
+
+; slot_l_3_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_3_e:
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+    db #B0,#30   ; W,,,
+    db #B0,#30   ; W,,,
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+
+; slot_l_3_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_3_p:
+    db #50,#30   ;  W,,
+    db #14,#30   ;  Y,,
+    db #B4,#30   ; WY,,
+    db #3C,#38   ; YYY,
+    db #3C,#78   ; YYYW
+    db #38,#78   ; Y,YW
+    db #38,#78   ; Y,YW
+    db #B0,#70   ; W,,W
+
+; slot_l_4_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_4_e:
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #B0,#30   ; W,,,
+    db #B0,#30   ; W,,,
+    db #50,#30   ;  W,,
+    db #50,#30   ;  W,,
+
+; slot_l_4_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_4_p:
+    db #B0,#70   ; W,,W
+    db #B4,#70   ; WY,W
+    db #B4,#70   ; WY,W
+    db #3C,#78   ; YYYW
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #78,#38   ; YWY,
+    db #50,#30   ;  W,,
+
+; slot_l_5_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_5_e:
+    db #30,#E4   ; ,,Wc
+    db #30,#70   ; ,,,W
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #B0,#30   ; W,,,
+    db #50,#30   ;  W,,
+
+; slot_l_5_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_5_p:
+    db #30,#E4   ; ,,Wc
+    db #34,#70   ; ,Y,W
+    db #34,#30   ; ,Y,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #38,#38   ; Y,Y,
+    db #50,#30   ;  W,,
+
+; slot_l_6_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_6_e:
+    db #0C,#D8   ; ..cW
+    db #CC,#B0   ; ccW,
+    db #F0,#30   ; WW,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+    db #30,#30   ; ,,,,
+
+; slot_l_6_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_6_p:
+    db #0C,#D8   ; ..cW
+    db #9C,#B0   ; cYW,
+    db #B4,#30   ; WY,,
+    db #3C,#38   ; YYY,
+    db #3C,#38   ; YYY,
+    db #38,#38   ; Y,Y,
+    db #38,#38   ; Y,Y,
+    db #30,#30   ; ,,,,
+
+; slot_l_7_e — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_7_e:
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #B0,#70   ; W,,W
+    db #30,#70   ; ,,,W
+    db #30,#70   ; ,,,W
+    db #30,#A0   ; ,,W 
+    db #30,#A0   ; ,,W 
+
+; slot_l_7_p — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_7_p:
+    db #B0,#70   ; W,,W
+    db #B4,#70   ; WY,W
+    db #B4,#70   ; WY,W
+    db #3C,#78   ; YYYW
+    db #3C,#78   ; YYYW
+    db #38,#78   ; Y,YW
+    db #38,#28   ; Y,Y 
+    db #30,#A0   ; ,,W 
+
+; --- θέσεις αποίκων πάνω στον δακτύλιο ---
+; corr_slots + size*CORR_SLOTS*2 + slot*2 -> (x bytes, y)
+corr_slots:
+    db  13, 17   ; s θέση 0
+    db   9,  2   ; s θέση 1
+    db   4,  2   ; s θέση 2
+    db   0, 17   ; s θέση 3
+    db   0, 39   ; s θέση 4
+    db   4, 54   ; s θέση 5
+    db   9, 54   ; s θέση 6
+    db  13, 39   ; s θέση 7
+    db  21, 27   ; m θέση 0
+    db  15,  3   ; m θέση 1
+    db   7,  3   ; m θέση 2
+    db   1, 27   ; m θέση 3
+    db   1, 61   ; m θέση 4
+    db   7, 85   ; m θέση 5
+    db  15, 85   ; m θέση 6
+    db  21, 61   ; m θέση 7
+    db  29, 37   ; l θέση 0
+    db  20,  5   ; l θέση 1
+    db   9,  5   ; l θέση 2
+    db   1, 37   ; l θέση 3
+    db   1, 83   ; l θέση 4
+    db   9,115   ; l θέση 5
+    db  20,115   ; l θέση 6
+    db  29, 83   ; l θέση 7
+
+; --- σειρά γεμίσματος θέσεων (σκορπισμένη) ---
+corr_fill:
+    db 0,4,2,6,1,5,3,7
 
 machines:
 
-; mach_oxygen — 8 x 12 pixels, αδιαφανές, 48 bytes
+; mach_oxygen — 12 x 22 pixels, αδιαφανές, 132 bytes
 mach_oxygen:
-    db #0C,#4C,#8C,#0C   ; ...cc...
-    db #0C,#CC,#CC,#0C   ; ..cccc..
-    db #4C,#F0,#F0,#8C   ; .cWWWWc.
-    db #4C,#F0,#F0,#8C   ; .cWWWWc.
-    db #4C,#F0,#F0,#8C   ; .cWWWWc.
-    db #4C,#F0,#F0,#8C   ; .cWWWWc.
-    db #0C,#CC,#CC,#0C   ; ..cccc..
-    db #0C,#58,#A4,#0C   ; ...WW...
-    db #58,#F0,#F0,#A4   ; .WWWWWW.
-    db #58,#0C,#0C,#A4   ; .W....W.
-    db #58,#F0,#F0,#A4   ; .WWWWWW.
-    db #0C,#A4,#58,#0C   ; ..W..W..
+    db #0C,#F0,#F0,#F0,#F0,#0C   ; ..WWWWWWWW..
+    db #58,#0C,#0C,#0C,#0C,#A4   ; .W........W.
+    db #A4,#4C,#CC,#CC,#8C,#58   ; W..cccccc..W
+    db #A4,#CC,#CC,#CC,#CC,#58   ; W.cccccccc.W
+    db #A4,#CC,#CC,#CC,#CC,#58   ; W.cccccccc.W
+    db #A4,#CC,#CC,#CC,#CC,#58   ; W.cccccccc.W
+    db #A4,#CC,#CC,#CC,#CC,#58   ; W.cccccccc.W
+    db #A4,#CC,#CC,#CC,#CC,#58   ; W.cccccccc.W
+    db #A4,#CC,#CC,#CC,#CC,#58   ; W.cccccccc.W
+    db #A4,#CC,#CC,#CC,#CC,#58   ; W.cccccccc.W
+    db #A4,#4C,#CC,#CC,#8C,#58   ; W..cccccc..W
+    db #58,#0C,#0C,#0C,#0C,#A4   ; .W........W.
+    db #0C,#F0,#F0,#F0,#F0,#0C   ; ..WWWWWWWW..
+    db #0C,#58,#30,#30,#A4,#0C   ; ...W,,,,W...
+    db #0C,#58,#30,#30,#A4,#0C   ; ...W,,,,W...
+    db #0C,#F0,#F0,#F0,#F0,#0C   ; ..WWWWWWWW..
+    db #0C,#B0,#0F,#25,#1A,#A4   ; ..W,CC,CC,W.
+    db #0C,#B0,#0F,#25,#1A,#A4   ; ..W,CC,CC,W.
+    db #0C,#F0,#F0,#F0,#F0,#0C   ; ..WWWWWWWW..
+    db #0C,#58,#A4,#58,#A4,#0C   ; ...WW..WW...
+    db #0C,#58,#A4,#58,#A4,#0C   ; ...WW..WW...
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
 
-; mach_iron — 8 x 12 pixels, αδιαφανές, 48 bytes
+; mach_iron — 12 x 22 pixels, αδιαφανές, 132 bytes
 mach_iron:
-    db #0C,#24,#18,#0C   ; ..,..,..
-    db #0C,#24,#18,#0C   ; ..,..,..
-    db #30,#30,#30,#30   ; ,,,,,,,,
-    db #24,#0C,#0C,#18   ; ,......,
-    db #24,#03,#03,#18   ; ,.RRRR.,
-    db #24,#53,#A3,#18   ; ,.RrrR.,
-    db #24,#53,#A3,#18   ; ,.RrrR.,
-    db #24,#03,#03,#18   ; ,.RRRR.,
-    db #24,#0C,#0C,#18   ; ,......,
-    db #30,#30,#30,#30   ; ,,,,,,,,
-    db #18,#30,#30,#24   ; .,,,,,,.
-    db #0C,#30,#30,#0C   ; ..,,,,..
+    db #0C,#30,#0C,#0C,#30,#0C   ; ..,,....,,..
+    db #0C,#30,#0C,#0C,#30,#0C   ; ..,,....,,..
+    db #0C,#30,#0C,#0C,#30,#0C   ; ..,,....,,..
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #24,#0C,#0C,#0C,#0C,#18   ; ,..........,
+    db #24,#30,#30,#30,#30,#18   ; ,.,,,,,,,,.,
+    db #24,#21,#03,#03,#12,#18   ; ,.,RRRRRR,.,
+    db #24,#21,#F3,#F3,#12,#18   ; ,.,RrrrrR,.,
+    db #24,#21,#A3,#53,#12,#18   ; ,.,RrRRrR,.,
+    db #24,#21,#A3,#53,#12,#18   ; ,.,RrRRrR,.,
+    db #24,#21,#F3,#F3,#12,#18   ; ,.,RrrrrR,.,
+    db #24,#21,#03,#03,#12,#18   ; ,.,RRRRRR,.,
+    db #24,#30,#30,#30,#30,#18   ; ,.,,,,,,,,.,
+    db #24,#0C,#0C,#0C,#0C,#18   ; ,..........,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #18,#30,#30,#30,#30,#24   ; .,,,,,,,,,,.
+    db #18,#18,#30,#30,#24,#24   ; .,.,,,,,,.,.
+    db #18,#18,#F3,#F3,#24,#24   ; .,.,rrrr,.,.
+    db #18,#18,#F3,#F3,#24,#24   ; .,.,rrrr,.,.
+    db #18,#18,#30,#30,#24,#24   ; .,.,,,,,,.,.
+    db #18,#30,#30,#30,#30,#24   ; .,,,,,,,,,,.
+    db #0C,#30,#30,#30,#30,#0C   ; ..,,,,,,,,..
 
-; mach_bioplastic — 8 x 12 pixels, αδιαφανές, 48 bytes
+; mach_bioplastic — 12 x 22 pixels, αδιαφανές, 132 bytes
 mach_bioplastic:
-    db #3F,#3F,#3F,#3F   ; SSSSSSSS
-    db #2E,#0C,#0C,#1D   ; S......S
-    db #2E,#C3,#C3,#1D   ; S.GGGG.S
-    db #2E,#C3,#C3,#1D   ; S.GGGG.S
-    db #2E,#C3,#C3,#1D   ; S.GGGG.S
-    db #2E,#C3,#C3,#1D   ; S.GGGG.S
-    db #2E,#0C,#0C,#1D   ; S......S
-    db #3F,#3F,#3F,#3F   ; SSSSSSSS
-    db #1D,#30,#30,#2E   ; .S,,,,S.
-    db #1D,#30,#30,#2E   ; .S,,,,S.
-    db #1D,#3F,#3F,#2E   ; .SSSSSS.
-    db #0C,#3F,#3F,#0C   ; ..SSSS..
+    db #1D,#3F,#3F,#3F,#3F,#2E   ; .SSSSSSSSSS.
+    db #1D,#0C,#0C,#0C,#0C,#2E   ; .S........S.
+    db #1D,#49,#C3,#C3,#86,#2E   ; .S.GGGGGG.S.
+    db #1D,#49,#C3,#C3,#86,#2E   ; .S.GGGGGG.S.
+    db #1D,#49,#C3,#C3,#86,#2E   ; .S.GGGGGG.S.
+    db #1D,#49,#C3,#C3,#86,#2E   ; .S.GGGGGG.S.
+    db #1D,#49,#C3,#C3,#86,#2E   ; .S.GGGGGG.S.
+    db #1D,#49,#C3,#C3,#86,#2E   ; .S.GGGGGG.S.
+    db #1D,#49,#C3,#C3,#86,#2E   ; .S.GGGGGG.S.
+    db #1D,#0C,#0C,#0C,#0C,#2E   ; .S........S.
+    db #1D,#3F,#3F,#3F,#3F,#2E   ; .SSSSSSSSSS.
+    db #0C,#3A,#30,#30,#35,#0C   ; ..S,,,,,,S..
+    db #0C,#3A,#C3,#C3,#35,#0C   ; ..S,GGGG,S..
+    db #0C,#3A,#C3,#C3,#35,#0C   ; ..S,GGGG,S..
+    db #0C,#3A,#30,#30,#35,#0C   ; ..S,,,,,,S..
+    db #0C,#3F,#3F,#3F,#3F,#0C   ; ..SSSSSSSS..
+    db #0C,#1D,#30,#30,#2E,#0C   ; ...S,,,,S...
+    db #0C,#1D,#30,#30,#2E,#0C   ; ...S,,,,S...
+    db #0C,#1D,#3F,#3F,#2E,#0C   ; ...SSSSSS...
+    db #0C,#0C,#2E,#1D,#0C,#0C   ; ....S..S....
+    db #0C,#0C,#2E,#1D,#0C,#0C   ; ....S..S....
+    db #0C,#0C,#3F,#3F,#0C,#0C   ; ....SSSS....
 
-; mach_weapons — 8 x 12 pixels, αδιαφανές, 48 bytes
+; mach_weapons — 12 x 22 pixels, αδιαφανές, 132 bytes
 mach_weapons:
-    db #30,#30,#30,#30   ; ,,,,,,,,
-    db #24,#06,#09,#18   ; ,.R..R.,
-    db #24,#06,#09,#18   ; ,.R..R.,
-    db #24,#06,#09,#18   ; ,.R..R.,
-    db #24,#06,#09,#18   ; ,.R..R.,
-    db #24,#06,#09,#18   ; ,.R..R.,
-    db #24,#06,#09,#18   ; ,.R..R.,
-    db #24,#0C,#0C,#18   ; ,......,
-    db #30,#30,#30,#30   ; ,,,,,,,,
-    db #18,#30,#30,#24   ; .,,,,,,.
-    db #18,#0C,#0C,#24   ; .,....,.
-    db #18,#30,#30,#24   ; .,,,,,,.
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #24,#0C,#0C,#0C,#0C,#18   ; ,..........,
+    db #24,#06,#06,#06,#06,#18   ; ,.R.R.R.R..,
+    db #24,#06,#06,#06,#06,#18   ; ,.R.R.R.R..,
+    db #24,#06,#06,#06,#06,#18   ; ,.R.R.R.R..,
+    db #24,#06,#06,#06,#06,#18   ; ,.R.R.R.R..,
+    db #24,#06,#06,#06,#06,#18   ; ,.R.R.R.R..,
+    db #24,#06,#06,#06,#06,#18   ; ,.R.R.R.R..,
+    db #24,#03,#03,#03,#06,#18   ; ,.RRRRRRR..,
+    db #24,#0C,#0C,#0C,#0C,#18   ; ,..........,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #24,#0C,#0C,#0C,#0C,#18   ; ,..........,
+    db #24,#30,#30,#30,#30,#18   ; ,.,,,,,,,,.,
+    db #24,#21,#03,#03,#12,#18   ; ,.,RRRRRR,.,
+    db #24,#30,#30,#30,#30,#18   ; ,.,,,,,,,,.,
+    db #24,#0C,#0C,#0C,#0C,#18   ; ,..........,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #18,#30,#30,#30,#30,#24   ; .,,,,,,,,,,.
+    db #18,#0C,#0C,#0C,#0C,#24   ; .,........,.
+    db #18,#30,#30,#30,#30,#24   ; .,,,,,,,,,,.
+    db #0C,#30,#30,#30,#30,#0C   ; ..,,,,,,,,..
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
 
-; mach_processors — 8 x 12 pixels, αδιαφανές, 48 bytes
+; mach_processors — 12 x 22 pixels, αδιαφανές, 132 bytes
 mach_processors:
-    db #18,#18,#18,#18   ; .,.,.,.,
-    db #0F,#0F,#0F,#0F   ; CCCCCCCC
-    db #0E,#0C,#0C,#0D   ; C......C
-    db #0E,#33,#33,#0D   ; C.yyyy.C
-    db #0E,#26,#19,#0D   ; C.y..y.C
-    db #0E,#26,#19,#0D   ; C.y..y.C
-    db #0E,#33,#33,#0D   ; C.yyyy.C
-    db #0E,#0C,#0C,#0D   ; C......C
-    db #0F,#0F,#0F,#0F   ; CCCCCCCC
-    db #18,#18,#18,#18   ; .,.,.,.,
-    db #18,#30,#30,#24   ; .,,,,,,.
-    db #0C,#30,#30,#0C   ; ..,,,,..
+    db #0C,#24,#24,#24,#24,#0C   ; ..,.,.,.,...
+    db #0F,#0F,#0F,#0F,#0F,#0F   ; CCCCCCCCCCCC
+    db #0E,#0C,#0C,#0C,#0C,#0D   ; C..........C
+    db #0E,#33,#33,#33,#33,#0D   ; C.yyyyyyyy.C
+    db #0E,#26,#0C,#0C,#19,#0D   ; C.y......y.C
+    db #0E,#26,#33,#33,#19,#0D   ; C.y.yyyy.y.C
+    db #0E,#26,#26,#19,#19,#0D   ; C.y.y..y.y.C
+    db #0E,#26,#26,#19,#19,#0D   ; C.y.y..y.y.C
+    db #0E,#26,#33,#33,#19,#0D   ; C.y.yyyy.y.C
+    db #0E,#26,#0C,#0C,#19,#0D   ; C.y......y.C
+    db #0E,#33,#33,#33,#33,#0D   ; C.yyyyyyyy.C
+    db #0E,#0C,#0C,#0C,#0C,#0D   ; C..........C
+    db #0F,#0F,#0F,#0F,#0F,#0F   ; CCCCCCCCCCCC
+    db #0C,#24,#24,#24,#24,#0C   ; ..,.,.,.,...
+    db #18,#30,#30,#30,#30,#24   ; .,,,,,,,,,,.
+    db #18,#0C,#0C,#0C,#0C,#24   ; .,........,.
+    db #18,#0D,#0F,#0F,#0E,#24   ; .,.CCCCCC.,.
+    db #18,#0D,#0F,#0F,#0E,#24   ; .,.CCCCCC.,.
+    db #18,#0C,#0C,#0C,#0C,#24   ; .,........,.
+    db #18,#30,#30,#30,#30,#24   ; .,,,,,,,,,,.
+    db #0C,#30,#30,#30,#30,#0C   ; ..,,,,,,,,..
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
 
-; mach_robots — 8 x 12 pixels, αδιαφανές, 48 bytes
+; mach_robots — 12 x 22 pixels, αδιαφανές, 132 bytes
 mach_robots:
-    db #0C,#F0,#F0,#0C   ; ..WWWW..
-    db #58,#DA,#E5,#A4   ; .WMWWMW.
-    db #58,#F0,#F0,#A4   ; .WWWWWW.
-    db #0C,#A4,#58,#0C   ; ..W..W..
-    db #58,#F0,#F0,#A4   ; .WWWWWW.
-    db #58,#4D,#8E,#A4   ; .W.MM.W.
-    db #58,#4D,#8E,#A4   ; .W.MM.W.
-    db #58,#F0,#F0,#A4   ; .WWWWWW.
-    db #0C,#A4,#58,#0C   ; ..W..W..
-    db #0C,#A4,#58,#0C   ; ..W..W..
-    db #58,#A4,#58,#A4   ; .WW..WW.
-    db #0C,#0C,#0C,#0C   ; ........
+    db #0C,#58,#F0,#F0,#A4,#0C   ; ...WWWWWW...
+    db #0C,#A4,#0C,#0C,#58,#0C   ; ..W......W..
+    db #58,#4D,#8E,#4D,#8E,#A4   ; .W.MM..MM.W.
+    db #58,#4D,#8E,#4D,#8E,#A4   ; .W.MM..MM.W.
+    db #0C,#A4,#0C,#0C,#58,#0C   ; ..W......W..
+    db #0C,#58,#F0,#F0,#A4,#0C   ; ...WWWWWW...
+    db #0C,#0C,#58,#A4,#0C,#0C   ; .....WW.....
+    db #0C,#F0,#F0,#F0,#F0,#0C   ; ..WWWWWWWW..
+    db #58,#0C,#0C,#0C,#0C,#A4   ; .W........W.
+    db #58,#4D,#CF,#CF,#8E,#A4   ; .W.MMMMMM.W.
+    db #58,#4D,#0C,#0C,#8E,#A4   ; .W.M....M.W.
+    db #58,#4D,#0C,#0C,#8E,#A4   ; .W.M....M.W.
+    db #58,#4D,#CF,#CF,#8E,#A4   ; .W.MMMMMM.W.
+    db #58,#0C,#0C,#0C,#0C,#A4   ; .W........W.
+    db #0C,#F0,#F0,#F0,#F0,#0C   ; ..WWWWWWWW..
+    db #0C,#58,#0C,#0C,#A4,#0C   ; ...W....W...
+    db #0C,#58,#0C,#0C,#A4,#0C   ; ...W....W...
+    db #0C,#58,#0C,#0C,#A4,#0C   ; ...W....W...
+    db #0C,#F0,#0C,#0C,#F0,#0C   ; ..WW....WW..
+    db #58,#F0,#0C,#0C,#F0,#A4   ; .WWW....WWW.
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
 
-; mach_food — 8 x 12 pixels, αδιαφανές, 48 bytes
+; mach_food — 12 x 22 pixels, αδιαφανές, 132 bytes
 mach_food:
-    db #0C,#49,#86,#0C   ; ...GG...
-    db #0C,#C3,#C3,#0C   ; ..GGGG..
-    db #49,#C3,#C3,#86   ; .GGGGGG.
-    db #0C,#C3,#C3,#0C   ; ..GGGG..
-    db #0C,#49,#86,#0C   ; ...GG...
-    db #33,#33,#33,#33   ; yyyyyyyy
-    db #26,#0C,#0C,#19   ; y......y
-    db #26,#FC,#FC,#19   ; y.OOOO.y
-    db #26,#FC,#FC,#19   ; y.OOOO.y
-    db #26,#0C,#0C,#19   ; y......y
-    db #33,#33,#33,#33   ; yyyyyyyy
-    db #0C,#26,#19,#0C   ; ..y..y..
+    db #0C,#0C,#49,#86,#0C,#0C   ; .....GG.....
+    db #0C,#49,#C3,#C3,#86,#0C   ; ...GGGGGG...
+    db #0C,#C3,#C3,#C3,#C3,#0C   ; ..GGGGGGGG..
+    db #49,#C3,#C3,#C3,#C3,#86   ; .GGGGGGGGGG.
+    db #0C,#C3,#C3,#C3,#C3,#0C   ; ..GGGGGGGG..
+    db #0C,#49,#C3,#C3,#86,#0C   ; ...GGGGGG...
+    db #0C,#0C,#1D,#2E,#0C,#0C   ; .....SS.....
+    db #0C,#0C,#1D,#2E,#0C,#0C   ; .....SS.....
+    db #0C,#1D,#3F,#3F,#2E,#0C   ; ...SSSSSS...
+    db #0C,#3A,#30,#30,#35,#0C   ; ..S,,,,,,S..
+    db #0C,#3A,#30,#30,#35,#0C   ; ..S,,,,,,S..
+    db #0C,#3F,#3F,#3F,#3F,#0C   ; ..SSSSSSSS..
+    db #19,#33,#33,#33,#33,#26   ; .yyyyyyyyyy.
+    db #19,#0C,#0C,#0C,#0C,#26   ; .y........y.
+    db #19,#5C,#FC,#FC,#AC,#26   ; .y.OOOOOO.y.
+    db #19,#5C,#FC,#FC,#AC,#26   ; .y.OOOOOO.y.
+    db #19,#0C,#0C,#0C,#0C,#26   ; .y........y.
+    db #19,#33,#33,#33,#33,#26   ; .yyyyyyyyyy.
+    db #0C,#32,#30,#30,#31,#0C   ; ..y,,,,,,y..
+    db #0C,#33,#33,#33,#33,#0C   ; ..yyyyyyyy..
+    db #0C,#19,#0C,#0C,#26,#0C   ; ...y....y...
+    db #0C,#19,#0C,#0C,#26,#0C   ; ...y....y...
 
 machine_count:
     db 1,4,8
@@ -1777,7 +2315,7 @@ machine_count:
 ; --- θέσεις μηχανημάτων, 8 ανά μέγεθος (255 = κενή) ---
 ; machine_slots + size*MACH_SLOTS*2 + slot*2 -> (x bytes, y)
 machine_slots:
-    db   6, 21   ; s θέση 0
+    db   5, 26   ; s θέση 0
     db 255,255   ; s θέση 1
     db 255,255   ; s θέση 2
     db 255,255   ; s θέση 3
@@ -1785,33 +2323,33 @@ machine_slots:
     db 255,255   ; s θέση 5
     db 255,255   ; s θέση 6
     db 255,255   ; s θέση 7
-    db   7, 22   ; m θέση 0
-    db  13, 22   ; m θέση 1
-    db   7, 35   ; m θέση 2
-    db  13, 35   ; m θέση 3
+    db   5, 30   ; m θέση 0
+    db  12, 30   ; m θέση 1
+    db   5, 54   ; m θέση 2
+    db  12, 54   ; m θέση 3
     db 255,255   ; m θέση 4
     db 255,255   ; m θέση 5
     db 255,255   ; m θέση 6
     db 255,255   ; m θέση 7
-    db  11, 22   ; l θέση 0
-    db  17, 22   ; l θέση 1
-    db  11, 35   ; l θέση 2
-    db  17, 35   ; l θέση 3
-    db  11, 48   ; l θέση 4
-    db  17, 48   ; l θέση 5
-    db  11, 61   ; l θέση 6
-    db  17, 61   ; l θέση 7
+    db  13, 15   ; l θέση 0
+    db   6, 26   ; l θέση 1
+    db   3, 53   ; l θέση 2
+    db   6, 80   ; l θέση 3
+    db  12, 91   ; l θέση 4
+    db  19, 80   ; l θέση 5
+    db  22, 53   ; l θέση 6
+    db  19, 26   ; l θέση 7
 
 machine_rules:
     db 1,7,7,7,7,7,7
     ; oxygen, iron, bioplastic, weapons, processors, robots, food
 
 ; --- θέσεις εικονιδίου/πληρότητας από το ΚΕΝΤΡΟ του θόλου ---
-; interior_ofs + size*4 -> (icon dx bytes, icon dy, occ dx, occ dy)
+; interior_ofs + size*2 -> (icon dx bytes, icon dy) από το κέντρο
 interior_ofs:
-    db 254,236,253,  2   ; s
-    db 254,220,253,  2   ; m
-    db 254,204,253, 12   ; l
+    db 254,240   ; s
+    db 254,228   ; m
+    db 254,252   ; l
 
 ; --- 16 firmware colour numbers, pen 0..15 ---
 palette_fw:
@@ -1833,9 +2371,9 @@ palette_fw:
     ; pen 14  FW 19  Sea green     εικονίδια
     ; pen 15  FW 16  Pink          εικονίδια
 
-; --- 202 bytes γέμισμα για τη σελίδα του flip_mode0 ---
+; --- 44 bytes γέμισμα για τη σελίδα του flip_mode0 ---
 sprites_pad:
-    defs 202,#00
+    defs 44,#00
 
 ; --- flip_mode0[b] = b με ανταλλαγμένα pixels ---
 align 256

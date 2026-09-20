@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Παράγει όλα τα sprites Mode 0 του colony sim προγραμματιστικά.
 
-    python3 tools/make_sprites.py [--anim-frames 1|2] [--uniform-quads] [--out DIR]
+    python3 tools/make_sprites.py [--quads all|nw] [--uniform-quads] [--out DIR]
 
 Βγάζει: sprites.asm (RASM), sprites.bin, sprites_map.txt, dump για το Aseprite
 και PNG προεπισκοπήσεις. Τίποτα δεν φορτώνεται από έτοιμα γραφικά.
@@ -134,9 +134,7 @@ def pad_to(pens, w, h):
     return out
 
 
-OCC_W, OCC_H = 12, 16
-SLOT_ORDER = [(3, 1), (6, 9), (9, 1), (0, 9), (6, 1), (3, 9), (0, 1), (9, 9)]
-LEVEL_FIGURES = [0, 1, 3, 5, 8]
+SLOT_SIZE = geo.SLOT_W // 2 * geo.SLOT_H          # bytes ανά θέση (αδιαφανής)
 
 
 def build_domes(uniform):
@@ -186,22 +184,30 @@ def build_icons():
     return out
 
 
-def build_occupancy(frames_count):
+def build_corridor_slots(frames):
+    """Θέσεις αποίκων πάνω στον δακτύλιο, σε δύο παραλλαγές: κενή και με άποικο.
+
+    Κόβονται από το ΣΥΝΘΕΤΟ πλαίσιο (θόλος + δακτύλιος), ώστε η κενή παραλλαγή
+    να επαναφέρει ακριβώς ό,τι υπήρχε εκεί. Έτσι ένα αδιαφανές blit αρκεί και
+    για να εμφανιστεί και για να σβηστεί ένας άποικος.
+    """
     fig = icons.parse_art(icons.COLONIST, icons.COLONIST_W, icons.COLONIST_H,
                           icons.COLONIST_LEGEND, "colonist")
+    ox = (geo.SLOT_W - icons.COLONIST_W) // 2
+    oy = (geo.SLOT_H - icons.COLONIST_H) // 2
     out = []
-    for frame in range(frames_count):
-        for level, n in enumerate(LEVEL_FIGURES):
-            pens = [[PEN_DOME_FLOOR] * OCC_W for _ in range(OCC_H)]
-            for sx, sy in SLOT_ORDER[:n]:
-                sy += frame
-                for j, frow in enumerate(fig):
-                    for i, p in enumerate(frow):
-                        if p is not None:
-                            pens[sy + j][sx + i] = p
-            suffix = "" if frames_count == 1 else f"_f{frame}"
-            out.append(Sprite(f"occ_level{level}{suffix}", pens,
-                              "επικαλύμματα πληρότητας", False))
+    for code, d in geo.DOME_SIZES:
+        _, fw, fh, cls, dp, rp = frames[code]
+        full = [[dp[y][x] or rp[y][x] for x in range(fw)] for y in range(fh)]
+        for k, x, y in geo.corridor_slots(d, fw, fh):
+            empty = [row[x:x + geo.SLOT_W] for row in full[y:y + geo.SLOT_H]]
+            out.append(Sprite(f"slot_{code}_{k}_e", empty, "θέσεις διαδρόμου", False))
+            person = [r[:] for r in empty]
+            for j, frow in enumerate(fig):
+                for i, pen in enumerate(frow):
+                    if pen is not None:
+                        person[oy + j][ox + i] = pen
+            out.append(Sprite(f"slot_{code}_{k}_p", person, "θέσεις διαδρόμου", False))
     return out
 
 
@@ -218,7 +224,7 @@ def check(cond, msg):
         raise CheckFailed(msg)
 
 
-def verify(frames, domes, rings, corr, conns, icon_sprites, occ, machines, uniform):
+def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines, uniform):
     # 1. κωδικοποίηση
     for a, b, want in ((1, 0, 0x80), (0, 1, 0x40), (15, 15, 0xFF),
                        (0, 0, 0x00), (8, 0, 0x02)):
@@ -231,7 +237,7 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, occ, machines, unifo
     for b in range(256):
         check(FLIP_TABLE[FLIP_TABLE[b]] == b, f"flip(flip(#{b:02X})) != #{b:02X}")
 
-    allspr = domes + rings + corr + conns + icon_sprites + occ + machines
+    allspr = domes + rings + corr + conns + icon_sprites + slots + machines
 
     # 3. διαστάσεις
     for s in allspr:
@@ -312,11 +318,27 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, occ, machines, unifo
     #     μηχάνημα επιτρέπεται σε τουλάχιστον ένα μέγεθος
     want = {"s": 1, "m": 4, "l": 8}
     for code, n in want.items():
-        got = len(geo.INTERIOR[code]["machines"])
+        d, fw, fh, *_ = frames[code]
+        got = sum(1 for nm, *_ in geo.interior(code, fw, fh) if nm.startswith("machine"))
         check(got == n, f"{code}: {got} θέσεις μηχανημάτων αντί για {n}")
     for name, sizes, _ in icons.MACHINES:
         check(sizes and all(c in "sml" for c in sizes),
               f"μηχάνημα {name}: άκυρα μεγέθη {sizes!r}")
+
+    # 9β. οι θέσεις αποίκων πέφτουν πάνω στον δακτύλιο και δεν πατάνε πόρτα
+    for code, (d, fw, fh, cls, dp, rp) in frames.items():
+        doors = set()
+        for name, x, y in geo.conn_points(d, fw, fh):
+            doors |= {(a, b) for b in range(y, y + geo.CONN_H)
+                      for a in range(x, x + geo.CONN_W)}
+        for k, x, y in geo.corridor_slots(d, fw, fh):
+            check(x % 2 == 0, f"{code}/θέση {k}: μονό x = {x}")
+            cxp, cyp = x + geo.SLOT_W // 2, y + geo.SLOT_H // 2
+            check(cls[cyp][cxp] == geo.CORRIDOR,
+                  f"{code}/θέση {k}: το κέντρο ({cxp},{cyp}) δεν είναι στον δακτύλιο")
+            box = {(a, b) for b in range(y, y + geo.SLOT_H)
+                   for a in range(x, x + geo.SLOT_W)}
+            check(not (box & doors), f"{code}/θέση {k}: πέφτει πάνω σε σημείο σύνδεσης")
 
     # 9. τα σημεία σύνδεσης πέφτουν πάνω στον δακτύλιο
     for code, (d, fw, fh, cls, dp, rp) in frames.items():
@@ -347,7 +369,7 @@ class Blob:
         return b"".join(i[1] for i in self.items)
 
 
-def build_blob(frames, domes, rings, corr, conns, icon_sprites, occ, machines, quads):
+def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines, quads):
     """quads="all": και τα 4 τεταρτημόρια. quads="nw": μόνο το nw — τα υπόλοιπα
     τρία τα παράγει ο Z80 με το flip_mode0 (το ένα τέταρτο της μνήμης)."""
     keep = (lambda n: True) if quads == "all" else (lambda n: n.endswith("_nw"))
@@ -381,17 +403,26 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, occ, machines, q
     blob.add("room_icons", b"", None, "—")
     for s in icon_sprites:
         blob.add(s.name, s.data(), s, s.category)
-    blob.add("occupancy", b"", None, "—")
-    for s in occ:
+    blob.add("corr_slot_gfx", b"", None, "—")
+    for s in slots:
         blob.add(s.name, s.data(), s, s.category)
+
+    # πού πέφτει κάθε θέση αποίκου πάνω στον δακτύλιο
+    pts = bytearray()
+    for code, _ in geo.DOME_SIZES:
+        d, fw, fh, *_ = frames[code]
+        for k, x, y in geo.corridor_slots(d, fw, fh):
+            pts += bytes([x // 2, y])
+    blob.add("corr_slots", pts, None, "πίνακες δωματίου")
+    blob.add("corr_fill", bytes(geo.SLOT_FILL), None, "πίνακες δωματίου")
 
     blob.add("machines", b"", None, "—")
     for sp in machines:
         blob.add(sp.name, sp.data(), sp, sp.category)
 
     # πόσα μηχανήματα χωράει κάθε μέγεθος
-    blob.add("machine_count", bytes(len(geo.INTERIOR[c]["machines"])
-                                    for c, _ in geo.DOME_SIZES), None, "πίνακες δωματίου")
+    blob.add("machine_count", bytes(geo.MACHINE_COUNT[c] for c, _ in geo.DOME_SIZES),
+             None, "πίνακες δωματίου")
 
     # θέσεις μηχανημάτων: γεμισμένες σε MAX_MACHINES ανά μέγεθος ώστε ο δείκτης
     # να είναι machine_slots + size*MAX_MACHINES*2 + slot*2
@@ -413,9 +444,9 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, occ, machines, q
     # θέσεις εικονιδίου και επικαλύμματος ανά μέγεθος (προσημασμένα bytes)
     ofs = bytearray()
     for code, _ in geo.DOME_SIZES:
-        L = geo.INTERIOR[code]
-        for dx, dy in (L["icon"], L["occ"]):
-            ofs += bytes([(dx // 2) & 0xFF, dy & 0xFF])
+        d, fw, fh, *_ = frames[code]
+        ix, iy = next((x, y) for n, x, y, w, h in geo.interior(code, fw, fh) if n == "icon")
+        ofs += bytes([((ix - fw // 2) // 2) & 0xFF, (iy - fh // 2) & 0xFF])
     blob.add("interior_ofs", ofs, None, "πίνακες δωματίου")
 
     blob.add("palette_fw", bytes(FW), None, "παλέτα")
@@ -456,7 +487,7 @@ QUADS_NW_NOTE = """\
 """
 
 
-def emit_asm(blob, frames, anim_frames, uniform, quads):
+def emit_asm(blob, frames, uniform, quads):
     L = [ASM_HEADER]
     if quads == "nw":
         L.append(QUADS_NW_NOTE)
@@ -472,14 +503,15 @@ def emit_asm(blob, frames, anim_frames, uniform, quads):
     L.append("ICON_W      equ %d" % (icons.ICON_W // 2))
     L.append("ICON_H      equ %d" % icons.ICON_H)
     L.append("ICON_SIZE   equ %d          ; room_icons + type*ICON_SIZE" % (icons.ICON_W // 2 * icons.ICON_H))
-    L.append("OCC_W       equ %d" % (OCC_W // 2))
-    L.append("OCC_H       equ %d" % OCC_H)
-    L.append("OCC_SIZE    equ %d          ; occupancy + level*OCC_SIZE" % (OCC_W // 2 * OCC_H))
-    L.append("OCC_LEVELS  equ %d" % len(LEVEL_FIGURES))
-    L.append("            ; οι θέσεις εικονιδίου/πληρότητας είναι στο interior_ofs")
-    if anim_frames > 1:
-        L.append("OCC_FRAME   equ %d         ; + frame*OCC_FRAME"
-                 % (len(LEVEL_FIGURES) * OCC_W // 2 * OCC_H))
+    L.append("SLOT_W      equ %d           ; θέση αποίκου στον διάδρομο" % (geo.SLOT_W // 2))
+    L.append("SLOT_H      equ %d" % geo.SLOT_H)
+    L.append("SLOT_SIZE   equ %d          ; bytes ανά παραλλαγή" % SLOT_SIZE)
+    L.append("SLOT_STRIDE equ %d          ; κενή + με άποικο" % (2 * SLOT_SIZE))
+    L.append("SLOT_BANK   equ %d         ; bytes ανά μέγεθος θόλου"
+             % (geo.CORR_SLOTS * 2 * SLOT_SIZE))
+    L.append("CORR_SLOTS  equ %d" % geo.CORR_SLOTS)
+    L.append("            ; corr_slot_gfx + size*SLOT_BANK + slot*SLOT_STRIDE")
+    L.append("            ; + (0 = κενή, SLOT_SIZE = με άποικο)")
     L.append("")
     L.append("CORR_H_W    equ 4")
     L.append("CORR_H_H    equ 8")
@@ -541,13 +573,25 @@ def emit_asm(blob, frames, anim_frames, uniform, quads):
                 continue
             if label == "interior_ofs":
                 L += ["", "; --- θέσεις εικονιδίου/πληρότητας από το ΚΕΝΤΡΟ του θόλου ---",
-                      "; interior_ofs + size*4 -> (icon dx bytes, icon dy, occ dx, occ dy)",
+                      "; interior_ofs + size*2 -> (icon dx bytes, icon dy) από το κέντρο",
                       "interior_ofs:"]
+                for i, (code, _) in enumerate(geo.DOME_SIZES):
+                    L.append("    db %3d,%3d   ; %s" % (data[2 * i], data[2 * i + 1], code))
+                continue
+            if label == "corr_slots":
+                L += ["", "; --- θέσεις αποίκων πάνω στον δακτύλιο ---",
+                      "; corr_slots + size*CORR_SLOTS*2 + slot*2 -> (x bytes, y)",
+                      "corr_slots:"]
                 i = 0
                 for code, _ in geo.DOME_SIZES:
-                    L.append("    db %3d,%3d,%3d,%3d   ; %s"
-                             % (data[i], data[i + 1], data[i + 2], data[i + 3], code))
-                    i += 4
+                    for k in range(geo.CORR_SLOTS):
+                        L.append("    db %3d,%3d   ; %s θέση %d"
+                                 % (data[i], data[i + 1], code, k))
+                        i += 2
+                continue
+            if label == "corr_fill":
+                L += ["", "; --- σειρά γεμίσματος θέσεων (σκορπισμένη) ---", "corr_fill:",
+                      "    db " + ",".join(str(b) for b in data)]
                 continue
             if label == "conn_points":
                 L += ["", "; --- σημεία σύνδεσης: ανά μέγεθος, 8 κατευθύνσεις x (x bytes, y) ---",
@@ -676,7 +720,7 @@ def paste_pens(dst, src, ox, oy):
                 dst[oy + y][ox + x] = p
 
 
-def composite_pens(blob, frames, code, icon_type, level, with_ring=True):
+def composite_pens(blob, frames, code, icon_type, people, with_ring=True):
     """Πλήρης θόλος, συντεθειμένος ΑΠΟ ΤΑ BYTES των sprites."""
     data = blob.data()
     d, fw, fh, cls, dp, rp = frames[code]
@@ -714,10 +758,6 @@ def composite_pens(blob, frames, code, icon_type, level, with_ring=True):
     for what, x, y, w, h in geo.interior(code, fw, fh):
         if what == "icon":
             blit(f"icon_{icons.ROOM_ICONS[icon_type][0]}", w, h, False, x, y)
-        elif what == "occ":
-            off = blob.marks["occupancy"] + level * (OCC_W // 2 * OCC_H)
-            paste_pens(out, sprite_from_bytes(data[off:off + OCC_W // 2 * OCC_H],
-                                              OCC_W // 2, OCC_H, False), x, y)
         else:
             k = int(what[len("machine"):])
             blit(f"mach_{allowed[k % len(allowed)][0]}", w, h, False, x, y)
@@ -725,6 +765,11 @@ def composite_pens(blob, frames, code, icon_type, level, with_ring=True):
     if with_ring:
         for name, x, y in geo.conn_points(d, fw, fh):
             blit(f"conn_{name}", geo.CONN_W, geo.CONN_H, True, x, y)
+        # άποικοι: γεμίζουν τις θέσεις του δακτυλίου με τη σειρά του corr_fill
+        chosen = set(geo.SLOT_FILL[:people])
+        for k, x, y in geo.corridor_slots(d, fw, fh):
+            if k in chosen:
+                blit(f"slot_{code}_{k}_p", geo.SLOT_W, geo.SLOT_H, False, x, y)
     return out
 
 
@@ -802,7 +847,6 @@ def main():
 
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--anim-frames", type=int, choices=(1, 2), default=1)
     ap.add_argument("--quads", choices=("all", "nw"), default="all",
                     help="all: και τα 4 τεταρτημόρια (γρήγορο). "
                          "nw: μόνο το nw, τα άλλα 3 παράγονται με το flip_mode0")
@@ -813,19 +857,20 @@ def main():
 
     domes, rings, frames = build_domes(args.uniform_quads)
     corr, conns = build_corridors(), build_connectors()
-    icon_sprites, occ = build_icons(), build_occupancy(args.anim_frames)
+    icon_sprites = build_icons()
     machines = build_machines()
+    slots = build_corridor_slots(frames)
 
     try:
-        verify(frames, domes, rings, corr, conns, icon_sprites, occ, machines,
+        verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
                args.uniform_quads)
     except CheckFailed as e:
         print("ΑΠΟΤΥΧΙΑ ΕΠΑΛΗΘΕΥΣΗΣ: %s" % e, file=sys.stderr)
         return 1
 
-    blob = build_blob(frames, domes, rings, corr, conns, icon_sprites, occ,
+    blob = build_blob(frames, domes, rings, corr, conns, icon_sprites, slots,
                       machines, args.quads)
-    asm = emit_asm(blob, frames, args.anim_frames, args.uniform_quads, args.quads)
+    asm = emit_asm(blob, frames, args.uniform_quads, args.quads)
     binary = blob.data()
 
     from_asm = parse_asm_bytes(asm)
@@ -853,9 +898,9 @@ def main():
     make_sheet(entries, os.path.join(prev, "sheet.png"))
 
     for code, _ in geo.DOME_SIZES:
-        render(composite_pens(blob, frames, code, 5, 3)).save(
+        render(composite_pens(blob, frames, code, 5, 5)).save(
             os.path.join(prev, "composite_%s.png" % code))
-    render(composite_pens(blob, frames, "l", 5, 3)).save(os.path.join(prev, "composite.png"))
+    render(composite_pens(blob, frames, "l", 5, 5)).save(os.path.join(prev, "composite.png"))
 
     # dump για το Aseprite: ΠΑΝΤΑ και τα 4 τεταρτημόρια, ακόμη και με --quads nw.
     # Τα .aseprite είναι το εικαστικό· τι αποθηκεύεται τελικά το λέει το sprites_map.txt.
@@ -868,7 +913,7 @@ def main():
         ("corridors", geo.DIAG_W, geo.DIAG_H,
          [(s.name, pad_to(s.pens, geo.DIAG_W, geo.DIAG_H)) for s in corr + conns]),
         ("icons", icons.ICON_W, icons.ICON_H, [(s.name, s.pens) for s in icon_sprites]),
-        ("occupancy", OCC_W, OCC_H, [(s.name, s.pens) for s in occ]),
+        ("slots", geo.SLOT_W, geo.SLOT_H, [(s.name, s.pens) for s in slots]),
         ("machines", geo.MACHINE_W, geo.MACHINE_H,
          [(s.name, s.pens) for s in machines]),
     ]

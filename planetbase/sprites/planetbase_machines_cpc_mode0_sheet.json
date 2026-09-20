@@ -1,65 +1,65 @@
 { "frames": [
    {
     "filename": "planetbase_machines_cpc_mode0 0.aseprite",
-    "frame": { "x": 0, "y": 0, "w": 8, "h": 12 },
+    "frame": { "x": 0, "y": 0, "w": 12, "h": 22 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 12 },
-    "sourceSize": { "w": 8, "h": 12 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 12, "h": 22 },
+    "sourceSize": { "w": 12, "h": 22 },
     "duration": 100
    },
    {
     "filename": "planetbase_machines_cpc_mode0 1.aseprite",
-    "frame": { "x": 8, "y": 0, "w": 8, "h": 12 },
+    "frame": { "x": 12, "y": 0, "w": 12, "h": 22 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 12 },
-    "sourceSize": { "w": 8, "h": 12 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 12, "h": 22 },
+    "sourceSize": { "w": 12, "h": 22 },
     "duration": 100
    },
    {
     "filename": "planetbase_machines_cpc_mode0 2.aseprite",
-    "frame": { "x": 16, "y": 0, "w": 8, "h": 12 },
+    "frame": { "x": 24, "y": 0, "w": 12, "h": 22 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 12 },
-    "sourceSize": { "w": 8, "h": 12 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 12, "h": 22 },
+    "sourceSize": { "w": 12, "h": 22 },
     "duration": 100
    },
    {
     "filename": "planetbase_machines_cpc_mode0 3.aseprite",
-    "frame": { "x": 24, "y": 0, "w": 8, "h": 12 },
+    "frame": { "x": 36, "y": 0, "w": 12, "h": 22 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 12 },
-    "sourceSize": { "w": 8, "h": 12 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 12, "h": 22 },
+    "sourceSize": { "w": 12, "h": 22 },
     "duration": 100
    },
    {
     "filename": "planetbase_machines_cpc_mode0 4.aseprite",
-    "frame": { "x": 32, "y": 0, "w": 8, "h": 12 },
+    "frame": { "x": 48, "y": 0, "w": 12, "h": 22 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 12 },
-    "sourceSize": { "w": 8, "h": 12 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 12, "h": 22 },
+    "sourceSize": { "w": 12, "h": 22 },
     "duration": 100
    },
    {
     "filename": "planetbase_machines_cpc_mode0 5.aseprite",
-    "frame": { "x": 40, "y": 0, "w": 8, "h": 12 },
+    "frame": { "x": 60, "y": 0, "w": 12, "h": 22 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 12 },
-    "sourceSize": { "w": 8, "h": 12 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 12, "h": 22 },
+    "sourceSize": { "w": 12, "h": 22 },
     "duration": 100
    },
    {
     "filename": "planetbase_machines_cpc_mode0 6.aseprite",
-    "frame": { "x": 48, "y": 0, "w": 8, "h": 12 },
+    "frame": { "x": 72, "y": 0, "w": 12, "h": 22 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 12 },
-    "sourceSize": { "w": 8, "h": 12 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 12, "h": 22 },
+    "sourceSize": { "w": 12, "h": 22 },
     "duration": 100
    }
  ],
@@ -68,7 +68,7 @@
   "version": "1.3.18.5-dev",
   "image": "planetbase_machines_cpc_mode0_sheet.png",
   "format": "I8",
-  "size": { "w": 56, "h": 12 },
+  "size": { "w": 84, "h": 22 },
   "scale": "1",
   "frameTags": [
    { "name": "mach_oxygen", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
