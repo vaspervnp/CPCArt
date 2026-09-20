@@ -58,6 +58,27 @@ def mask_mode0(p0, p1):
 FLIP_TABLE = [flip_byte(b) for b in range(256)]
 
 
+def hflip_row(row, masked):
+    """Οριζόντιο καθρέφτισμα μιας γραμμής bytes.
+
+    Αντίστροφη σειρά bytes, με κάθε byte να περνά από το flip_mode0. Στα sprites
+    με μάσκα το ζεύγος (mask, data) μένει ενιαίο — αντιστρέφονται τα ΖΕΥΓΗ.
+    """
+    if masked:
+        pairs = [row[i:i + 2] for i in range(0, len(row), 2)]
+        return [FLIP_TABLE[b] for pair in reversed(pairs) for b in pair]
+    return [FLIP_TABLE[b] for b in reversed(row)]
+
+
+def derive_quad(rows, corner, masked):
+    """Παράγει ne/sw/se από τις γραμμές του nw."""
+    if corner in ("ne", "se"):
+        rows = [hflip_row(r, masked) for r in rows]
+    if corner in ("sw", "se"):
+        rows = list(reversed(rows))
+    return rows
+
+
 # --------------------------------------------------------------------------
 # 2. Sprites
 # --------------------------------------------------------------------------
@@ -252,6 +273,16 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, occ, machines, unifo
             check(by[f"{kind}_{code}_sw"].pens == list(reversed([list(r) for r in nw])),
                   f"{kind}_{code}_sw != κάθετο καθρέφτισμα του nw")
 
+    # 6β. τα ne/sw/se παράγονται από το nw με το flip_mode0 σε επίπεδο BYTES —
+    #     ακριβώς ό,τι θα κάνει ο Z80 όταν αποθηκεύεται μόνο το nw
+    for code, _ in geo.DOME_SIZES:
+        for kind in ("dome", "ring"):
+            rows = by[f"{kind}_{code}_nw"].rows_bytes()
+            for corner in ("ne", "sw", "se"):
+                got = by[f"{kind}_{code}_{corner}"].rows_bytes()
+                check(got == derive_quad(rows, corner, True),
+                      f"{kind}_{code}_{corner}: δεν παράγεται από το nw με το flip_mode0")
+
     # 7. θόλος και δακτύλιος δεν επικαλύπτονται και μαζί δίνουν το πλήρες σχήμα
     for code, (d, fw, fh, cls, dp, rp) in frames.items():
         for y in range(fh):
@@ -316,17 +347,20 @@ class Blob:
         return b"".join(i[1] for i in self.items)
 
 
-def build_blob(frames, domes, rings, corr, conns, icon_sprites, occ, machines):
+def build_blob(frames, domes, rings, corr, conns, icon_sprites, occ, machines, quads):
+    """quads="all": και τα 4 τεταρτημόρια. quads="nw": μόνο το nw — τα υπόλοιπα
+    τρία τα παράγει ο Z80 με το flip_mode0 (το ένα τέταρτο της μνήμης)."""
+    keep = (lambda n: True) if quads == "all" else (lambda n: n.endswith("_nw"))
     blob = Blob()
     for code, _ in geo.DOME_SIZES:
         blob.add(f"domes_{code}", b"", None, "—")
         for s in domes:
-            if s.name.startswith(f"dome_{code}_"):
+            if s.name.startswith(f"dome_{code}_") and keep(s.name):
                 blob.add(s.name, s.data(), s, s.category)
     for code, _ in geo.DOME_SIZES:
         blob.add(f"rings_{code}", b"", None, "—")
         for s in rings:
-            if s.name.startswith(f"ring_{code}_"):
+            if s.name.startswith(f"ring_{code}_") and keep(s.name):
                 blob.add(s.name, s.data(), s, s.category)
 
     blob.add("corridors", b"", None, "—")
@@ -408,8 +442,24 @@ ASM_HEADER = """\
 """
 
 
-def emit_asm(blob, frames, anim_frames, uniform):
+QUADS_NW_NOTE = """\
+; ΠΡΟΣΟΧΗ: αποθηκεύεται ΜΟΝΟ το τεταρτημόριο nw κάθε θόλου και δακτυλίου.
+; Τα άλλα τρία παράγονται τη στιγμή του blit με το flip_mode0:
+;
+;   ne = οριζόντιο καθρέφτισμα -> αντίστροφη σειρά ΖΕΥΓΩΝ (mask,data) σε κάθε
+;        γραμμή, με κάθε byte να περνά από το flip_mode0
+;   sw = κάθετο καθρέφτισμα    -> οι γραμμές με αντίστροφη σειρά, bytes ως έχουν
+;   se = και τα δύο μαζί
+;
+; Το ζεύγος (mask, data) μένει ΕΝΙΑΙΟ στον οριζόντιο καθρεφτισμό — αντιστρέφονται
+; τα ζεύγη, όχι τα μεμονωμένα bytes.
+"""
+
+
+def emit_asm(blob, frames, anim_frames, uniform, quads):
     L = [ASM_HEADER]
+    if quads == "nw":
+        L.append(QUADS_NW_NOTE)
     for code, d in geo.DOME_SIZES:
         _, fw, fh, *_ = frames[code]
         u = code.upper()
@@ -638,10 +688,27 @@ def composite_pens(blob, frames, code, icon_type, level, with_ring=True):
         n = (w // 2) * (2 if masked else 1) * h
         paste_pens(out, sprite_from_bytes(data[off:off + n], w // 2, h, masked), ox, oy)
 
+    def quad(kind, corner):
+        """Τα pens ενός τεταρτημορίου: από το blob, ή παραγμένα από το nw.
+
+        Όταν τρέχει με --quads nw, αυτό εδώ κάνει ακριβώς ό,τι θα κάνει ο Z80,
+        οπότε η προεπισκόπηση επαληθεύει και την παραγωγή.
+        """
+        stride, label = qw // 2 * 2, f"{kind}_{code}_{corner}"
+        if label not in blob.marks:
+            label, derive = f"{kind}_{code}_nw", corner
+        else:
+            derive = None
+        off = blob.marks[label]
+        rows = [list(data[off + y * stride:off + (y + 1) * stride]) for y in range(qh)]
+        if derive:
+            rows = derive_quad(rows, derive, True)
+        return sprite_from_bytes(bytes(b for r in rows for b in r), qw // 2, qh, True)
+
     order = (["ring"] if with_ring else []) + ["dome"]
     for kind in order:
         for corner, ox, oy in (("nw", 0, 0), ("ne", qw, 0), ("sw", 0, qh), ("se", qw, qh)):
-            blit(f"{kind}_{code}_{corner}", qw, qh, True, ox, oy)
+            paste_pens(out, quad(kind, corner), ox, oy)
 
     allowed = [(n, sz) for n, sz, _ in icons.MACHINES if code in sz]
     for what, x, y, w, h in geo.interior(code, fw, fh):
@@ -736,6 +803,9 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--anim-frames", type=int, choices=(1, 2), default=1)
+    ap.add_argument("--quads", choices=("all", "nw"), default="all",
+                    help="all: και τα 4 τεταρτημόρια (γρήγορο). "
+                         "nw: μόνο το nw, τα άλλα 3 παράγονται με το flip_mode0")
     ap.add_argument("--uniform-quads", action="store_true",
                     help="όλα τα μεγέθη σε τεταρτημόριο 32x64 (αλλιώς σφιχτό πλαίσιο ανά μέγεθος)")
     ap.add_argument("--out", default=os.path.join(root, "build", "sprites"))
@@ -753,8 +823,9 @@ def main():
         print("ΑΠΟΤΥΧΙΑ ΕΠΑΛΗΘΕΥΣΗΣ: %s" % e, file=sys.stderr)
         return 1
 
-    blob = build_blob(frames, domes, rings, corr, conns, icon_sprites, occ, machines)
-    asm = emit_asm(blob, frames, args.anim_frames, args.uniform_quads)
+    blob = build_blob(frames, domes, rings, corr, conns, icon_sprites, occ,
+                      machines, args.quads)
+    asm = emit_asm(blob, frames, args.anim_frames, args.uniform_quads, args.quads)
     binary = blob.data()
 
     from_asm = parse_asm_bytes(asm)
@@ -790,9 +861,9 @@ def main():
     max_q = max((f[1] // 2, f[2] // 2) for f in frames.values())
     groups = [
         ("domes", max_q[0], max_q[1],
-         [(s.name, pad_to(s.pens, *max_q)) for s in domes]),
+         [(s.name, pad_to(s.pens, *max_q)) for s in domes if s.name in blob.marks]),
         ("rings", max_q[0], max_q[1],
-         [(s.name, pad_to(s.pens, *max_q)) for s in rings]),
+         [(s.name, pad_to(s.pens, *max_q)) for s in rings if s.name in blob.marks]),
         ("corridors", geo.DIAG_W, geo.DIAG_H,
          [(s.name, pad_to(s.pens, geo.DIAG_W, geo.DIAG_H)) for s in corr + conns]),
         ("icons", icons.ICON_W, icons.ICON_H, [(s.name, s.pens) for s in icon_sprites]),
@@ -822,10 +893,16 @@ def main():
           % ("ΣΥΝΟΛΟ", sum(n for n, _ in cats.values()), len(binary), len(binary) / 1024))
     quad_bytes = sum(len(d) for l, d, sp, c in blob.items
                      if sp is not None and c in ("θόλοι", "δακτύλιοι"))
-    print("  Τα τεταρτημόρια είναι %d bytes από αυτά. Κρατώντας μόνο το nw και"
-          % quad_bytes)
-    print("  παράγοντας τα άλλα 3 με το flip_mode0, πέφτουν σε %d (σύνολο %.1f KB)."
-          % (quad_bytes // 4, (len(binary) - quad_bytes * 3 // 4) / 1024))
+    if args.quads == "nw":
+        print("  Αποθηκεύεται μόνο το nw (%d bytes)· τα ne/sw/se παράγονται με το"
+              % quad_bytes)
+        print("  flip_mode0. Με --quads all θα ήταν %d bytes (σύνολο %.1f KB)."
+              % (quad_bytes * 4, (len(binary) + quad_bytes * 3) / 1024))
+    else:
+        print("  Τα τεταρτημόρια είναι %d bytes από αυτά. Με --quads nw κρατιέται"
+              % quad_bytes)
+        print("  μόνο το nw: %d bytes, σύνολο %.1f KB."
+              % (quad_bytes // 4, (len(binary) - quad_bytes * 3 // 4) / 1024))
     print()
     print("  Όλες οι επαληθεύσεις (1-9) πέρασαν.")
     return 0
