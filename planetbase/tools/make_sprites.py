@@ -857,13 +857,14 @@ def main():
             os.path.join(prev, "composite_%s.png" % code))
     render(composite_pens(blob, frames, "l", 5, 3)).save(os.path.join(prev, "composite.png"))
 
-    # dump για το Aseprite: ομάδες με ενιαίο μέγεθος καμβά
+    # dump για το Aseprite: ΠΑΝΤΑ και τα 4 τεταρτημόρια, ακόμη και με --quads nw.
+    # Τα .aseprite είναι το εικαστικό· τι αποθηκεύεται τελικά το λέει το sprites_map.txt.
     max_q = max((f[1] // 2, f[2] // 2) for f in frames.values())
     groups = [
         ("domes", max_q[0], max_q[1],
-         [(s.name, pad_to(s.pens, *max_q)) for s in domes if s.name in blob.marks]),
+         [(s.name, pad_to(s.pens, *max_q)) for s in domes]),
         ("rings", max_q[0], max_q[1],
-         [(s.name, pad_to(s.pens, *max_q)) for s in rings if s.name in blob.marks]),
+         [(s.name, pad_to(s.pens, *max_q)) for s in rings]),
         ("corridors", geo.DIAG_W, geo.DIAG_H,
          [(s.name, pad_to(s.pens, geo.DIAG_W, geo.DIAG_H)) for s in corr + conns]),
         ("icons", icons.ICON_W, icons.ICON_H, [(s.name, s.pens) for s in icon_sprites]),

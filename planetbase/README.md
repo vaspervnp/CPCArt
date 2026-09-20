@@ -26,6 +26,7 @@ python3 tools/make_sprites.py --anim-frames 2   # + δεύτερο frame πλη�
 | `tools/make_aseprite.lua` | φτιάχνει τα `.aseprite` από το dump |
 | `tools/check_aseprite.py` | συγκρίνει τα εξαγόμενα sheets με τη γεννήτρια, pixel-προς-pixel |
 | `sprites/*.aseprite` | τα spritemaps — ένα frame ανά sprite, ένα tag με το όνομά του |
+| | περιέχουν **πάντα και τα 4 τεταρτημόρια**, ακόμη και με `--quads nw` |
 | `sprites/*_sheet.png/.json` | τα ίδια εξαγμένα από το Aseprite |
 | `build/sprites/sprites.asm` | πηγαίος κώδικας RASM, γραμμικά δεδομένα, ASCII σχόλιο ανά γραμμή |
 | `build/sprites/sprites.bin` | τα ίδια bytes σε raw binary |
@@ -119,6 +120,10 @@ ne = οριζόντιο καθρέφτισμα -> αντίστροφη σειρ�
 sw = κάθετο καθρέφτισμα    -> οι γραμμές με αντίστροφη σειρά, bytes ως έχουν
 se = και τα δύο μαζί
 ```
+
+Τα αρχεία Aseprite κρατούν **πάντα και τα 4 τεταρτημόρια** — είναι το εικαστικό, και
+το dump τους βγαίνει ίδιο σε `--quads all` και `--quads nw`. Τι αποθηκεύεται τελικά
+στο `.bin` το λέει το `sprites_map.txt`.
 
 Το ζεύγος `(mask, data)` μένει **ενιαίο** στον οριζόντιο καθρεφτισμό: αντιστρέφονται
 τα ζεύγη, όχι τα μεμονωμένα bytes. Η επαλήθευση 6β το ελέγχει σε επίπεδο bytes —
