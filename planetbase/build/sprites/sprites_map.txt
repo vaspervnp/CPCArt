@@ -60,8 +60,20 @@
   occ_level2            #7970     96  12x16 px       αδιαφανές  επικαλύμματα πληρότητας
   occ_level3            #79D0     96  12x16 px       αδιαφανές  επικαλύμματα πληρότητας
   occ_level4            #7A30     96  12x16 px       αδιαφανές  επικαλύμματα πληρότητας
-  palette_fw            #7A90     16                            παλέτα
-  sprites_pad           #7AA0     96                            στοίχιση
-  flip_mode0            #7B00    256                            πίνακας καθρεφτισμού
+# machines              #7A90      -                            (ομάδα)
+  mach_oxygen           #7A90     48  8x12 px        αδιαφανές  μηχανήματα
+  mach_iron             #7AC0     48  8x12 px        αδιαφανές  μηχανήματα
+  mach_bioplastic       #7AF0     48  8x12 px        αδιαφανές  μηχανήματα
+  mach_weapons          #7B20     48  8x12 px        αδιαφανές  μηχανήματα
+  mach_processors       #7B50     48  8x12 px        αδιαφανές  μηχανήματα
+  mach_robots           #7B80     48  8x12 px        αδιαφανές  μηχανήματα
+  mach_food             #7BB0     48  8x12 px        αδιαφανές  μηχανήματα
+  machine_count         #7BE0      3                            πίνακες δωματίου
+  machine_slots         #7BE3     48                            πίνακες δωματίου
+  machine_rules         #7C13      7                            πίνακες δωματίου
+  interior_ofs          #7C1A     12                            πίνακες δωματίου
+  palette_fw            #7C26     16                            παλέτα
+  sprites_pad           #7C36    202                            στοίχιση
+  flip_mode0            #7D00    256                            πίνακας καθρεφτισμού
 
-  ΣΥΝΟΛΟ                       31744
+  ΣΥΝΟΛΟ                       32256

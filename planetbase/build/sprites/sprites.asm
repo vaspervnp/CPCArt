@@ -27,14 +27,11 @@ DOME_L_SZ   equ 2048      ; bytes ανά τεταρτημόριο (mask+data)
 ICON_W      equ 4
 ICON_H      equ 8
 ICON_SIZE   equ 32          ; room_icons + type*ICON_SIZE
-ICON_DX     equ -2           ; bytes, από το ΚΕΝΤΡΟ του θόλου
-ICON_DY     equ -18
 OCC_W       equ 6
 OCC_H       equ 16
 OCC_SIZE    equ 96          ; occupancy + level*OCC_SIZE
-OCC_DX      equ -3           ; bytes, από το ΚΕΝΤΡΟ του θόλου
-OCC_DY      equ -6
 OCC_LEVELS  equ 5
+            ; οι θέσεις εικονιδίου/πληρότητας είναι στο interior_ofs
 
 CORR_H_W    equ 4
 CORR_H_H    equ 8
@@ -44,6 +41,12 @@ CORR_D_W    equ 8           ; διαγώνιο tile
 CORR_D_H    equ 16
 CORR_D_SX   equ 4           ; βήμα τοποθέτησης σε bytes
 CORR_D_SY   equ 16
+MACH_W      equ 4
+MACH_H      equ 12
+MACH_SIZE   equ 48          ; machines + type*MACH_SIZE
+MACH_TYPES  equ 7           ; oxygen, iron, bioplastic, weapons, processors, robots, food
+MACH_SLOTS  equ 8           ; θέσεις ανά μέγεθος στον πίνακα
+
 CONN_W      equ 2
 CONN_H      equ 8
 CONN_DIRS   equ 8           ; n,ne,e,se,s,sw,w,nw
@@ -1660,6 +1663,156 @@ occ_level4:
     db #2C,#3C,#1C,#2C,#3C,#1C   ; Y.YY.YY.YY.Y
     db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
 
+machines:
+
+; mach_oxygen — 8 x 12 pixels, αδιαφανές, 48 bytes
+mach_oxygen:
+    db #0C,#4C,#8C,#0C   ; ...cc...
+    db #0C,#CC,#CC,#0C   ; ..cccc..
+    db #4C,#F0,#F0,#8C   ; .cWWWWc.
+    db #4C,#F0,#F0,#8C   ; .cWWWWc.
+    db #4C,#F0,#F0,#8C   ; .cWWWWc.
+    db #4C,#F0,#F0,#8C   ; .cWWWWc.
+    db #0C,#CC,#CC,#0C   ; ..cccc..
+    db #0C,#58,#A4,#0C   ; ...WW...
+    db #58,#F0,#F0,#A4   ; .WWWWWW.
+    db #58,#0C,#0C,#A4   ; .W....W.
+    db #58,#F0,#F0,#A4   ; .WWWWWW.
+    db #0C,#A4,#58,#0C   ; ..W..W..
+
+; mach_iron — 8 x 12 pixels, αδιαφανές, 48 bytes
+mach_iron:
+    db #0C,#24,#18,#0C   ; ..,..,..
+    db #0C,#24,#18,#0C   ; ..,..,..
+    db #30,#30,#30,#30   ; ,,,,,,,,
+    db #24,#0C,#0C,#18   ; ,......,
+    db #24,#03,#03,#18   ; ,.RRRR.,
+    db #24,#53,#A3,#18   ; ,.RrrR.,
+    db #24,#53,#A3,#18   ; ,.RrrR.,
+    db #24,#03,#03,#18   ; ,.RRRR.,
+    db #24,#0C,#0C,#18   ; ,......,
+    db #30,#30,#30,#30   ; ,,,,,,,,
+    db #18,#30,#30,#24   ; .,,,,,,.
+    db #0C,#30,#30,#0C   ; ..,,,,..
+
+; mach_bioplastic — 8 x 12 pixels, αδιαφανές, 48 bytes
+mach_bioplastic:
+    db #3F,#3F,#3F,#3F   ; SSSSSSSS
+    db #2E,#0C,#0C,#1D   ; S......S
+    db #2E,#C3,#C3,#1D   ; S.GGGG.S
+    db #2E,#C3,#C3,#1D   ; S.GGGG.S
+    db #2E,#C3,#C3,#1D   ; S.GGGG.S
+    db #2E,#C3,#C3,#1D   ; S.GGGG.S
+    db #2E,#0C,#0C,#1D   ; S......S
+    db #3F,#3F,#3F,#3F   ; SSSSSSSS
+    db #1D,#30,#30,#2E   ; .S,,,,S.
+    db #1D,#30,#30,#2E   ; .S,,,,S.
+    db #1D,#3F,#3F,#2E   ; .SSSSSS.
+    db #0C,#3F,#3F,#0C   ; ..SSSS..
+
+; mach_weapons — 8 x 12 pixels, αδιαφανές, 48 bytes
+mach_weapons:
+    db #30,#30,#30,#30   ; ,,,,,,,,
+    db #24,#06,#09,#18   ; ,.R..R.,
+    db #24,#06,#09,#18   ; ,.R..R.,
+    db #24,#06,#09,#18   ; ,.R..R.,
+    db #24,#06,#09,#18   ; ,.R..R.,
+    db #24,#06,#09,#18   ; ,.R..R.,
+    db #24,#06,#09,#18   ; ,.R..R.,
+    db #24,#0C,#0C,#18   ; ,......,
+    db #30,#30,#30,#30   ; ,,,,,,,,
+    db #18,#30,#30,#24   ; .,,,,,,.
+    db #18,#0C,#0C,#24   ; .,....,.
+    db #18,#30,#30,#24   ; .,,,,,,.
+
+; mach_processors — 8 x 12 pixels, αδιαφανές, 48 bytes
+mach_processors:
+    db #18,#18,#18,#18   ; .,.,.,.,
+    db #0F,#0F,#0F,#0F   ; CCCCCCCC
+    db #0E,#0C,#0C,#0D   ; C......C
+    db #0E,#33,#33,#0D   ; C.yyyy.C
+    db #0E,#26,#19,#0D   ; C.y..y.C
+    db #0E,#26,#19,#0D   ; C.y..y.C
+    db #0E,#33,#33,#0D   ; C.yyyy.C
+    db #0E,#0C,#0C,#0D   ; C......C
+    db #0F,#0F,#0F,#0F   ; CCCCCCCC
+    db #18,#18,#18,#18   ; .,.,.,.,
+    db #18,#30,#30,#24   ; .,,,,,,.
+    db #0C,#30,#30,#0C   ; ..,,,,..
+
+; mach_robots — 8 x 12 pixels, αδιαφανές, 48 bytes
+mach_robots:
+    db #0C,#F0,#F0,#0C   ; ..WWWW..
+    db #58,#DA,#E5,#A4   ; .WMWWMW.
+    db #58,#F0,#F0,#A4   ; .WWWWWW.
+    db #0C,#A4,#58,#0C   ; ..W..W..
+    db #58,#F0,#F0,#A4   ; .WWWWWW.
+    db #58,#4D,#8E,#A4   ; .W.MM.W.
+    db #58,#4D,#8E,#A4   ; .W.MM.W.
+    db #58,#F0,#F0,#A4   ; .WWWWWW.
+    db #0C,#A4,#58,#0C   ; ..W..W..
+    db #0C,#A4,#58,#0C   ; ..W..W..
+    db #58,#A4,#58,#A4   ; .WW..WW.
+    db #0C,#0C,#0C,#0C   ; ........
+
+; mach_food — 8 x 12 pixels, αδιαφανές, 48 bytes
+mach_food:
+    db #0C,#49,#86,#0C   ; ...GG...
+    db #0C,#C3,#C3,#0C   ; ..GGGG..
+    db #49,#C3,#C3,#86   ; .GGGGGG.
+    db #0C,#C3,#C3,#0C   ; ..GGGG..
+    db #0C,#49,#86,#0C   ; ...GG...
+    db #33,#33,#33,#33   ; yyyyyyyy
+    db #26,#0C,#0C,#19   ; y......y
+    db #26,#FC,#FC,#19   ; y.OOOO.y
+    db #26,#FC,#FC,#19   ; y.OOOO.y
+    db #26,#0C,#0C,#19   ; y......y
+    db #33,#33,#33,#33   ; yyyyyyyy
+    db #0C,#26,#19,#0C   ; ..y..y..
+
+machine_count:
+    db 1,4,8
+    ; s, m, l
+
+; --- θέσεις μηχανημάτων, 8 ανά μέγεθος (255 = κενή) ---
+; machine_slots + size*MACH_SLOTS*2 + slot*2 -> (x bytes, y)
+machine_slots:
+    db   6, 21   ; s θέση 0
+    db 255,255   ; s θέση 1
+    db 255,255   ; s θέση 2
+    db 255,255   ; s θέση 3
+    db 255,255   ; s θέση 4
+    db 255,255   ; s θέση 5
+    db 255,255   ; s θέση 6
+    db 255,255   ; s θέση 7
+    db   7, 22   ; m θέση 0
+    db  13, 22   ; m θέση 1
+    db   7, 35   ; m θέση 2
+    db  13, 35   ; m θέση 3
+    db 255,255   ; m θέση 4
+    db 255,255   ; m θέση 5
+    db 255,255   ; m θέση 6
+    db 255,255   ; m θέση 7
+    db  11, 22   ; l θέση 0
+    db  17, 22   ; l θέση 1
+    db  11, 35   ; l θέση 2
+    db  17, 35   ; l θέση 3
+    db  11, 48   ; l θέση 4
+    db  17, 48   ; l θέση 5
+    db  11, 61   ; l θέση 6
+    db  17, 61   ; l θέση 7
+
+machine_rules:
+    db 1,7,7,7,7,7,7
+    ; oxygen, iron, bioplastic, weapons, processors, robots, food
+
+; --- θέσεις εικονιδίου/πληρότητας από το ΚΕΝΤΡΟ του θόλου ---
+; interior_ofs + size*4 -> (icon dx bytes, icon dy, occ dx, occ dy)
+interior_ofs:
+    db 254,236,253,  2   ; s
+    db 254,220,253,  2   ; m
+    db 254,204,253, 12   ; l
+
 ; --- 16 firmware colour numbers, pen 0..15 ---
 palette_fw:
     db #00,#01,#0B,#17,#0D,#1A,#18,#0F,#06,#12,#0A,#05,#19,#03,#13,#10
@@ -1680,9 +1833,9 @@ palette_fw:
     ; pen 14  FW 19  Sea green     εικονίδια
     ; pen 15  FW 16  Pink          εικονίδια
 
-; --- 96 bytes γέμισμα για τη σελίδα του flip_mode0 ---
+; --- 202 bytes γέμισμα για τη σελίδα του flip_mode0 ---
 sprites_pad:
-    defs 96,#00
+    defs 202,#00
 
 ; --- flip_mode0[b] = b με ανταλλαγμένα pixels ---
 align 256

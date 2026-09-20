@@ -226,3 +226,39 @@ def conn_points(diameter, fw, fh):
         y = max(0, min(fh - CONN_H, y))
         out.append((name, x & ~1, y))           # ζυγό x = ακέραιο byte
     return out
+
+
+# --------------------------------------------------------------------------
+# Διάταξη εσωτερικού θόλου
+# --------------------------------------------------------------------------
+# Όλες οι θέσεις είναι σχετικές με το ΚΕΝΤΡΟ του θόλου, σε pixels/γραμμές.
+# Τα x είναι ζυγά (ακέραια bytes). Στοιβάζονται κάθετα: εικονίδιο τύπου πάνω,
+# μηχανήματα στη μέση, επικάλυμμα πληρότητας κάτω.
+
+MACHINE_W, MACHINE_H = 8, 12
+MAX_MACHINES = 8
+
+INTERIOR = {
+    "s": {"icon": (-4, -20), "occ": (-6, 2),
+          "machines": [(-4, -11)]},
+    "m": {"icon": (-4, -36), "occ": (-6, 2),
+          "machines": [(-10, -26), (2, -26),
+                       (-10, -13), (2, -13)]},
+    "l": {"icon": (-4, -52), "occ": (-6, 12),
+          "machines": [(-10, -42), (2, -42),
+                       (-10, -29), (2, -29),
+                       (-10, -16), (2, -16),
+                       (-10, -3), (2, -3)]},
+}
+
+
+def interior(code, fw, fh):
+    """Απόλυτες θέσεις μέσα στο πλαίσιο: (όνομα, x, y, w, h)."""
+    from icons import ICON_W, ICON_H
+    cx, cy = fw // 2, fh // 2
+    L = INTERIOR[code]
+    out = [("icon", cx + L["icon"][0], cy + L["icon"][1], ICON_W, ICON_H),
+           ("occ", cx + L["occ"][0], cy + L["occ"][1], 12, 16)]
+    for i, (dx, dy) in enumerate(L["machines"]):
+        out.append((f"machine{i}", cx + dx, cy + dy, MACHINE_W, MACHINE_H))
+    return out
