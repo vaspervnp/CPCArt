@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
 """Παράγει όλα τα sprites Mode 0 του colony sim προγραμματιστικά.
 
-    python3 tools/make_sprites.py [--anim-frames 1|2] [--out build/sprites]
+    python3 tools/make_sprites.py [--anim-frames 1|2] [--uniform-quads] [--out DIR]
 
-Βγάζει: sprites.asm (RASM), sprites.bin, sprites_map.txt και PNG προεπισκοπήσεις.
-Τίποτα δεν φορτώνεται από έτοιμα γραφικά: όλα προκύπτουν από γεωμετρία ή ASCII art.
+Βγάζει: sprites.asm (RASM), sprites.bin, sprites_map.txt, dump για το Aseprite
+και PNG προεπισκοπήσεις. Τίποτα δεν φορτώνεται από έτοιμα γραφικά.
+
+Οι θόλοι, οι δακτύλιοι, οι διάδρομοι και τα σημεία σύνδεσης είναι ΞΕΧΩΡΙΣΤΑ
+sprites με μάσκα (screen = (screen AND mask) OR data), ώστε να συντίθενται
+ελεύθερα. Τα εικονίδια και τα επικαλύμματα πληρότητας μένουν αδιαφανή: κάθονται
+πάντα πάνω στο δάπεδο του θόλου και δεν χρειάζονται μάσκα.
 """
 
 import argparse
-import math
 import os
 import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from palette import (PALETTE, FW, RGB, PEN_CHARS, NAMES, USAGE, pens_to_ascii,
-                     PEN_OUTSIDE, PEN_DOME_FLOOR, PEN_DOME_EDGE,
-                     PEN_CORR_FLOOR, PEN_CORR_EDGE, PEN_COLONIST)
+from palette import (PALETTE, FW, RGB, PEN_CHARS, pens_to_ascii, PEN_OUTSIDE,
+                     PEN_DOME_FLOOR)
+import geometry as geo
 import icons
 
 
@@ -41,84 +45,35 @@ def decode_mode0(b):
 
 
 def flip_byte(b):
-    """Το byte με τα δύο pixels του ανταλλαγμένα."""
     p0, p1 = decode_mode0(b)
     return encode_mode0(p1, p0)
+
+
+def mask_mode0(p0, p1):
+    """Μάσκα: 1 στα bits των ΔΙΑΦΑΝΩΝ pixels, ώστε το AND να κρατά το φόντο."""
+    return encode_mode0(15 if p0 == PEN_OUTSIDE else 0,
+                        15 if p1 == PEN_OUTSIDE else 0)
 
 
 FLIP_TABLE = [flip_byte(b) for b in range(256)]
 
 
 # --------------------------------------------------------------------------
-# 2. Γεωμετρία θόλου και δακτυλίου
-# --------------------------------------------------------------------------
-
-DOME_D      = 48          # οπτική διάμετρος θόλου
-CORRIDOR_W  = 8           # οπτικό πλάτος δακτυλίου
-FRAME_W     = 32          # pixels Mode 0
-FRAME_H     = 64          # γραμμές
-CX, CY      = FRAME_W // 2, FRAME_H // 2
-
-OUTSIDE, DOME, CORRIDOR = 0, 1, 2
-
-R_DOME = DOME_D / 2
-R_CORR = DOME_D / 2 + CORRIDOR_W
-
-
-def classify(x, y):
-    """Κατηγορία του pixel (x, y) του πλαισίου, σε οπτικές συντεταγμένες (2:1)."""
-    vx = (x + 0.5) * 2 - 2 * CX
-    vy = (y + 0.5) - CY
-    r = math.hypot(vx, vy)
-    if r <= R_DOME:
-        return DOME
-    if r <= R_CORR:
-        return CORRIDOR
-    return OUTSIDE
-
-
-def build_frame(ring):
-    """Το πλήρες πλαίσιο 32x64 σε pens. ring=False: ο διάδρομος γίνεται φόντο."""
-    cls = [[classify(x, y) for x in range(FRAME_W)] for y in range(FRAME_H)]
-    if not ring:
-        cls = [[OUTSIDE if c == CORRIDOR else c for c in row] for row in cls]
-
-    def at(x, y):
-        # γείτονας έξω από το πλαίσιο μετρά ως OUTSIDE
-        if 0 <= x < FRAME_W and 0 <= y < FRAME_H:
-            return cls[y][x]
-        return OUTSIDE
-
-    pens = []
-    for y in range(FRAME_H):
-        row = []
-        for x in range(FRAME_W):
-            c = cls[y][x]
-            if c == OUTSIDE:
-                row.append(PEN_OUTSIDE)
-                continue
-            edge = any(at(x + dx, y + dy) != c
-                       for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)))
-            if c == DOME:
-                row.append(PEN_DOME_EDGE if edge else PEN_DOME_FLOOR)
-            else:
-                row.append(PEN_CORR_EDGE if edge else PEN_CORR_FLOOR)
-        pens.append(row)
-    return cls, pens
-
-
-# --------------------------------------------------------------------------
-# 3. Sprites
+# 2. Sprites
 # --------------------------------------------------------------------------
 
 class Sprite:
-    """Ένα sprite: pens σε πίνακα [h][w], με w ζυγό. Τα bytes είναι γραμμικά."""
+    """pens σε πίνακα [h][w], με w ζυγό.
 
-    def __init__(self, name, pens):
-        self.name = name
-        self.pens = pens
-        self.h = len(pens)
-        self.w = len(pens[0])
+    masked=True  -> bytes «mask, data, mask, data...» ανά γραμμή (διαδοχικές
+                    αναγνώσεις HL στον Z80)
+    masked=False -> μόνο data
+    """
+
+    def __init__(self, name, pens, category, masked):
+        self.name, self.pens = name, pens
+        self.category, self.masked = category, masked
+        self.h, self.w = len(pens), len(pens[0])
         if self.w % 2:
             raise ValueError(f"{name}: πλάτος {self.w} — πρέπει να είναι ζυγό")
         if any(len(r) != self.w for r in pens):
@@ -129,40 +84,78 @@ class Sprite:
         return self.w // 2
 
     def rows_bytes(self):
-        return [[encode_mode0(row[x], row[x + 1]) for x in range(0, self.w, 2)]
-                for row in self.pens]
+        out = []
+        for row in self.pens:
+            r = []
+            for x in range(0, self.w, 2):
+                p0, p1 = row[x], row[x + 1]
+                if self.masked:
+                    r.append(mask_mode0(p0, p1))
+                r.append(encode_mode0(p0, p1))
+            out.append(r)
+        return out
 
     def data(self):
         return bytes(b for row in self.rows_bytes() for b in row)
 
-
-QUAD_W, QUAD_H = 16, 32
-ICON_POS = (12, 14)        # θέση εικονιδίου μέσα στο πλαίσιο 32x64
-OCC_POS  = (10, 26)        # θέση επικαλύμματος πληρότητας
-OCC_W, OCC_H = 12, 16
-
-CORNERS = [("nw", 0, 0), ("ne", QUAD_W, 0), ("sw", 0, QUAD_H), ("se", QUAD_W, QUAD_H)]
-
-# 4 στήλες x 2 σειρές, με σειρά γεμίσματος που σπάει το πλέγμα οπτικά
-SLOT_ORDER = [(3, 1), (6, 9), (9, 1), (0, 9), (6, 1), (3, 9), (0, 1), (9, 9)]
-LEVEL_FIGURES = [0, 1, 3, 5, 8]      # αντιστοιχεί στο level_tab
+    @property
+    def stride(self):
+        return self.bw * (2 if self.masked else 1)
 
 
-def build_quads(frames):
-    out = []
-    for variant in ("ring", "bare"):
-        pens = frames[variant][1]
-        for corner, ox, oy in CORNERS:
-            sub = [row[ox:ox + QUAD_W] for row in pens[oy:oy + QUAD_H]]
-            out.append(Sprite(f"quad_{corner}_{variant}", sub))
+def pad_to(pens, w, h):
+    """Κεντράρει ένα sprite σε μεγαλύτερο διαφανές πλαίσιο (για το Aseprite)."""
+    ox, oy = (w - len(pens[0])) // 2, (h - len(pens)) // 2
+    out = [[PEN_OUTSIDE] * w for _ in range(h)]
+    for y, row in enumerate(pens):
+        for x, p in enumerate(row):
+            out[oy + y][ox + x] = p
     return out
+
+
+# Θέσεις εικονιδίου και επικαλύμματος, σχετικά με το ΚΕΝΤΡΟ του θόλου.
+ICON_OFS = (-4, -18)
+OCC_OFS = (-6, -6)
+OCC_W, OCC_H = 12, 16
+SLOT_ORDER = [(3, 1), (6, 9), (9, 1), (0, 9), (6, 1), (3, 9), (0, 1), (9, 9)]
+LEVEL_FIGURES = [0, 1, 3, 5, 8]
+
+
+def build_domes(uniform):
+    """Ανά μέγεθος: 4 τεταρτημόρια θόλου και 4 τεταρτημόρια δακτυλίου."""
+    domes, rings, frames = [], [], {}
+    for code, d in geo.DOME_SIZES:
+        fw, fh = geo.frame_size(d, uniform)
+        cls = geo.classify_frame(d, fw, fh)
+        dp, rp = geo.dome_pens(cls, fw, fh), geo.ring_pens(cls, fw, fh)
+        frames[code] = (d, fw, fh, cls, dp, rp)
+        for corner, pens in geo.quadrants(dp, fw, fh):
+            domes.append(Sprite(f"dome_{code}_{corner}", pens, "θόλοι", True))
+        for corner, pens in geo.quadrants(rp, fw, fh):
+            rings.append(Sprite(f"ring_{code}_{corner}", pens, "δακτύλιοι", True))
+    return domes, rings, frames
+
+
+def build_corridors():
+    c = "διάδρομοι"
+    return [
+        Sprite("corr_h", geo.corr_h(), c, True),
+        Sprite("corr_v", geo.corr_v(), c, True),
+        Sprite("corr_dr", geo.corr_diag(True), c, True),
+        Sprite("corr_dl", geo.corr_diag(False), c, True),
+    ]
+
+
+def build_connectors():
+    return [Sprite(f"conn_{name}", geo.connector(name), "σημεία σύνδεσης", True)
+            for name, _, _ in geo.DIRS]
 
 
 def build_icons():
     out = []
     for name, art in icons.ROOM_ICONS:
         pens = icons.parse_art(art, icons.ICON_W, icons.ICON_H, what=f"icon {name}")
-        out.append(Sprite(f"icon_{name}", pens))
+        out.append(Sprite(f"icon_{name}", pens, "εικονίδια δωματίων", False))
     return out
 
 
@@ -174,26 +167,19 @@ def build_occupancy(frames_count):
         for level, n in enumerate(LEVEL_FIGURES):
             pens = [[PEN_DOME_FLOOR] * OCC_W for _ in range(OCC_H)]
             for sx, sy in SLOT_ORDER[:n]:
-                sy += frame                      # frame 1: μία γραμμή πιο κάτω
+                sy += frame
                 for j, frow in enumerate(fig):
                     for i, p in enumerate(frow):
                         if p is not None:
                             pens[sy + j][sx + i] = p
             suffix = "" if frames_count == 1 else f"_f{frame}"
-            out.append(Sprite(f"occ_level{level}{suffix}", pens))
+            out.append(Sprite(f"occ_level{level}{suffix}", pens,
+                              "επικαλύμματα πληρότητας", False))
     return out
 
 
-def build_corridors():
-    ch = [[PEN_CORR_EDGE if y in (0, 7) else PEN_CORR_FLOOR for x in range(8)]
-          for y in range(8)]
-    cv = [[PEN_CORR_EDGE if x in (0, 3) else PEN_CORR_FLOOR for x in range(4)]
-          for y in range(16)]
-    return [Sprite("corr_h", ch), Sprite("corr_v", cv)]
-
-
 # --------------------------------------------------------------------------
-# 4. Επαλήθευση
+# 3. Επαλήθευση
 # --------------------------------------------------------------------------
 
 class CheckFailed(Exception):
@@ -205,15 +191,7 @@ def check(cond, msg):
         raise CheckFailed(msg)
 
 
-def hflip_pens(pens):
-    return [list(reversed(r)) for r in pens]
-
-
-def vflip_pens(pens):
-    return list(reversed([list(r) for r in pens]))
-
-
-def verify(frames, quads, icon_sprites, occ, corr):
+def verify(frames, domes, rings, corr, conns, icon_sprites, occ, uniform):
     # 1. κωδικοποίηση
     for a, b, want in ((1, 0, 0x80), (0, 1, 0x40), (15, 15, 0xFF),
                        (0, 0, 0x00), (8, 0, 0x02)):
@@ -226,71 +204,94 @@ def verify(frames, quads, icon_sprites, occ, corr):
     for b in range(256):
         check(FLIP_TABLE[FLIP_TABLE[b]] == b, f"flip(flip(#{b:02X})) != #{b:02X}")
 
-    # 3. διαστάσεις κάθε sprite
-    for s in quads + icon_sprites + occ + corr:
+    allspr = domes + rings + corr + conns + icon_sprites + occ
+
+    # 3. διαστάσεις
+    for s in allspr:
         check(s.w % 2 == 0, f"{s.name}: μονό πλάτος {s.w}")
-        check(len(s.data()) == s.bw * s.h,
-              f"{s.name}: {len(s.data())} bytes αντί για {s.bw * s.h}")
+        check(len(s.data()) == s.stride * s.h,
+              f"{s.name}: {len(s.data())} bytes αντί για {s.stride * s.h}")
 
-    by_name = {s.name: s for s in quads}
+    # 4. η μάσκα συμφωνεί με τα δεδομένα: όπου διαφανές, data=0 και mask=1
+    for s in allspr:
+        if not s.masked:
+            continue
+        for y, row in enumerate(s.pens):
+            rb = s.rows_bytes()[y]
+            for i in range(s.bw):
+                m, dbyte = rb[2 * i], rb[2 * i + 1]
+                p0, p1 = row[2 * i], row[2 * i + 1]
+                check(m & dbyte == 0, f"{s.name}: mask και data επικαλύπτονται στη γραμμή {y}")
+                check(m == mask_mode0(p0, p1), f"{s.name}: λάθος μάσκα στη γραμμή {y}")
 
-    # 4. τα 4 τεταρτημόρια συναρμολογημένα == πλήρες πλαίσιο
-    for variant in ("ring", "bare"):
-        full = frames[variant][1]
-        rebuilt = [[None] * FRAME_W for _ in range(FRAME_H)]
-        for corner, ox, oy in CORNERS:
-            q = by_name[f"quad_{corner}_{variant}"]
-            for y in range(QUAD_H):
-                for x in range(QUAD_W):
-                    rebuilt[oy + y][ox + x] = q.pens[y][x]
-        for y in range(FRAME_H):
-            for x in range(FRAME_W):
-                check(rebuilt[y][x] == full[y][x],
-                      f"{variant}: διαφορά στο pixel ({x},{y})")
+    by = {s.name: s for s in domes + rings}
 
-    # 5. συμμετρία τεταρτημορίων
-    for variant in ("ring", "bare"):
-        nw = by_name[f"quad_nw_{variant}"].pens
-        check(by_name[f"quad_ne_{variant}"].pens == hflip_pens(nw),
-              f"quad_ne_{variant} != οριζόντιο καθρέφτισμα του quad_nw_{variant}")
-        check(by_name[f"quad_sw_{variant}"].pens == vflip_pens(nw),
-              f"quad_sw_{variant} != κάθετο καθρέφτισμα του quad_nw_{variant}")
+    # 5. τα τεταρτημόρια συναρμολογημένα == το πλήρες πλαίσιο
+    for code, (d, fw, fh, cls, dp, rp) in frames.items():
+        for kind, full in (("dome", dp), ("ring", rp)):
+            qw, qh = fw // 2, fh // 2
+            for corner, ox, oy in (("nw", 0, 0), ("ne", qw, 0), ("sw", 0, qh), ("se", qw, qh)):
+                q = by[f"{kind}_{code}_{corner}"]
+                for y in range(qh):
+                    for x in range(qw):
+                        check(q.pens[y][x] == full[oy + y][ox + x],
+                              f"{kind}_{code}_{corner}: διαφορά στο pixel ({x},{y})")
 
-    # 6. εικονίδιο και επικάλυμμα: μέσα στον θόλο, όχι σε άκρη, χωρίς επικάλυψη
-    cls, pens = frames["ring"]
-    occupied = set()
-    for what, (px, py), (w, h) in (("εικονίδιο", ICON_POS, (icons.ICON_W, icons.ICON_H)),
-                                   ("επικάλυμμα", OCC_POS, (OCC_W, OCC_H))):
-        for y in range(py, py + h):
-            for x in range(px, px + w):
-                check(0 <= x < FRAME_W and 0 <= y < FRAME_H,
-                      f"{what}: το pixel ({x},{y}) είναι έξω από το πλαίσιο")
-                check(cls[y][x] == DOME,
-                      f"{what}: το pixel ({x},{y}) δεν είναι DOME")
-                check(pens[y][x] == PEN_DOME_FLOOR,
-                      f"{what}: το pixel ({x},{y}) είναι άκρη του θόλου")
-                check((x, y) not in occupied,
-                      f"{what}: επικάλυψη στο pixel ({x},{y})")
-                occupied.add((x, y))
+    # 6. συμμετρία τεταρτημορίων
+    for code, _ in geo.DOME_SIZES:
+        for kind in ("dome", "ring"):
+            nw = by[f"{kind}_{code}_nw"].pens
+            check(by[f"{kind}_{code}_ne"].pens == [list(reversed(r)) for r in nw],
+                  f"{kind}_{code}_ne != οριζόντιο καθρέφτισμα του nw")
+            check(by[f"{kind}_{code}_sw"].pens == list(reversed([list(r) for r in nw])),
+                  f"{kind}_{code}_sw != κάθετο καθρέφτισμα του nw")
+
+    # 7. θόλος και δακτύλιος δεν επικαλύπτονται και μαζί δίνουν το πλήρες σχήμα
+    for code, (d, fw, fh, cls, dp, rp) in frames.items():
+        for y in range(fh):
+            for x in range(fw):
+                a, b2 = dp[y][x] != PEN_OUTSIDE, rp[y][x] != PEN_OUTSIDE
+                check(not (a and b2), f"{code}: θόλος και δακτύλιος επικαλύπτονται στο ({x},{y})")
+                check((a or b2) == (cls[y][x] != geo.OUTSIDE),
+                      f"{code}: κενό ανάμεσα σε θόλο και δακτύλιο στο ({x},{y})")
+
+    # 8. εικονίδιο και επικάλυμμα: μέσα στον θόλο, όχι σε άκρη, χωρίς επικάλυψη
+    for code, (d, fw, fh, cls, dp, rp) in frames.items():
+        cx, cy = fw // 2, fh // 2
+        taken = set()
+        for what, ofs, (w, h) in (("εικονίδιο", ICON_OFS, (icons.ICON_W, icons.ICON_H)),
+                                  ("επικάλυμμα", OCC_OFS, (OCC_W, OCC_H))):
+            px, py = cx + ofs[0], cy + ofs[1]
+            for y in range(py, py + h):
+                for x in range(px, px + w):
+                    check(0 <= x < fw and 0 <= y < fh,
+                          f"{code}/{what}: pixel ({x},{y}) έξω από το πλαίσιο")
+                    check(dp[y][x] == PEN_DOME_FLOOR,
+                          f"{code}/{what}: pixel ({x},{y}) δεν είναι δάπεδο θόλου")
+                    check((x, y) not in taken, f"{code}/{what}: επικάλυψη στο ({x},{y})")
+                    taken.add((x, y))
+
+    # 9. τα σημεία σύνδεσης πέφτουν πάνω στον δακτύλιο
+    for code, (d, fw, fh, cls, dp, rp) in frames.items():
+        for name, x, y in geo.conn_points(d, fw, fh):
+            check(x % 2 == 0, f"{code}/conn_{name}: μονό x = {x}")
+            cxp, cyp = x + geo.CONN_W // 2, y + geo.CONN_H // 2
+            check(cls[cyp][cxp] == geo.CORRIDOR,
+                  f"{code}/conn_{name}: το κέντρο ({cxp},{cyp}) δεν είναι πάνω στον δακτύλιο")
 
 
 # --------------------------------------------------------------------------
-# 5. Έξοδος: sprites.asm / sprites.bin / sprites_map.txt
+# 4. Έξοδος
 # --------------------------------------------------------------------------
 
 class Blob:
-    """Η διάταξη των δεδομένων: ίδια σειρά σε .asm και .bin."""
-
     def __init__(self):
-        self.items = []     # (label, bytes, sprite|None, category)
-        self.groups = []    # (label, [equ...]) που μπαίνουν πριν από ένα item
-        self.marks = {}     # label -> offset στην αρχή του item
+        self.items = []
+        self.marks = {}
 
-    def add(self, label, data, sprite=None, category="άλλο", extra_labels=()):
+    def add(self, label, data, sprite=None, category="άλλο"):
         self.marks[label] = self.size()
-        for e in extra_labels:
-            self.marks[e] = self.size()
-        self.items.append((label, bytes(data), sprite, category, tuple(extra_labels)))
+        self.items.append((label, bytes(data), sprite, category))
 
     def size(self):
         return sum(len(i[1]) for i in self.items)
@@ -299,30 +300,45 @@ class Blob:
         return b"".join(i[1] for i in self.items)
 
 
-def build_blob(quads, icon_sprites, occ, corr, anim_frames):
+def build_blob(frames, domes, rings, corr, conns, icon_sprites, occ):
     blob = Blob()
+    for code, _ in geo.DOME_SIZES:
+        blob.add(f"domes_{code}", b"", None, "—")
+        for s in domes:
+            if s.name.startswith(f"dome_{code}_"):
+                blob.add(s.name, s.data(), s, s.category)
+    for code, _ in geo.DOME_SIZES:
+        blob.add(f"rings_{code}", b"", None, "—")
+        for s in rings:
+            if s.name.startswith(f"ring_{code}_"):
+                blob.add(s.name, s.data(), s, s.category)
 
-    blob.add("dome_quads", b"", category="—")        # ετικέτα ομάδας, 0 bytes
-    for s in quads:
-        blob.add(s.name, s.data(), s, "τεταρτημόρια θόλου")
-
-    blob.add("room_icons", b"", category="—")
-    for s in icon_sprites:
-        blob.add(s.name, s.data(), s, "εικονίδια δωματίων")
-
-    blob.add("occupancy", b"", category="—")
-    for s in occ:
-        blob.add(s.name, s.data(), s, "επικαλύμματα πληρότητας")
-
+    blob.add("corridors", b"", None, "—")
     for s in corr:
-        blob.add(s.name, s.data(), s, "ευθύγραμμοι διάδρομοι")
+        blob.add(s.name, s.data(), s, s.category)
+    blob.add("connectors", b"", None, "—")
+    for s in conns:
+        blob.add(s.name, s.data(), s, s.category)
+
+    # πίνακας σημείων σύνδεσης: ανά μέγεθος, 8 κατευθύνσεις x (x σε bytes, y)
+    pts = bytearray()
+    for code, _ in geo.DOME_SIZES:
+        d, fw, fh, *_ = frames[code]
+        for name, x, y in geo.conn_points(d, fw, fh):
+            pts += bytes([x // 2, y])
+    blob.add("conn_points", pts, None, "πίνακας συνδέσεων")
+
+    blob.add("room_icons", b"", None, "—")
+    for s in icon_sprites:
+        blob.add(s.name, s.data(), s, s.category)
+    blob.add("occupancy", b"", None, "—")
+    for s in occ:
+        blob.add(s.name, s.data(), s, s.category)
 
     blob.add("palette_fw", bytes(FW), None, "παλέτα")
-
     pad = (-blob.size()) % 256
     if pad:
         blob.add("sprites_pad", bytes(pad), None, "στοίχιση")
-
     blob.add("flip_mode0", bytes(FLIP_TABLE), None, "πίνακας καθρεφτισμού")
     return blob
 
@@ -331,76 +347,91 @@ ASM_HEADER = """\
 ; sprites.asm — Colony sim, Amstrad CPC Mode 0
 ; ΠΑΡΑΓΕΤΑΙ ΑΥΤΟΜΑΤΑ από tools/make_sprites.py — μην το επεξεργάζεσαι με το χέρι.
 ;
-; Τα δεδομένα είναι γραμμικά (γραμμή-γραμμή, πάνω προς τα κάτω), ΟΧΙ στη διάταξη
-; της μνήμης οθόνης. Τον υπολογισμό διεύθυνσης τον κάνει η ρουτίνα blit.
-; Όλα τα blits είναι αδιαφανή — δεν χρειάζεται mask.
+; Δεδομένα γραμμικά (γραμμή-γραμμή), ΟΧΙ στη διάταξη της μνήμης οθόνης.
 ;
-; Το μπλοκ πρέπει να φορτωθεί σε διεύθυνση πολλαπλάσιο του 256, ώστε το
-; flip_mode0 να πέφτει σε σελίδα (το padding πριν από αυτό είναι ήδη υπολογισμένο).
+; Θόλοι, δακτύλιοι, διάδρομοι και σημεία σύνδεσης έχουν ΜΑΣΚΑ, σε μορφή
+; «mask, data, mask, data...» ανά γραμμή:
+;       ld a,(hl) : inc hl : and (de) : ld b,a
+;       ld a,(hl) : inc hl : or b     : ld (de),a : inc de
+; Τα εικονίδια και τα επικαλύμματα πληρότητας είναι αδιαφανή (μόνο data).
+;
+; Φόρτωσε το μπλοκ σε διεύθυνση πολλαπλάσιο του 256 (το flip_mode0 θέλει σελίδα).
 """
 
 
-def emit_asm(blob, anim_frames, occ_count):
+def emit_asm(blob, frames, anim_frames, uniform):
     L = [ASM_HEADER]
-    L.append("QUAD_W      equ %d           ; bytes ανά γραμμή" % (QUAD_W // 2))
-    L.append("QUAD_H      equ %d" % QUAD_H)
-    L.append("QUAD_SIZE   equ %d" % (QUAD_W // 2 * QUAD_H))
-    L.append("QUAD_BARE   equ %d          ; dome_quads + QUAD_BARE + corner*QUAD_SIZE" % (4 * QUAD_W // 2 * QUAD_H))
+    for code, d in geo.DOME_SIZES:
+        _, fw, fh, *_ = frames[code]
+        u = code.upper()
+        L.append("DOME_%s_D    equ %-4d      ; οπτική διάμετρος" % (u, d))
+        L.append("DOME_%s_W    equ %-4d      ; bytes ανά γραμμή τεταρτημορίου" % (u, fw // 4))
+        L.append("DOME_%s_H    equ %-4d      ; γραμμές τεταρτημορίου" % (u, fh // 2))
+        L.append("DOME_%s_SZ   equ %-4d      ; bytes ανά τεταρτημόριο (mask+data)"
+                 % (u, fw // 4 * 2 * (fh // 2)))
+    L.append("")
     L.append("ICON_W      equ %d" % (icons.ICON_W // 2))
     L.append("ICON_H      equ %d" % icons.ICON_H)
     L.append("ICON_SIZE   equ %d          ; room_icons + type*ICON_SIZE" % (icons.ICON_W // 2 * icons.ICON_H))
-    L.append("ICON_X      equ %d           ; bytes, σχετικά με την αρχή του θόλου" % (ICON_POS[0] // 2))
-    L.append("ICON_Y      equ %d" % ICON_POS[1])
+    L.append("ICON_DX     equ %d           ; bytes, από το ΚΕΝΤΡΟ του θόλου" % (ICON_OFS[0] // 2))
+    L.append("ICON_DY     equ %d" % ICON_OFS[1])
     L.append("OCC_W       equ %d" % (OCC_W // 2))
     L.append("OCC_H       equ %d" % OCC_H)
     L.append("OCC_SIZE    equ %d          ; occupancy + level*OCC_SIZE" % (OCC_W // 2 * OCC_H))
-    L.append("OCC_X       equ %d           ; bytes" % (OCC_POS[0] // 2))
-    L.append("OCC_Y       equ %d" % OCC_POS[1])
+    L.append("OCC_DX      equ %d           ; bytes, από το ΚΕΝΤΡΟ του θόλου" % (OCC_OFS[0] // 2))
+    L.append("OCC_DY      equ %d" % OCC_OFS[1])
     L.append("OCC_LEVELS  equ %d" % len(LEVEL_FIGURES))
     if anim_frames > 1:
-        L.append("OCC_FRAMES  equ %d" % anim_frames)
-        L.append("OCC_FRAME   equ %d         ; occupancy + frame*OCC_FRAME + level*OCC_SIZE"
+        L.append("OCC_FRAME   equ %d         ; + frame*OCC_FRAME"
                  % (len(LEVEL_FIGURES) * OCC_W // 2 * OCC_H))
+    L.append("")
     L.append("CORR_H_W    equ 4")
     L.append("CORR_H_H    equ 8")
     L.append("CORR_V_W    equ 2")
     L.append("CORR_V_H    equ 16")
+    L.append("CORR_D_W    equ %d           ; διαγώνιο tile" % (geo.DIAG_W // 2))
+    L.append("CORR_D_H    equ %d" % geo.DIAG_H)
+    L.append("CORR_D_SX   equ %d           ; βήμα τοποθέτησης σε bytes" % (geo.DIAG_STEP_X // 2))
+    L.append("CORR_D_SY   equ %d" % geo.DIAG_STEP_Y)
+    L.append("CONN_W      equ %d" % (geo.CONN_W // 2))
+    L.append("CONN_H      equ %d" % geo.CONN_H)
+    L.append("CONN_DIRS   equ %d           ; n,ne,e,se,s,sw,w,nw" % len(geo.DIRS))
     L.append("")
 
-    for label, data, sprite, category, extras in blob.items:
-        for e in extras:
-            L.append("%s:" % e)
+    for label, data, sprite, category in blob.items:
         if sprite is None:
             if label == "flip_mode0":
-                L.append("")
-                L.append("; --- πίνακας καθρεφτισμού: flip_mode0[b] = b με ανταλλαγμένα pixels ---")
-                L.append("align 256")
-                L.append("flip_mode0:")
+                L += ["", "; --- flip_mode0[b] = b με ανταλλαγμένα pixels ---",
+                      "align 256", "flip_mode0:"]
                 for i in range(0, 256, 16):
                     L.append("    db " + ",".join("#%02X" % b for b in data[i:i + 16]))
                 continue
             if label == "sprites_pad":
-                L.append("")
-                L.append("; --- %d bytes γέμισμα ώστε το flip_mode0 να πέσει σε σελίδα 256 ---" % len(data))
-                L.append("sprites_pad:")
-                L.append("    defs %d,#00" % len(data))
+                L += ["", "; --- %d bytes γέμισμα για τη σελίδα του flip_mode0 ---" % len(data),
+                      "sprites_pad:", "    defs %d,#00" % len(data)]
                 continue
             if label == "palette_fw":
-                L.append("")
-                L.append("; --- παλέτα: 16 firmware colour numbers, pen 0..15 ---")
-                L.append("palette_fw:")
-                L.append("    db " + ",".join("#%02X" % b for b in data))
-                for i, (pen, name, fw, rgb, ch, use) in enumerate(PALETTE):
-                    L.append("    ; pen %2d  FW %2d  %-13s %s" % (pen, fw, name, use))
+                L += ["", "; --- 16 firmware colour numbers, pen 0..15 ---", "palette_fw:",
+                      "    db " + ",".join("#%02X" % b for b in data)]
+                for pen, name, fw_, rgb, ch, use in PALETTE:
+                    L.append("    ; pen %2d  FW %2d  %-13s %s" % (pen, fw_, name, use))
                 continue
-            L.append("")
-            L.append("%s:" % label)
+            if label == "conn_points":
+                L += ["", "; --- σημεία σύνδεσης: ανά μέγεθος, 8 κατευθύνσεις x (x bytes, y) ---",
+                      "; conn_points + size*CONN_DIRS*2 + dir*2", "conn_points:"]
+                i = 0
+                for code, _ in geo.DOME_SIZES:
+                    for name, _, _ in geo.DIRS:
+                        L.append("    db %3d,%3d   ; %s %s" % (data[i], data[i + 1], code, name))
+                        i += 2
+                continue
+            L += ["", "%s:" % label]
             continue
 
-        L.append("")
-        L.append("; %s — %d x %d pixels (%d x %d bytes), %d bytes"
-                 % (label, sprite.w, sprite.h, sprite.bw, sprite.h, len(data)))
-        L.append("%s:" % label)
+        L += ["", "; %s — %d x %d pixels, %s, %d bytes"
+              % (label, sprite.w, sprite.h,
+                 "mask+data" if sprite.masked else "αδιαφανές", len(data)),
+              "%s:" % label]
         for row_pens, row_bytes in zip(sprite.pens, sprite.rows_bytes()):
             L.append("    db " + ",".join("#%02X" % b for b in row_bytes)
                      + "   ; " + pens_to_ascii(row_pens))
@@ -413,7 +444,6 @@ ASM_DEFS_RE = re.compile(r"^\s*defs\s+(\d+)\s*,\s*#([0-9A-Fa-f]{1,2})\s*$", re.I
 
 
 def parse_asm_bytes(text):
-    """Ξαναδιαβάζει το παραγόμενο .asm και βγάζει τα bytes του — για την επαλήθευση 7."""
     out = bytearray()
     for line in text.splitlines():
         line = line.split(";", 1)[0]
@@ -428,144 +458,153 @@ def parse_asm_bytes(text):
             for tok in m.group(1).split(","):
                 tok = tok.strip()
                 if tok:
-                    out.append(int(tok.lstrip("#"), 16))
+                    # όπως η RASM: «#» = δεκαεξαδικό, γυμνός αριθμός = δεκαδικό
+                    out.append(int(tok[1:], 16) if tok.startswith("#") else int(tok, 10))
     return bytes(out)
 
 
 def emit_map(blob):
-    L = ["# sprite                offset  μέγεθος  διαστάσεις        κατηγορία",
-         "# " + "-" * 74]
-    for label, data, sprite, category, extras in blob.items:
+    L = ["# sprite                offset  bytes  διαστάσεις     μορφή      κατηγορία",
+         "# " + "-" * 76]
+    for label, data, sprite, category in blob.items:
         if not data and sprite is None:
-            L.append("# %-22s #%04X   %6s  %-16s %s"
-                     % (label, blob.marks[label], "-", "(ετικέτα ομάδας)", category))
+            L.append("# %-21s #%04X      -  %-14s %-10s %s"
+                     % (label, blob.marks[label], "", "", "(ομάδα)"))
             continue
-        dims = "%dx%d px" % (sprite.w, sprite.h) if sprite else "-"
-        L.append("  %-22s #%04X   %6d  %-16s %s"
-                 % (label, blob.marks[label], len(data), dims, category))
+        dims = "%dx%d px" % (sprite.w, sprite.h) if sprite else ""
+        fmt = ("mask+data" if sprite.masked else "αδιαφανές") if sprite else ""
+        L.append("  %-21s #%04X %6d  %-14s %-10s %s"
+                 % (label, blob.marks[label], len(data), dims, fmt, category))
     L.append("")
-    L.append("  %-22s #%04X   %6d" % ("ΣΥΝΟΛΟ", 0, blob.size()))
+    L.append("  %-21s       %6d" % ("ΣΥΝΟΛΟ", blob.size()))
+    return "\n".join(L) + "\n"
+
+
+def emit_aseprite_dump(groups):
+    """Text dump που διαβάζει το make_aseprite.lua (μία γραμμή ανά frame)."""
+    L = ["pal " + " ".join("%02X%02X%02X" % c for c in RGB)]
+    for gname, w, h, members in groups:
+        L.append("group %s %d %d" % (gname, w, h))
+        for name, pens in members:
+            flat = "".join("%X" % p for row in pens for p in row)
+            L.append("frame %s %s" % (name, flat))
     return "\n".join(L) + "\n"
 
 
 # --------------------------------------------------------------------------
-# 6. Προεπισκοπήσεις PNG
+# 5. Προεπισκοπήσεις PNG
 # --------------------------------------------------------------------------
 
 from PIL import Image, ImageDraw, ImageFont
 
-SCALE = 4
-PIX_W, PIX_H = 2 * SCALE, 1 * SCALE      # αναλογία 2:1 -> 8x4 πραγματικά pixels
+CHECKER = ((40, 40, 48), (28, 28, 34))      # φόντο για τα διαφανή pixels
 
 
-def sprite_from_bytes(data, bw, h):
-    """Αποκωδικοποιεί bytes σε pens — η προεπισκόπηση επαληθεύει την κωδικοποίηση."""
+def sprite_from_bytes(data, bw, h, masked):
+    """Αποκωδικοποιεί bytes σε pens — επαληθεύει και την κωδικοποίηση."""
+    stride = bw * (2 if masked else 1)
     pens = []
     for y in range(h):
-        row = []
-        for b in data[y * bw:(y + 1) * bw]:
-            row.extend(decode_mode0(b))
+        row, line = [], data[y * stride:(y + 1) * stride]
+        for i in range(bw):
+            b = line[2 * i + 1] if masked else line[i]
+            m = line[2 * i] if masked else 0
+            p0, p1 = decode_mode0(b)
+            mp0, mp1 = decode_mode0(m)
+            row.append(PEN_OUTSIDE if mp0 == 15 else p0)
+            row.append(PEN_OUTSIDE if mp1 == 15 else p1)
         pens.append(row)
     return pens
 
 
-def render(pens, grid=False):
+def render(pens, scale=4, grid=False):
     w, h = len(pens[0]), len(pens)
-    img = Image.new("RGB", (w * PIX_W, h * PIX_H))
+    pw, ph = 2 * scale, 1 * scale
+    img = Image.new("RGB", (w * pw, h * ph))
     d = ImageDraw.Draw(img)
     for y in range(h):
         for x in range(w):
-            d.rectangle([x * PIX_W, y * PIX_H, (x + 1) * PIX_W - 1, (y + 1) * PIX_H - 1],
-                        fill=RGB[pens[y][x]])
-    if grid:
+            p = pens[y][x]
+            col = CHECKER[(x + y) & 1] if p == PEN_OUTSIDE else RGB[p]
+            d.rectangle([x * pw, y * ph, (x + 1) * pw - 1, (y + 1) * ph - 1], fill=col)
+    if grid and scale >= 3:
         for x in range(1, w):
-            d.line([(x * PIX_W, 0), (x * PIX_W, h * PIX_H)], fill=(48, 48, 48))
+            d.line([(x * pw, 0), (x * pw, h * ph)], fill=(60, 60, 70))
         for y in range(1, h):
-            d.line([(0, y * PIX_H), (w * PIX_W, y * PIX_H)], fill=(48, 48, 48))
+            d.line([(0, y * ph), (w * pw, y * ph)], fill=(60, 60, 70))
     return img
 
 
-def composite_pens(blob, icon_type, level):
-    """Πλήρης θόλος, συντεθειμένος ΑΠΟ ΤΑ BYTES (όχι από την ενδιάμεση εικόνα)."""
+def paste_pens(dst, src, ox, oy):
+    """Σύνθεση με μάσκα: τα διαφανή pixels δεν γράφονται."""
+    for y, row in enumerate(src):
+        for x, p in enumerate(row):
+            if p != PEN_OUTSIDE and 0 <= oy + y < len(dst) and 0 <= ox + x < len(dst[0]):
+                dst[oy + y][ox + x] = p
+
+
+def composite_pens(blob, frames, code, icon_type, level, with_ring=True):
+    """Πλήρης θόλος, συντεθειμένος ΑΠΟ ΤΑ BYTES των sprites."""
     data = blob.data()
-    out = [[PEN_OUTSIDE] * FRAME_W for _ in range(FRAME_H)]
+    d, fw, fh, cls, dp, rp = frames[code]
+    out = [[PEN_OUTSIDE] * fw for _ in range(fh)]
+    qw, qh = fw // 2, fh // 2
 
-    for corner, ox, oy in CORNERS:
-        off = blob.marks["quad_%s_ring" % corner]
-        q = sprite_from_bytes(data[off:off + QUAD_W // 2 * QUAD_H], QUAD_W // 2, QUAD_H)
-        for y in range(QUAD_H):
-            for x in range(QUAD_W):
-                out[oy + y][ox + x] = q[y][x]
+    def blit(label, w, h, masked, ox, oy):
+        off = blob.marks[label]
+        n = (w // 2) * (2 if masked else 1) * h
+        paste_pens(out, sprite_from_bytes(data[off:off + n], w // 2, h, masked), ox, oy)
 
-    off = blob.marks["room_icons"] + icon_type * (icons.ICON_W // 2 * icons.ICON_H)
-    ic = sprite_from_bytes(data[off:off + icons.ICON_W // 2 * icons.ICON_H],
-                           icons.ICON_W // 2, icons.ICON_H)
-    for y in range(icons.ICON_H):
-        for x in range(icons.ICON_W):
-            out[ICON_POS[1] + y][ICON_POS[0] + x] = ic[y][x]
+    order = (["ring"] if with_ring else []) + ["dome"]
+    for kind in order:
+        for corner, ox, oy in (("nw", 0, 0), ("ne", qw, 0), ("sw", 0, qh), ("se", qw, qh)):
+            blit(f"{kind}_{code}_{corner}", qw, qh, True, ox, oy)
 
+    cx, cy = fw // 2, fh // 2
+    blit(f"icon_{icons.ROOM_ICONS[icon_type][0]}", icons.ICON_W, icons.ICON_H, False,
+         cx + ICON_OFS[0], cy + ICON_OFS[1])
     off = blob.marks["occupancy"] + level * (OCC_W // 2 * OCC_H)
-    oc = sprite_from_bytes(data[off:off + OCC_W // 2 * OCC_H], OCC_W // 2, OCC_H)
-    for y in range(OCC_H):
-        for x in range(OCC_W):
-            out[OCC_POS[1] + y][OCC_POS[0] + x] = oc[y][x]
+    paste_pens(out, sprite_from_bytes(data[off:off + OCC_W // 2 * OCC_H], OCC_W // 2,
+                                      OCC_H, False), cx + OCC_OFS[0], cy + OCC_OFS[1])
 
+    if with_ring:
+        for name, x, y in geo.conn_points(d, fw, fh):
+            blit(f"conn_{name}", geo.CONN_W, geo.CONN_H, True, x, y)
     return out
 
 
-# Ισοδύναμα ASCII, για την περίπτωση που δεν βρεθεί γραμματοσειρά με ελληνικά.
-CATEGORY_ASCII = {
-    "τεταρτημόρια θόλου":      "dome quadrants",
-    "εικονίδια δωματίων":      "room icons",
-    "επικαλύμματα πληρότητας": "occupancy overlays",
-    "ευθύγραμμοι διάδρομοι":   "straight corridors",
-}
-
-FONT_CANDIDATES = [
-    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-    "/Library/Fonts/Arial Unicode.ttf",
-    "C:\\Windows\\Fonts\\arial.ttf",
-]
-
-
 def font(size=12):
-    """(γραμματοσειρά, έχει_ελληνικά). Χωρίς TTF πέφτουμε στο bitmap font + ASCII."""
-    for path in FONT_CANDIDATES:
+    for path in ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                 "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"):
         try:
-            return ImageFont.truetype(path, size), True
+            return ImageFont.truetype(path, size)
         except OSError:
             continue
     try:
-        return ImageFont.load_default(size), False
+        return ImageFont.load_default(size)
     except TypeError:
-        return ImageFont.load_default(), False
+        return ImageFont.load_default()
 
 
-def make_sheet(entries, path):
-    """Όλα τα sprites σε ένα φύλλο με πλέγμα και ετικέτες, ομαδοποιημένα."""
-    F, greek = font()
-    PAD, LABEL_H, HEAD_H, MARGIN, LIMIT = 12, 16, 24, 14, 1000
-
+def make_sheet(entries, path, scale=2):
+    F = font()
+    PAD, LABEL_H, HEAD_H, MARGIN, LIMIT = 12, 16, 24, 14, 1400
     groups = []
     for category, name, pens in entries:
         if not groups or groups[-1][0] != category:
             groups.append((category, []))
         groups[-1][1].append((name, pens))
 
-    tiles = {n: render(p, grid=True) for _, g in groups for n, p in g}
-
+    tiles = {n: render(p, scale, grid=True) for _, g in groups for n, p in g}
     probe = ImageDraw.Draw(Image.new("RGB", (1, 1)))
-    # το κελί είναι όσο το πλατύτερο από sprite και ετικέτα, ώστε να μην πατάνε
-    cell_w = {n: max(im.width, int(probe.textlength(n, font=F)) + 4)
-              for n, im in tiles.items()}
+    cell = {n: max(im.width, int(probe.textlength(n, font=F)) + 4) for n, im in tiles.items()}
 
     layout, total_h, sheet_w = [], MARGIN, 0
     for category, members in groups:
         total_h += HEAD_H
         rows, cur, cur_w = [], [], 0
         for name, _ in members:
-            w = cell_w[name] + PAD
+            w = cell[name] + PAD
             if cur and cur_w + w > LIMIT:
                 rows.append(cur)
                 cur, cur_w = [], 0
@@ -575,27 +614,24 @@ def make_sheet(entries, path):
             rows.append(cur)
         for r in rows:
             total_h += max(tiles[n].height for n in r) + LABEL_H + PAD
-            sheet_w = max(sheet_w, sum(cell_w[n] + PAD for n in r))
+            sheet_w = max(sheet_w, sum(cell[n] + PAD for n in r))
         layout.append((category, rows))
         total_h += PAD
 
     img = Image.new("RGB", (sheet_w + 2 * MARGIN, total_h + MARGIN), (24, 24, 32))
     d = ImageDraw.Draw(img)
-
     y = MARGIN
     for category, rows in layout:
-        label = category if greek else CATEGORY_ASCII.get(category, category)
-        d.text((MARGIN, y), label, fill=(255, 210, 120), font=F)
+        d.text((MARGIN, y), category, fill=(255, 210, 120), font=F)
         y += HEAD_H
         for r in rows:
             x, rh = MARGIN, max(tiles[n].height for n in r)
             for n in r:
                 im = tiles[n]
                 img.paste(im, (x, y))
-                d.rectangle([x - 1, y - 1, x + im.width, y + im.height],
-                            outline=(90, 90, 100))
+                d.rectangle([x - 1, y - 1, x + im.width, y + im.height], outline=(90, 90, 100))
                 d.text((x, y + rh + 3), n, fill=(200, 200, 210), font=F)
-                x += cell_w[n] + PAD
+                x += cell[n] + PAD
             y += rh + LABEL_H + PAD
         y += PAD
     img.save(path)
@@ -607,86 +643,99 @@ def make_sheet(entries, path):
 
 def main():
     here = os.path.dirname(os.path.abspath(__file__))
-    default_out = os.path.join(os.path.dirname(here), "build", "sprites")
+    root = os.path.dirname(here)
 
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--anim-frames", type=int, choices=(1, 2), default=1,
-                    help="frames ανά επίπεδο πληρότητας (2 = απλό animation)")
-    ap.add_argument("--out", default=default_out, help="φάκελος εξόδου")
-    ap.add_argument("--composite-icon", type=int, default=5,
-                    help="τύπος δωματίου για το composite.png (προεπιλογή: θερμοκήπιο)")
+    ap.add_argument("--anim-frames", type=int, choices=(1, 2), default=1)
+    ap.add_argument("--uniform-quads", action="store_true",
+                    help="όλα τα μεγέθη σε τεταρτημόριο 32x64 (αλλιώς σφιχτό πλαίσιο ανά μέγεθος)")
+    ap.add_argument("--out", default=os.path.join(root, "build", "sprites"))
     args = ap.parse_args()
 
-    frames = {"ring": build_frame(True), "bare": build_frame(False)}
-    quads = build_quads(frames)
-    icon_sprites = build_icons()
-    occ = build_occupancy(args.anim_frames)
-    corr = build_corridors()
+    domes, rings, frames = build_domes(args.uniform_quads)
+    corr, conns = build_corridors(), build_connectors()
+    icon_sprites, occ = build_icons(), build_occupancy(args.anim_frames)
 
     try:
-        verify(frames, quads, icon_sprites, occ, corr)
+        verify(frames, domes, rings, corr, conns, icon_sprites, occ, args.uniform_quads)
     except CheckFailed as e:
         print("ΑΠΟΤΥΧΙΑ ΕΠΑΛΗΘΕΥΣΗΣ: %s" % e, file=sys.stderr)
         return 1
 
-    blob = build_blob(quads, icon_sprites, occ, corr, args.anim_frames)
-    asm = emit_asm(blob, args.anim_frames, len(occ))
+    blob = build_blob(frames, domes, rings, corr, conns, icon_sprites, occ)
+    asm = emit_asm(blob, frames, args.anim_frames, args.uniform_quads)
     binary = blob.data()
 
-    # 7. το .bin ταυτίζεται με τα δεδομένα του .asm
     from_asm = parse_asm_bytes(asm)
     if from_asm != binary:
-        print("ΑΠΟΤΥΧΙΑ ΕΠΑΛΗΘΕΥΣΗΣ: sprites.asm (%d bytes) != sprites.bin (%d bytes)"
-              % (len(from_asm), len(binary)), file=sys.stderr)
-        for i, (a, b) in enumerate(zip(from_asm, binary)):
-            if a != b:
-                print("  πρώτη διαφορά στο offset #%04X: #%02X vs #%02X" % (i, a, b),
-                      file=sys.stderr)
-                break
+        print("ΑΠΟΤΥΧΙΑ: sprites.asm (%d) != sprites.bin (%d)" % (len(from_asm), len(binary)),
+              file=sys.stderr)
         return 1
 
     prev = os.path.join(args.out, "preview")
     os.makedirs(prev, exist_ok=True)
-
-    with open(os.path.join(args.out, "sprites.asm"), "w", encoding="utf-8") as f:
-        f.write(asm)
+    for name, text in (("sprites.asm", asm), ("sprites_map.txt", emit_map(blob))):
+        with open(os.path.join(args.out, name), "w", encoding="utf-8") as f:
+            f.write(text)
     with open(os.path.join(args.out, "sprites.bin"), "wb") as f:
         f.write(binary)
-    with open(os.path.join(args.out, "sprites_map.txt"), "w", encoding="utf-8") as f:
-        f.write(emit_map(blob))
 
-    # PNG ανά sprite, αποκωδικοποιημένα από τα bytes
+    # PNG ανά sprite + φύλλο, αποκωδικοποιημένα από τα bytes
     entries = []
-    for label, data, sprite, category, extras in blob.items:
+    for label, data, sprite, category in blob.items:
         if sprite is None:
             continue
-        pens = sprite_from_bytes(data, sprite.bw, sprite.h)
+        pens = sprite_from_bytes(data, sprite.bw, sprite.h, sprite.masked)
         render(pens).save(os.path.join(prev, label + ".png"))
         entries.append((category, label, pens))
-
     make_sheet(entries, os.path.join(prev, "sheet.png"))
-    render(composite_pens(blob, args.composite_icon, 3)).save(
-        os.path.join(prev, "composite.png"))
 
-    # 8. σύνοψη
+    for code, _ in geo.DOME_SIZES:
+        render(composite_pens(blob, frames, code, 5, 3)).save(
+            os.path.join(prev, "composite_%s.png" % code))
+    render(composite_pens(blob, frames, "l", 5, 3)).save(os.path.join(prev, "composite.png"))
+
+    # dump για το Aseprite: ομάδες με ενιαίο μέγεθος καμβά
+    max_q = max((f[1] // 2, f[2] // 2) for f in frames.values())
+    groups = [
+        ("domes", max_q[0], max_q[1],
+         [(s.name, pad_to(s.pens, *max_q)) for s in domes]),
+        ("rings", max_q[0], max_q[1],
+         [(s.name, pad_to(s.pens, *max_q)) for s in rings]),
+        ("corridors", geo.DIAG_W, geo.DIAG_H,
+         [(s.name, pad_to(s.pens, geo.DIAG_W, geo.DIAG_H)) for s in corr + conns]),
+        ("icons", icons.ICON_W, icons.ICON_H, [(s.name, s.pens) for s in icon_sprites]),
+        ("occupancy", OCC_W, OCC_H, [(s.name, s.pens) for s in occ]),
+    ]
+    with open(os.path.join(args.out, "aseprite_dump.txt"), "w", encoding="utf-8") as f:
+        f.write(emit_aseprite_dump(groups))
+
     cats = {}
-    for label, data, sprite, category, extras in blob.items:
+    for label, data, sprite, category in blob.items:
         if not data:
             continue
         n, tot = cats.get(category, (0, 0))
         cats[category] = (n + 1, tot + len(data))
     print("Γράφτηκαν στο %s" % args.out)
+    print("Τεταρτημόρια: " + ", ".join(
+        "%s %dx%d" % (c, frames[c][1] // 2, frames[c][2] // 2) for c, _ in geo.DOME_SIZES))
     print()
     print("  %-26s %6s %8s" % ("κατηγορία", "πλήθος", "bytes"))
     print("  " + "-" * 42)
     for c, (n, tot) in cats.items():
         print("  %-26s %6d %8d" % (c, n, tot))
     print("  " + "-" * 42)
-    print("  %-26s %6d %8d  (%.2f KB)"
+    print("  %-26s %6d %8d  (%.1f KB)"
           % ("ΣΥΝΟΛΟ", sum(n for n, _ in cats.values()), len(binary), len(binary) / 1024))
+    quad_bytes = sum(len(d) for l, d, sp, c in blob.items
+                     if sp is not None and c in ("θόλοι", "δακτύλιοι"))
+    print("  Τα τεταρτημόρια είναι %d bytes από αυτά. Κρατώντας μόνο το nw και"
+          % quad_bytes)
+    print("  παράγοντας τα άλλα 3 με το flip_mode0, πέφτουν σε %d (σύνολο %.1f KB)."
+          % (quad_bytes // 4, (len(binary) - quad_bytes * 3 // 4) / 1024))
     print()
-    print("  Όλες οι επαληθεύσεις (1-8) πέρασαν.")
+    print("  Όλες οι επαληθεύσεις (1-9) πέρασαν.")
     return 0
 
 
