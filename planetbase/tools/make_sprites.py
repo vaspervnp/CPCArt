@@ -177,10 +177,13 @@ def build_machines():
 
 
 def build_icons():
+    """Ένα σετ ανά μέγεθος θόλου — το εικονίδιο κλιμακώνεται μαζί του."""
     out = []
-    for name, art in icons.ROOM_ICONS:
-        pens = icons.parse_art(art, icons.ICON_W, icons.ICON_H, what=f"icon {name}")
-        out.append(Sprite(f"icon_{name}", pens, "εικονίδια δωματίων", False))
+    for code, _ in geo.DOME_SIZES:
+        n = icons.ICON_SIZES[code]
+        for name, per in icons.ROOM_ICONS:
+            pens = icons.parse_art(per[n], n, n, what=f"icon {name}@{n}")
+            out.append(Sprite(f"icon_{code}_{name}", pens, "εικονίδια δωματίων", False))
     return out
 
 
@@ -302,7 +305,7 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines, uni
     #    χωρίς επικαλύψεις μεταξύ τους
     for code, (d, fw, fh, cls, dp, rp) in frames.items():
         taken = {}
-        for what, px, py, w, h in geo.interior(code, fw, fh):
+        for what, px, py, w, h in geo.interior(code, d, fw, fh):
             check(px % 2 == 0, f"{code}/{what}: μονό x = {px}")
             for y in range(py, py + h):
                 for x in range(px, px + w):
@@ -319,7 +322,7 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines, uni
     want = {"s": 1, "m": 4, "l": 8}
     for code, n in want.items():
         d, fw, fh, *_ = frames[code]
-        got = sum(1 for nm, *_ in geo.interior(code, fw, fh) if nm.startswith("machine"))
+        got = sum(1 for nm, *_ in geo.interior(code, d, fw, fh) if nm.startswith("machine"))
         check(got == n, f"{code}: {got} θέσεις μηχανημάτων αντί για {n}")
     for name, sizes, _ in icons.MACHINES:
         check(sizes and all(c in "sml" for c in sizes),
@@ -400,9 +403,11 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
             pts += bytes([x // 2, y])
     blob.add("conn_points", pts, None, "πίνακας συνδέσεων")
 
-    blob.add("room_icons", b"", None, "—")
-    for s in icon_sprites:
-        blob.add(s.name, s.data(), s, s.category)
+    for code, _ in geo.DOME_SIZES:
+        blob.add(f"room_icons_{code}", b"", None, "—")
+        for s in icon_sprites:
+            if s.name.startswith(f"icon_{code}_"):
+                blob.add(s.name, s.data(), s, s.category)
     blob.add("corr_slot_gfx", b"", None, "—")
     for s in slots:
         blob.add(s.name, s.data(), s, s.category)
@@ -429,7 +434,7 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
     slots = bytearray()
     for code, _ in geo.DOME_SIZES:
         d, fw, fh, *_ = frames[code]
-        got = [(x, y) for what, x, y, w, h in geo.interior(code, fw, fh)
+        got = [(x, y) for what, x, y, w, h in geo.interior(code, d, fw, fh)
                if what.startswith("machine")]
         for i in range(geo.MAX_MACHINES):
             slots += bytes([got[i][0] // 2, got[i][1]]) if i < len(got) else b"\xff\xff"
@@ -445,7 +450,7 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
     ofs = bytearray()
     for code, _ in geo.DOME_SIZES:
         d, fw, fh, *_ = frames[code]
-        ix, iy = next((x, y) for n, x, y, w, h in geo.interior(code, fw, fh) if n == "icon")
+        ix, iy = next((x, y) for n, x, y, w, h in geo.interior(code, d, fw, fh) if n == "icon")
         ofs += bytes([((ix - fw // 2) // 2) & 0xFF, (iy - fh // 2) & 0xFF])
     blob.add("interior_ofs", ofs, None, "πίνακες δωματίου")
 
@@ -500,9 +505,13 @@ def emit_asm(blob, frames, uniform, quads):
         L.append("DOME_%s_SZ   equ %-4d      ; bytes ανά τεταρτημόριο (mask+data)"
                  % (u, fw // 4 * 2 * (fh // 2)))
     L.append("")
-    L.append("ICON_W      equ %d" % (icons.ICON_W // 2))
-    L.append("ICON_H      equ %d" % icons.ICON_H)
-    L.append("ICON_SIZE   equ %d          ; room_icons + type*ICON_SIZE" % (icons.ICON_W // 2 * icons.ICON_H))
+    for code, _ in geo.DOME_SIZES:
+        n = icons.ICON_SIZES[code]
+        u = code.upper()
+        L.append("ICON_%s_W    equ %-4d      ; bytes· room_icons_%s + type*ICON_%s_SZ"
+                 % (u, n // 2, code, u))
+        L.append("ICON_%s_H    equ %-4d" % (u, n))
+        L.append("ICON_%s_SZ   equ %-4d" % (u, n // 2 * n))
     L.append("SLOT_W      equ %d           ; θέση αποίκου στον διάδρομο" % (geo.SLOT_W // 2))
     L.append("SLOT_H      equ %d" % geo.SLOT_H)
     L.append("SLOT_SIZE   equ %d          ; bytes ανά παραλλαγή" % SLOT_SIZE)
@@ -755,9 +764,9 @@ def composite_pens(blob, frames, code, icon_type, people, with_ring=True):
             paste_pens(out, quad(kind, corner), ox, oy)
 
     allowed = [(n, sz) for n, sz, _ in icons.MACHINES if code in sz]
-    for what, x, y, w, h in geo.interior(code, fw, fh):
+    for what, x, y, w, h in geo.interior(code, d, fw, fh):
         if what == "icon":
-            blit(f"icon_{icons.ROOM_ICONS[icon_type][0]}", w, h, False, x, y)
+            blit(f"icon_{code}_{icons.ROOM_ICONS[icon_type][0]}", w, h, False, x, y)
         else:
             k = int(what[len("machine"):])
             blit(f"mach_{allowed[k % len(allowed)][0]}", w, h, False, x, y)
@@ -912,7 +921,9 @@ def main():
          [(s.name, pad_to(s.pens, *max_q)) for s in rings]),
         ("corridors", geo.DIAG_W, geo.DIAG_H,
          [(s.name, pad_to(s.pens, geo.DIAG_W, geo.DIAG_H)) for s in corr + conns]),
-        ("icons", icons.ICON_W, icons.ICON_H, [(s.name, s.pens) for s in icon_sprites]),
+        *[("icons_%s" % c, icons.ICON_SIZES[c], icons.ICON_SIZES[c],
+           [(s.name, s.pens) for s in icon_sprites if s.name.startswith("icon_%s_" % c)])
+          for c, _ in geo.DOME_SIZES],
         ("slots", geo.SLOT_W, geo.SLOT_H, [(s.name, s.pens) for s in slots]),
         ("machines", geo.MACHINE_W, geo.MACHINE_H,
          [(s.name, s.pens) for s in machines]),

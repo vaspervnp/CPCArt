@@ -246,17 +246,48 @@ MACHINE_COUNT = {"s": 1, "m": 4, "l": 8}
 # μπαίνουν στη ΜΕΣΗ, με το εικονίδιο από πάνω.
 PERIM_R = 38                       # η μέγιστη που χωράει με μηχάνημα 12x22
 
-ICON_W = ICON_H = 8
+_FLOOR = {}
 
 
-def interior(code, fw, fh):
-    """Απόλυτες θέσεις μέσα στο πλαίσιο: (όνομα, x, y, w, h). Τα x είναι ζυγά."""
+def _floor(diameter, fw, fh):
+    key = (diameter, fw, fh)
+    if key not in _FLOOR:
+        _FLOOR[key] = dome_pens(classify_frame(diameter, fw, fh), fw, fh)
+    return _FLOOR[key]
+
+
+def _fits(dp, fw, fh, rects):
+    """Όλα τα ορθογώνια πέφτουν σε δάπεδο θόλου (όχι άκρη) χωρίς επικαλύψεις."""
+    taken = set()
+    for x, y, w, h in rects:
+        for yy in range(y, y + h):
+            for xx in range(x, x + w):
+                if not (0 <= xx < fw and 0 <= yy < fh):
+                    return False
+                if dp[yy][xx] != PEN_DOME_FLOOR:
+                    return False
+                if (xx, yy) in taken:
+                    return False
+                taken.add((xx, yy))
+    return True
+
+
+def interior(code, diameter, fw, fh):
+    """Απόλυτες θέσεις μέσα στο πλαίσιο: (όνομα, x, y, w, h). Τα x είναι ζυγά.
+
+    Στον μεγάλο θόλο το εικονίδιο πάει στο κέντρο και τα μηχανήματα περιμετρικά.
+    Στους άλλους δύο στοιβάζονται κάθετα — και επειδή το εικονίδιο κλιμακώνεται,
+    η κατακόρυφη θέση της στοίβας δεν κεντράρεται τυφλά: δοκιμάζονται θέσεις
+    γύρω από το κέντρο και κρατιέται η πρώτη που χωράει ολόκληρη.
+    """
+    from icons import ICON_SIZES
+    iw = ih = ICON_SIZES[code]
     cx, cy = fw // 2, fh // 2
     n = MACHINE_COUNT[code]
     out = []
 
     if code == "l":
-        out.append(("icon", cx - ICON_W // 2, cy - ICON_H // 2, ICON_W, ICON_H))
+        out.append(("icon", (cx - iw // 2) & ~1, cy - ih // 2, iw, ih))
         for k in range(n):
             a = math.radians(90 + k * 45)          # ξεκινά από Βορρά, δεξιόστροφα
             vx, vy = PERIM_R * math.cos(a), -PERIM_R * math.sin(a)
@@ -267,18 +298,30 @@ def interior(code, fw, fh):
 
     cols = 2 if n > 1 else 1
     rows = -(-n // cols)
-    tot = ICON_H + MACHINE_GAP + rows * MACHINE_H + (rows - 1) * MACHINE_GAP
-    top = cy - tot // 2
-    out.append(("icon", cx - ICON_W // 2, top, ICON_W, ICON_H))
+    tot = ih + MACHINE_GAP + rows * MACHINE_H + (rows - 1) * MACHINE_GAP
     gw = cols * MACHINE_W + (cols - 1) * MACHINE_GAP
     gx = int(cx - gw / 2) & ~1
-    for k in range(n):
-        i, j = k % cols, k // cols
-        out.append((f"machine{k}",
-                    gx + i * (MACHINE_W + MACHINE_GAP),
-                    top + ICON_H + MACHINE_GAP + j * (MACHINE_H + MACHINE_GAP),
-                    MACHINE_W, MACHINE_H))
-    return out
+    ix = (cx - iw // 2) & ~1
+
+    def stack(top):
+        r = [("icon", ix, top, iw, ih)]
+        for k in range(n):
+            i, j = k % cols, k // cols
+            r.append((f"machine{k}",
+                      gx + i * (MACHINE_W + MACHINE_GAP),
+                      top + ih + MACHINE_GAP + j * (MACHINE_H + MACHINE_GAP),
+                      MACHINE_W, MACHINE_H))
+        return r
+
+    dp = _floor(diameter, fw, fh)
+    mid = cy - tot // 2
+    for delta in range(0, fh):                 # από το κέντρο προς τα έξω
+        for top in {mid - delta, mid + delta}:
+            cand = stack(top)
+            if _fits(dp, fw, fh, [(x, y, w, h) for _, x, y, w, h in cand]):
+                return cand
+    raise ValueError(f"{code}: δεν χωράει εικονίδιο {iw}x{ih} με {n} μηχανήματα "
+                     f"{MACHINE_W}x{MACHINE_H} στο πλαίσιο {fw}x{fh}")
 
 
 # --------------------------------------------------------------------------
