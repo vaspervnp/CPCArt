@@ -397,6 +397,13 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
     budget = sum(len(sp.data()) for sp in tiles)
     check(budget == 3584, f"έδαφος: {budget} bytes αντί για 3584")
 
+    # 10β. τα πλήθη παραλλαγών πρέπει να μένουν δυνάμεις του 2, αλλιώς το
+    #      «variant AND (count-1)» της μηχανής παύει να είναι έγκυρο mask
+    for name, count, _, _ in terr.CLASSES:
+        check(count and (count & (count - 1)) == 0,
+              f"tile_{name}: {count} παραλλαγές — δεν είναι δύναμη του 2, "
+              f"οπότε το tile_variants δεν μπορεί να χρησιμοποιηθεί ως mask")
+
     # 9β. οι θέσεις αποίκων πέφτουν πάνω στον δακτύλιο και δεν πατάνε πόρτα
     for code, (d, fw, fh, cls, dp, rp) in frames.items():
         doors = set()
@@ -514,6 +521,12 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
         base += bytes([off & 0xFF, off >> 8])
     blob.add("tile_base", base, None, "πίνακες εδάφους")
 
+    # Πόσες παραλλαγές έχει κάθε κλάση. Το world byte δίνει 2 bits decor, δηλαδή
+    # 0-3, αλλά ο κρατήρας και τα θεμέλια έχουν μόνο 2 — χωρίς mask η μηχανή
+    # διαβάζει tiles της επόμενης κλάσης.
+    blob.add("tile_variants", bytes(c for _, c, _, _ in terr.CLASSES),
+             None, "πίνακες εδάφους")
+
     pens = bytearray()
     for _, fw, _ in palette_mod.PLANETS:
         pens += bytes(fw)
@@ -618,6 +631,7 @@ def emit_asm(blob, frames, uniform, quads):
     L.append("AUTOTILE    equ %d          ; παραλλαγές σε βουνό και νερό" % terr.AUTOTILE)
     L.append("ORE_OVL_SZ  equ %d         ; ore_overlay — ΜΕ ΜΑΣΚΑ, πάνω από βουνό"
              % (terr.TILE_W // 2 * 2 * terr.TILE_H))
+    L.append("TER_VARMASK equ 1           ; variant AND (tile_variants[class]-1)")
     L.append("TER_CLASSES equ %d           ; %s"
              % (len(terr.CLASSES), ", ".join(n for n, _, _, _ in terr.CLASSES)))
     L.append("PLANETS     equ %d           ; %s"
@@ -704,6 +718,14 @@ def emit_asm(blob, frames, uniform, quads):
                     off = data[2 * i] | (data[2 * i + 1] << 8)
                     L.append("    dw #%04X   ; %d %-10s %2d %s"
                              % (off, i, name, cnt, "autotile" if auto else "παραλλαγές"))
+                continue
+            if label == "tile_variants":
+                L += ["", "; --- παραλλαγές ανά κλάση εδάφους ---",
+                      "; Όλα είναι δυνάμεις του 2, οπότε:  variant AND (count-1)",
+                      "; Χωρίς αυτό το mask, decor 2-3 σε crater/foundation δείχνει",
+                      "; στα tiles της ΕΠΟΜΕΝΗΣ κλάσης.", "tile_variants:",
+                      "    db " + ",".join(str(b) for b in data),
+                      "    ; " + ", ".join(n for n, _, _, _ in terr.CLASSES)]
                 continue
             if label == "planet_pens":
                 L += ["", "; --- planet_pens + planet*4 -> FW για τα pens 7, 11, 12, 14 ---",
