@@ -1,2 +1,6 @@
 __pycache__/
 *.py[cod]
+
+# Κατεβασμένα MIDI από mfiles.co.uk — δείτε music/README.md.
+# Δεν μπαίνουν στο repo: είναι «all rights reserved», και το CPCArt είναι δημόσιο.
+music/*.mid
