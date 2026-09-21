@@ -222,9 +222,30 @@ def conn_points(diameter, fw, fh):
         vx, vy = dx * r, dy * r                 # οπτικές συντεταγμένες
         x = int(round(cx + vx / 2 - CONN_W / 2))
         y = int(round(cy + vy - CONN_H / 2))
+
+        # ASSET-6 — πλέγμα ΜΙΣΟΥ TILE, αλλά ΜΟΝΟ στους άξονες.
+        #
+        # Το tile είναι 4 bytes x 16 γραμμές, άρα το μισό είναι 2 bytes x 8
+        # γραμμές: ακριβώς η διατομή ενός connector. Ένας οριζόντιος διάδρομος
+        # κάθεται στη μεσαία γραμμή του θόλου, δηλαδή 4 γραμμές εκατέρωθεν ενός
+        # ορίου tile, και πατάει δύο σειρές tile από 4 γραμμές — γι' αυτό τα
+        # ορθογώνια επανασχεδίασης μετριούνταν σε γραμμές αντί για tiles.
+        #
+        # Σε πόρτα πάνω στον άξονα η μετατόπιση είναι ΕΦΑΠΤΟΜΕΝΙΚΗ: αλλάζει την
+        # ακτίνα κατά d^2/2r, δηλαδή κλάσμα του pixel, και η πόρτα μένει μέσα
+        # στον δακτύλιο. Σε διαγώνια πόρτα η ίδια μετατόπιση έχει ακτινική
+        # συνιστώσα 0,707*d, που σε δακτύλιο πάχους 8 οπτικών pixel τη βγάζει
+        # έξω. Οι διαγώνιες μένουν λοιπόν όπου είναι — και δεν το χρειάζονται:
+        # ο διαγώνιος διάδρομος προχωράει ήδη ακριβώς ένα tile ανά βήμα.
+        if dx == 0.0:                                   # n, s — κάθετος διάδρομος
+            x = ((x + CONN_W // 2) // CONN_W) * CONN_W
+        elif dy == 0.0:                                 # e, w — οριζόντιος
+            y = ((y + CONN_H // 2) // CONN_H) * CONN_H
+        else:
+            x &= ~1                                     # διαγώνια: ακέραιο byte
         x = max(0, min(fw - CONN_W, x))
         y = max(0, min(fh - CONN_H, y))
-        out.append((name, x & ~1, y))           # ζυγό x = ακέραιο byte
+        out.append((name, x, y))
     return out
 
 
@@ -338,14 +359,47 @@ SLOT_FILL = [0, 4, 2, 6, 1, 5, 3, 7]
 
 
 def corridor_slots(diameter, fw, fh):
-    """(k, x, y) της πάνω-αριστερής γωνίας κάθε θέσης αποίκου πάνω στον δακτύλιο."""
+    """(k, x, y) της πάνω-αριστερής γωνίας κάθε θέσης αποίκου πάνω στον δακτύλιο.
+
+    Ονομαστικά στις 22,5° ανάμεσα σε δύο πόρτες. Αυτό από μόνο του ΔΕΝ αρκεί:
+    στον μικρό θόλο η περιφέρεια του δακτυλίου είναι ~176 οπτικά pixel, οι 22,5°
+    δίνουν ~11 pixel απόσταση, και πόρτα και θέση είναι 8 pixel φαρδιές η καθεμία.
+    Μόλις τα conn_points μπήκαν στο πλέγμα μισού tile (ASSET-6), τέσσερις θέσεις
+    ακούμπησαν πόρτα κατά μία γραμμή.
+
+    Γι' αυτό η θέση **υπολογίζεται σε σχέση με τις πόρτες**: αν η ονομαστική
+    γωνία συγκρούεται, η θέση ολισθαίνει κατά μήκος του δακτυλίου — ίδια ακτίνα,
+    άρα μένει πάνω στον διάδρομο — μέχρι να καθαρίσει.
+    """
     cx, cy = fw / 2, fh / 2
     r = diameter / 2 + CORRIDOR_W / 2
-    out = []
-    for k in range(CORR_SLOTS):
-        a = math.radians(22.5 + k * 45)
+    doors = [(x, y, x + CONN_W, y + CONN_H) for _, x, y in conn_points(diameter, fw, fh)]
+
+    def place(a_deg):
+        a = math.radians(a_deg)
         vx, vy = r * math.cos(a), -r * math.sin(a)
         x = int(round(cx + vx / 2 - SLOT_W / 2)) & ~1
         y = int(round(cy + vy - SLOT_H / 2))
-        out.append((k, max(0, min(fw - SLOT_W, x)), max(0, min(fh - SLOT_H, y))))
+        return max(0, min(fw - SLOT_W, x)), max(0, min(fh - SLOT_H, y))
+
+    def clear(x, y):
+        bx, by = x + SLOT_W, y + SLOT_H
+        return all(not (x < dx1 and dx0 < bx and y < dy1 and dy0 < by)
+                   for dx0, dy0, dx1, dy1 in doors)
+
+    out = []
+    for k in range(CORR_SLOTS):
+        base = 22.5 + k * 45
+        for step in range(0, 23):               # ως ±22° — ποτέ πέρα από γειτονική πόρτα
+            for d in ((0,) if step == 0 else (step, -step)):
+                x, y = place(base + d)
+                if clear(x, y):
+                    out.append((k, x, y))
+                    break
+            else:
+                continue
+            break
+        else:
+            raise ValueError("θέση %d: δεν βρέθηκε σημείο μακριά από πόρτα "
+                             "σε διάμετρο %d" % (k, diameter))
     return out

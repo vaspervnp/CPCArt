@@ -452,6 +452,30 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
         check(not name or name in drawn,
               f"το SLOT_FIGURES αναφέρει «{name}» που δεν έχει σχέδιο")
 
+    # 12. ASSET-6: οι λωρίδες διαδρόμου πάνω στο πλέγμα μισού tile.
+    #     Οριζόντιος διάδρομος -> y πολλαπλάσιο των 8 γραμμών (μισό tile ύψος).
+    #     Κάθετος διάδρομος    -> x πολλαπλάσιο των 4 pixel (μισό tile πλάτος).
+    #     Οι διαγώνιοι εξαιρούνται: το snap εκεί είναι ακτινικό και τους βγάζει
+    #     από τον δακτύλιο — και δεν το χρειάζονται, προχωράνε ήδη ένα tile
+    #     ανά βήμα. Το ψαλίδισμα στα άκρα δεν χαλάει το πλέγμα, γιατί τα
+    #     fw-CONN_W και fh-CONN_H είναι και τα ίδια πάνω του.
+    for code, (d, fw, fh, cls, dp, rp) in frames.items():
+        check((fw - geo.CONN_W) % geo.CONN_W == 0,
+              f"{code}: fw-CONN_W={fw - geo.CONN_W} εκτός πλέγματος")
+        check((fh - geo.CONN_H) % geo.CONN_H == 0,
+              f"{code}: fh-CONN_H={fh - geo.CONN_H} εκτός πλέγματος")
+        for name, x, y in geo.conn_points(d, fw, fh):
+            if name in ("n", "s"):
+                check(x % geo.CONN_W == 0,
+                      f"{code}/conn_{name}: x={x} — κάθετη λωρίδα εκτός "
+                      f"πλέγματος μισού tile")
+            elif name in ("e", "w"):
+                check(y % geo.CONN_H == 0,
+                      f"{code}/conn_{name}: y={y} — οριζόντια λωρίδα εκτός "
+                      f"πλέγματος μισού tile")
+            else:
+                check(x % 2 == 0, f"{code}/conn_{name}: μονό x={x}")
+
     # 9β. οι θέσεις αποίκων πέφτουν πάνω στον δακτύλιο και δεν πατάνε πόρτα
     for code, (d, fw, fh, cls, dp, rp) in frames.items():
         doors = set()
@@ -1372,7 +1396,7 @@ def main():
         print("  μόνο το nw: %d bytes, σύνολο %.1f KB."
               % (quad_bytes // 4, (len(binary) - quad_bytes * 3 // 4) / 1024))
     print()
-    print("  Όλες οι επαληθεύσεις (1-11) πέρασαν.")
+    print("  Όλες οι επαληθεύσεις (1-12) πέρασαν.")
     return 0
 
 
