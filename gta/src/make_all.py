@@ -22,6 +22,7 @@ import mockup
 import preview
 import roads
 import shadows
+import sprites
 from assemble import building, roof_grid
 from cpcgfx import PALETTE, TW, TH
 
@@ -35,14 +36,16 @@ def hexdump(t):
     return ''.join('%x' % v for row in t for v in row)
 
 
-def write_dump(path, name, tiles, names, tags, grid=None):
+def write_dump(path, name, tiles, names, tags, grid=None, size=None, durations=None):
     with open(path, 'w') as f:
         f.write('name %s\n' % name)
+        if size:                                   # sprites: frame size, pen 0 transparent
+            f.write('size %d %d\ntransparent\n' % size)
         f.write('pal ' + ' '.join('%02X%02X%02X' % p[3] for p in PALETTE) + '\n')
-        for tag, a, b in tags:
-            f.write('tag %s %d %d\n' % (tag, a, b))
-        for t, n in zip(tiles, names):
-            f.write('tile %s %s\n' % (n, hexdump(t)))
+        for tag in tags:
+            f.write('tag %s %d %d %s\n' % (tuple(tag) + ('',))[:4])
+        for i, (t, n) in enumerate(zip(tiles, names)):
+            f.write('tile %s %s %s\n' % (n, hexdump(t), durations[i] if durations else ''))
         if grid:
             f.write('map %d %d\n' % (len(grid[0]), len(grid)))
             for row in grid:
@@ -63,6 +66,20 @@ def make_sheet(tmp, name, bank):
              '--sheet-columns', '8', '--data', os.path.join(OUT, name + '_sheet.json'),
              '--format', 'json-array', '--list-tags', '--list-layers')
     strip_trns(os.path.join(OUT, name + '_sheet.png'))
+
+
+def make_sprite_sheet(tmp, sheet):
+    """Sprite sheet: pen 0 transparent (the PNG keeps its tRNS), one row per tag."""
+    dump = os.path.join(tmp, sheet.name + '.txt')
+    write_dump(dump, sheet.name, sheet.frames, sheet.names, sheet.tags,
+               size=(sheet.w, sheet.h), durations=sheet.durations)
+    ase = os.path.join(OUT, sheet.name + '.aseprite')
+    aseprite('--script-param', 'in=' + dump, '--script-param', 'out=' + ase,
+             '--script-param', 'mode=frames', '--script', LUA)
+    aseprite(ase, '--sheet', os.path.join(OUT, sheet.name + '_sheet.png'), '--sheet-type', 'rows',
+             '--split-tags', '--filename-format', '{title} #{tag} {tagframe}.{extension}',
+             '--data', os.path.join(OUT, sheet.name + '_sheet.json'),
+             '--format', 'json-array', '--list-tags', '--list-layers')
 
 
 def strip_trns(path):
@@ -159,12 +176,15 @@ def main():
     print('shadow tiles %d, total %d' % (S, R + B + S))
     if R + B + S > 256:
         print('WARNING: %d tiles no longer fit 1-byte tile indices' % (R + B + S))
-    mockup.render_all(m, OUT)
+    cars, peds = sprites.car_sheet(), sprites.ped_sheet()
+    mockup.render_all(m, OUT, cars, peds)
 
     with tempfile.TemporaryDirectory() as tmp:
         make_sheet(tmp, 'roads_cpc_mode0', rbank)
         make_sheet(tmp, 'buildings_cpc_mode0', bbank)
         make_sheet(tmp, 'shadows_cpc_mode0', sbank)
+        make_sprite_sheet(tmp, cars)
+        make_sprite_sheet(tmp, peds)
         tags = (rbank.tag_ranges() + [(t, a + R, b + R) for t, a, b in bbank.tag_ranges()] +
                 [(t, a + R + B, b + R + B) for t, a, b in sbank.tag_ranges()])
         dump = os.path.join(tmp, 'map.txt')
@@ -183,6 +203,13 @@ def main():
     building_preview(bbank, kit, os.path.join(OUT, 'preview_buildings.png'))
     preview.tile_sheet_preview(bbank, os.path.join(OUT, 'preview_buildings_index.png'))
     preview.tile_sheet_preview(sbank, os.path.join(OUT, 'preview_shadows_index.png'))
+    preview.sprite_preview(cars, os.path.join(OUT, 'preview_cars.png'), 4,
+                           'CARS  (8x16, pen 0 transparent, shown 2:1)',
+                           [(t[0], [t[0]]) for t in cars.tags], sprites.DIRS)
+    preview.sprite_preview(peds, os.path.join(OUT, 'preview_peds.png'), 6,
+                           'PEDESTRIANS  (4x8, shown 2:1)',
+                           [(k, ['%s_%s' % (k, d) for d in sprites.PED_DIRS + ['down']]) for k in sprites.PEDS],
+                           [h for d in sprites.PED_DIRS for h in (d, '', '')] + ['DOWN'])
 
     # data
     def js(name, obj):
@@ -280,9 +307,35 @@ def main():
         'memory': {'tiles': R + B + S, 'bytes': 64 * (R + B + S),
                    'note': 'all three sheets together %s a 1-byte tile map (256 tiles)'
                            % ('fit' if R + B + S <= 256 else 'do NOT fit')},
+        'sprites': [
+            {'name': 'cars', 'file': 'cars_cpc_mode0_sheet.png', 'aseprite': 'cars_cpc_mode0.aseprite',
+             'size': [cars.w, cars.h], 'count': len(cars.frames), 'layout': 'one row per tag',
+             'tags': {t: b - a + 1 for t, a, b, _ in cars.tags},
+             'frames_per_tag': sprites.DIRS, 'anchor': [cars.w // 2, cars.h // 2],
+             'about': 'Top-down cars, 14x8 visual units. Each tag = 8 headings clockwise from north. '
+                      'SW, W, NW are exact horizontal mirrors of SE, E, NE (store 5, flip the rest). '
+                      'sedan/taxi/police/wreck share one shape and differ only in pens, so an engine can '
+                      'keep one shape and recolour it. police_flash = police with the light bar colours '
+                      'swapped: alternate the two tags for the siren. Anchor = centre of the frame.',
+             'bytes': {'frame': cars.w * cars.h // 2, 'frame_with_mask': cars.w * cars.h,
+                       'model_5_headings_with_mask': 5 * cars.w * cars.h}},
+            {'name': 'pedestrians', 'file': 'peds_cpc_mode0_sheet.png', 'aseprite': 'peds_cpc_mode0.aseprite',
+             'size': [peds.w, peds.h], 'count': len(peds.frames), 'layout': 'one row per tag',
+             'tags': {t: b - a + 1 for t, a, b, _ in peds.tags},
+             'frames_per_tag': 'walk tags <kind>_N/E/S/W: [step, stand, other step], ping-pong '
+                               '(%d ms); <kind>_down: 1 frame' % peds.durations[0],
+             'kinds': list(sprites.PEDS), 'anchor': [peds.w // 2, peds.h - 1],
+             'about': 'Pedestrians in a slight 3/4 view (head up, feet down, like the building fronts), '
+                      '8x8 visual units. W is the horizontal mirror of E; diagonal walking uses E/W. '
+                      'Anchor = between the feet (bottom centre).',
+             'bytes': {'frame': peds.w * peds.h // 2, 'frame_with_mask': peds.w * peds.h,
+                       'kind_10_frames_with_mask': 10 * peds.w * peds.h}},
+        ],
         'mockups': ['mockup_city.png', 'mockup_screen.png', 'mockup_city_tilemap.aseprite', 'mockup_city_map.json'],
-        'notes': 'Previews and mockups are drawn with 2:1 pixels. The three cars in the mockups are '
-                 'placeholders for scale only and are not part of the sheets. Light comes from the top-left. '
+        'notes': 'Previews and mockups are drawn with 2:1 pixels. Tile sheets are opaque (pen 0 = black); '
+                 'sprite sheets use pen 0 as transparent (the PNGs keep tRNS for index 0; masks come from '
+                 'pen 0), so the darkest visible sprite colour is pen 1. Mirroring a Mode 0 sprite needs a '
+                 '256-byte table that swaps the two pixels of each byte. Light comes from the top-left. '
                  'Regenerate everything with src/make_all.py.',
     }
     js('manifest.json', manifest)

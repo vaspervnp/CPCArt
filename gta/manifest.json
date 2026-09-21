@@ -160,11 +160,109 @@
   "bytes": 15744,
   "note": "all three sheets together fit a 1-byte tile map (256 tiles)"
  },
+ "sprites": [
+  {
+   "name": "cars",
+   "file": "cars_cpc_mode0_sheet.png",
+   "aseprite": "cars_cpc_mode0.aseprite",
+   "size": [
+    8,
+    16
+   ],
+   "count": 56,
+   "layout": "one row per tag",
+   "tags": {
+    "sedan": 8,
+    "taxi": 8,
+    "police": 8,
+    "police_flash": 8,
+    "sports": 8,
+    "van": 8,
+    "wreck": 8
+   },
+   "frames_per_tag": [
+    "N",
+    "NE",
+    "E",
+    "SE",
+    "S",
+    "SW",
+    "W",
+    "NW"
+   ],
+   "anchor": [
+    4,
+    8
+   ],
+   "about": "Top-down cars, 14x8 visual units. Each tag = 8 headings clockwise from north. SW, W, NW are exact horizontal mirrors of SE, E, NE (store 5, flip the rest). sedan/taxi/police/wreck share one shape and differ only in pens, so an engine can keep one shape and recolour it. police_flash = police with the light bar colours swapped: alternate the two tags for the siren. Anchor = centre of the frame.",
+   "bytes": {
+    "frame": 64,
+    "frame_with_mask": 128,
+    "model_5_headings_with_mask": 640
+   }
+  },
+  {
+   "name": "pedestrians",
+   "file": "peds_cpc_mode0_sheet.png",
+   "aseprite": "peds_cpc_mode0.aseprite",
+   "size": [
+    4,
+    8
+   ],
+   "count": 65,
+   "layout": "one row per tag",
+   "tags": {
+    "suit_N": 3,
+    "suit_E": 3,
+    "suit_S": 3,
+    "suit_W": 3,
+    "suit_down": 1,
+    "dress_N": 3,
+    "dress_E": 3,
+    "dress_S": 3,
+    "dress_W": 3,
+    "dress_down": 1,
+    "tourist_N": 3,
+    "tourist_E": 3,
+    "tourist_S": 3,
+    "tourist_W": 3,
+    "tourist_down": 1,
+    "punk_N": 3,
+    "punk_E": 3,
+    "punk_S": 3,
+    "punk_W": 3,
+    "punk_down": 1,
+    "cop_N": 3,
+    "cop_E": 3,
+    "cop_S": 3,
+    "cop_W": 3,
+    "cop_down": 1
+   },
+   "frames_per_tag": "walk tags <kind>_N/E/S/W: [step, stand, other step], ping-pong (160 ms); <kind>_down: 1 frame",
+   "kinds": [
+    "suit",
+    "dress",
+    "tourist",
+    "punk",
+    "cop"
+   ],
+   "anchor": [
+    2,
+    7
+   ],
+   "about": "Pedestrians in a slight 3/4 view (head up, feet down, like the building fronts), 8x8 visual units. W is the horizontal mirror of E; diagonal walking uses E/W. Anchor = between the feet (bottom centre).",
+   "bytes": {
+    "frame": 16,
+    "frame_with_mask": 32,
+    "kind_10_frames_with_mask": 320
+   }
+  }
+ ],
  "mockups": [
   "mockup_city.png",
   "mockup_screen.png",
   "mockup_city_tilemap.aseprite",
   "mockup_city_map.json"
  ],
- "notes": "Previews and mockups are drawn with 2:1 pixels. The three cars in the mockups are placeholders for scale only and are not part of the sheets. Light comes from the top-left. Regenerate everything with src/make_all.py."
+ "notes": "Previews and mockups are drawn with 2:1 pixels. Tile sheets are opaque (pen 0 = black); sprite sheets use pen 0 as transparent (the PNGs keep tRNS for index 0; masks come from pen 0), so the darkest visible sprite colour is pen 1. Mirroring a Mode 0 sprite needs a 256-byte table that swaps the two pixels of each byte. Light comes from the top-left. Regenerate everything with src/make_all.py."
 }
