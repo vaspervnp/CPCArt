@@ -53,8 +53,23 @@ CORR_D_SY   equ 16
 MACH_W      equ 6
 MACH_H      equ 22
 MACH_SIZE   equ 132          ; machines + type*MACH_SIZE
-MACH_TYPES  equ 7           ; oxygen, iron, bioplastic, weapons, processors, robots, food
+MACH_TYPES  equ 10           ; oxygen, iron, bioplastic, weapons, processors, robots, food, spares, medical, vitromeat
 MACH_SLOTS  equ 8           ; θέσεις ανά μέγεθος στον πίνακα
+
+PLANT_SIZE  equ 132          ; ίδιες διαστάσεις με τα μηχανήματα
+PLANT_TYPES equ 12          ; plants + type*PLANT_SIZE
+            ;  0 peas       starch
+            ;  1 rice       starch
+            ;  2 potatoes   starch
+            ;  3 wheat      starch
+            ;  4 maize      starch
+            ;  5 tomatoes   veg
+            ;  6 lettuce    veg
+            ;  7 onions     veg
+            ;  8 radishes   veg
+            ;  9 mushrooms  veg
+            ; 10 medicinal  medicine
+            ; 11 tree       morale
 
 CONN_W      equ 2
 CONN_H      equ 8
@@ -2686,6 +2701,388 @@ mach_food:
     db #0C,#19,#0C,#0C,#26,#0C   ; ...y....y...
     db #0C,#19,#0C,#0C,#26,#0C   ; ...y....y...
 
+; mach_spares — 12 x 22 pixels, αδιαφανές, 132 bytes
+mach_spares:
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #24,#0C,#0C,#0C,#0C,#18   ; ,..........,
+    db #24,#F0,#0C,#0C,#F0,#18   ; ,.WW....WW.,
+    db #70,#F0,#A4,#58,#F0,#B0   ; ,WWWW..WWWW,
+    db #70,#F0,#A4,#58,#F0,#B0   ; ,WWWW..WWWW,
+    db #24,#F0,#0C,#0C,#F0,#18   ; ,.WW....WW.,
+    db #24,#0C,#0C,#0C,#0C,#18   ; ,..........,
+    db #24,#F0,#0C,#0C,#F0,#18   ; ,.WW....WW.,
+    db #70,#F0,#A4,#58,#F0,#B0   ; ,WWWW..WWWW,
+    db #70,#F0,#A4,#58,#F0,#B0   ; ,WWWW..WWWW,
+    db #24,#F0,#0C,#0C,#F0,#18   ; ,.WW....WW.,
+    db #24,#0C,#0C,#0C,#0C,#18   ; ,..........,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #24,#0C,#0C,#0C,#0C,#18   ; ,..........,
+    db #24,#30,#30,#30,#30,#18   ; ,.,,,,,,,,.,
+    db #24,#70,#F0,#F0,#B0,#18   ; ,.,WWWWWW,.,
+    db #24,#30,#30,#30,#30,#18   ; ,.,,,,,,,,.,
+    db #24,#0C,#0C,#0C,#0C,#18   ; ,..........,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #18,#30,#30,#30,#30,#24   ; .,,,,,,,,,,.
+    db #18,#0C,#0C,#0C,#0C,#24   ; .,........,.
+    db #18,#30,#30,#30,#30,#24   ; .,,,,,,,,,,.
+
+; mach_medical — 12 x 22 pixels, αδιαφανές, 132 bytes
+mach_medical:
+    db #58,#F0,#F0,#F0,#F0,#A4   ; .WWWWWWWWWW.
+    db #58,#0C,#0C,#0C,#0C,#A4   ; .W........W.
+    db #58,#0C,#09,#06,#0C,#A4   ; .W...RR...W.
+    db #58,#0C,#09,#06,#0C,#A4   ; .W...RR...W.
+    db #58,#09,#03,#03,#06,#A4   ; .W.RRRRRR.W.
+    db #58,#09,#03,#03,#06,#A4   ; .W.RRRRRR.W.
+    db #58,#0C,#09,#06,#0C,#A4   ; .W...RR...W.
+    db #58,#0C,#09,#06,#0C,#A4   ; .W...RR...W.
+    db #58,#0C,#0C,#0C,#0C,#A4   ; .W........W.
+    db #58,#F0,#F0,#F0,#F0,#A4   ; .WWWWWWWWWW.
+    db #0C,#B0,#30,#30,#70,#0C   ; ..W,,,,,,W..
+    db #0C,#B0,#30,#30,#70,#0C   ; ..W,,,,,,W..
+    db #0C,#F0,#F0,#F0,#F0,#0C   ; ..WWWWWWWW..
+    db #18,#30,#30,#30,#30,#24   ; .,,,,,,,,,,.
+    db #18,#0C,#0C,#0C,#0C,#24   ; .,........,.
+    db #18,#4D,#CF,#CF,#8E,#24   ; .,.MMMMMM.,.
+    db #18,#4D,#CF,#CF,#8E,#24   ; .,.MMMMMM.,.
+    db #18,#0C,#0C,#0C,#0C,#24   ; .,........,.
+    db #18,#30,#30,#30,#30,#24   ; .,,,,,,,,,,.
+    db #0C,#30,#30,#30,#30,#0C   ; ..,,,,,,,,..
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+
+; mach_vitromeat — 12 x 22 pixels, αδιαφανές, 132 bytes
+mach_vitromeat:
+    db #0C,#F0,#F0,#F0,#F0,#0C   ; ..WWWWWWWW..
+    db #58,#0C,#0C,#0C,#0C,#A4   ; .W........W.
+    db #A4,#5D,#FF,#FF,#AE,#58   ; W..PPPPPP..W
+    db #A4,#FF,#FF,#FF,#FF,#58   ; W.PPPPPPPP.W
+    db #A4,#FF,#FF,#FF,#FF,#58   ; W.PPPPPPPP.W
+    db #A4,#FF,#FF,#FF,#FF,#58   ; W.PPPPPPPP.W
+    db #A4,#FF,#FF,#FF,#FF,#58   ; W.PPPPPPPP.W
+    db #A4,#FF,#FF,#FF,#FF,#58   ; W.PPPPPPPP.W
+    db #A4,#5D,#FF,#FF,#AE,#58   ; W..PPPPPP..W
+    db #58,#0C,#0C,#0C,#0C,#A4   ; .W........W.
+    db #0C,#F0,#F0,#F0,#F0,#0C   ; ..WWWWWWWW..
+    db #0C,#58,#30,#30,#A4,#0C   ; ...W,,,,W...
+    db #0C,#58,#30,#30,#A4,#0C   ; ...W,,,,W...
+    db #0C,#F0,#F0,#F0,#F0,#0C   ; ..WWWWWWWW..
+    db #0C,#B0,#FF,#75,#BA,#A4   ; ..W,PP,PP,W.
+    db #0C,#B0,#FF,#75,#BA,#A4   ; ..W,PP,PP,W.
+    db #0C,#F0,#F0,#F0,#F0,#0C   ; ..WWWWWWWW..
+    db #0C,#58,#A4,#58,#A4,#0C   ; ...WW..WW...
+    db #0C,#58,#A4,#58,#A4,#0C   ; ...WW..WW...
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+
+plants:
+
+; plant_peas — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_peas:
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#C3,#0C,#0C,#0C   ; ....GG......
+    db #0C,#49,#C3,#86,#C3,#0C   ; ...GGGG.GG..
+    db #0C,#C3,#C3,#C3,#C3,#86   ; ..GGGGGGGGG.
+    db #0C,#C3,#33,#C3,#33,#86   ; ..GGyyGGyyG.
+    db #0C,#C3,#C3,#C3,#C3,#86   ; ..GGGGGGGGG.
+    db #49,#C3,#C3,#C3,#C3,#C3   ; .GGGGGGGGGGG
+    db #49,#93,#63,#C3,#33,#86   ; .GGyyGGGyyG.
+    db #49,#C3,#C3,#C3,#C3,#C3   ; .GGGGGGGGGGG
+    db #0C,#C3,#C3,#C3,#C3,#86   ; ..GGGGGGGGG.
+    db #0C,#C3,#33,#C3,#33,#86   ; ..GGyyGGyyG.
+    db #0C,#C3,#C3,#C3,#C3,#86   ; ..GGGGGGGGG.
+    db #0C,#49,#C3,#C3,#C3,#0C   ; ...GGGGGGG..
+    db #0C,#0C,#C3,#C3,#86,#0C   ; ....GGGGG...
+    db #0C,#0C,#49,#C3,#0C,#0C   ; .....GGG....
+    db #0C,#0C,#0D,#0E,#0C,#0C   ; .....CC.....
+    db #0C,#0C,#0D,#0E,#0C,#0C   ; .....CC.....
+    db #0C,#0C,#0D,#0E,#0C,#0C   ; .....CC.....
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; plant_rice — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_rice:
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#26,#19,#0C,#26,#0C   ; ..y..y..y...
+    db #0C,#26,#19,#0C,#26,#0C   ; ..y..y..y...
+    db #1D,#26,#3B,#1D,#26,#2E   ; .Sy.Sy.Sy.S.
+    db #1D,#26,#3B,#1D,#26,#2E   ; .Sy.Sy.Sy.S.
+    db #1D,#2E,#3F,#1D,#2E,#3F   ; .SS.SS.SS.SS
+    db #1D,#2E,#3F,#1D,#2E,#3F   ; .SS.SS.SS.SS
+    db #3F,#2E,#3F,#1D,#2E,#3F   ; SSS.SS.SS.SS
+    db #3F,#2E,#3F,#1D,#2E,#3F   ; SSS.SS.SS.SS
+    db #3F,#2E,#3F,#1D,#2E,#3F   ; SSS.SS.SS.SS
+    db #3F,#2E,#3F,#1D,#2E,#3F   ; SSS.SS.SS.SS
+    db #1D,#2E,#3F,#1D,#2E,#3F   ; .SS.SS.SS.SS
+    db #1D,#2E,#3F,#1D,#2E,#3F   ; .SS.SS.SS.SS
+    db #1D,#2E,#3F,#1D,#2E,#3F   ; .SS.SS.SS.SS
+    db #0C,#2E,#3F,#1D,#2E,#2E   ; ..S.SS.SS.S.
+    db #0C,#2E,#1D,#0C,#2E,#0C   ; ..S..S..S...
+    db #0C,#2E,#1D,#0C,#2E,#0C   ; ..S..S..S...
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; plant_potatoes — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_potatoes:
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#C3,#49,#86,#0C   ; ....GG.GG...
+    db #0C,#C3,#C3,#C3,#C3,#86   ; ..GGGGGGGGG.
+    db #49,#C3,#C3,#C3,#C3,#C3   ; .GGGGGGGGGGG
+    db #49,#C3,#C3,#C3,#C3,#C3   ; .GGGGGGGGGGG
+    db #C3,#C3,#C3,#C3,#C3,#C3   ; GGGGGGGGGGGG
+    db #C3,#C3,#C3,#C3,#C3,#C3   ; GGGGGGGGGGGG
+    db #49,#C3,#C3,#C3,#C3,#C3   ; .GGGGGGGGGGG
+    db #0C,#C3,#C3,#C3,#C3,#86   ; ..GGGGGGGGG.
+    db #0C,#49,#C3,#C3,#C3,#0C   ; ...GGGGGGG..
+    db #0C,#0C,#C3,#C3,#86,#0C   ; ....GGGGG...
+    db #0C,#0C,#1D,#2E,#0C,#0C   ; .....SS.....
+    db #0C,#0C,#1D,#2E,#0C,#0C   ; .....SS.....
+    db #0C,#33,#1D,#2E,#33,#0C   ; ..yy.SS.yy..
+    db #19,#33,#37,#3B,#33,#26   ; .yyyySSyyyy.
+    db #19,#33,#26,#19,#33,#26   ; .yyyy..yyyy.
+    db #0C,#33,#0C,#0C,#33,#0C   ; ..yy....yy..
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; plant_wheat — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_wheat:
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#AC,#5C,#0C,#AC,#0C   ; ..O..O..O...
+    db #5C,#FC,#5C,#AC,#FC,#0C   ; .OOO.OO.OO..
+    db #5C,#FC,#5C,#AC,#FC,#AC   ; .OOO.OO.OOO.
+    db #5C,#FC,#5C,#AC,#FC,#AC   ; .OOO.OO.OOO.
+    db #5C,#FC,#5C,#AC,#FC,#AC   ; .OOO.OO.OOO.
+    db #0C,#AC,#5C,#AC,#5C,#0C   ; ..O..OO..O..
+    db #0C,#26,#19,#26,#19,#0C   ; ..y..yy..y..
+    db #0C,#26,#19,#26,#19,#0C   ; ..y..yy..y..
+    db #0C,#26,#19,#26,#19,#0C   ; ..y..yy..y..
+    db #19,#26,#19,#26,#19,#26   ; .yy..yy..yy.
+    db #19,#26,#19,#26,#19,#26   ; .yy..yy..yy.
+    db #19,#26,#19,#26,#19,#26   ; .yy..yy..yy.
+    db #19,#26,#19,#26,#19,#26   ; .yy..yy..yy.
+    db #19,#26,#19,#26,#19,#26   ; .yy..yy..yy.
+    db #0C,#26,#19,#26,#19,#0C   ; ..y..yy..y..
+    db #0C,#26,#19,#26,#19,#0C   ; ..y..yy..y..
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; plant_maize — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_maize:
+    db #0C,#49,#0C,#0C,#86,#0C   ; ...G....G...
+    db #0C,#C3,#0C,#0C,#C3,#0C   ; ..GG....GG..
+    db #49,#C3,#0C,#0C,#C3,#86   ; .GGG....GGG.
+    db #49,#C3,#19,#26,#C3,#86   ; .GGG.yy.GGG.
+    db #0C,#C3,#76,#76,#C3,#0C   ; ..GGyOyOGG..
+    db #0C,#C3,#B9,#B9,#C3,#0C   ; ..GGOyOyGG..
+    db #0C,#49,#76,#76,#86,#0C   ; ...GyOyOG...
+    db #0C,#49,#B9,#B9,#86,#0C   ; ...GOyOyG...
+    db #0C,#49,#76,#76,#86,#0C   ; ...GyOyOG...
+    db #0C,#C3,#B9,#B9,#C3,#0C   ; ..GGOyOyGG..
+    db #0C,#C3,#76,#76,#C3,#0C   ; ..GGyOyOGG..
+    db #49,#C3,#19,#26,#C3,#86   ; .GGG.yy.GGG.
+    db #49,#C3,#49,#86,#C3,#86   ; .GGG.GG.GGG.
+    db #49,#86,#49,#86,#49,#86   ; .GG..GG..GG.
+    db #0C,#86,#49,#86,#49,#0C   ; ..G..GG..G..
+    db #0C,#0C,#49,#86,#0C,#0C   ; .....GG.....
+    db #0C,#0C,#49,#86,#0C,#0C   ; .....GG.....
+    db #0C,#0C,#49,#86,#0C,#0C   ; .....GG.....
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; plant_tomatoes — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_tomatoes:
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#C3,#C3,#0C,#0C   ; ....GGGG....
+    db #0C,#C3,#C3,#C3,#C3,#0C   ; ..GGGGGGGG..
+    db #49,#C3,#03,#C3,#C3,#86   ; .GGGRRGGGGG.
+    db #49,#83,#03,#43,#C3,#86   ; .GGRRRRGGGG.
+    db #C3,#83,#03,#43,#C3,#C3   ; GGGRRRRGGGGG
+    db #C3,#C3,#03,#C3,#C3,#C3   ; GGGGRRGGGGGG
+    db #C3,#C3,#C3,#83,#43,#C3   ; GGGGGGGRRGGG
+    db #49,#C3,#C3,#03,#03,#86   ; .GGGGGRRRRG.
+    db #49,#C3,#C3,#03,#03,#86   ; .GGGGGRRRRG.
+    db #49,#C3,#C3,#83,#43,#86   ; .GGGGGGRRGG.
+    db #0C,#C3,#C3,#C3,#C3,#86   ; ..GGGGGGGGG.
+    db #0C,#49,#C3,#C3,#C3,#0C   ; ...GGGGGGG..
+    db #0C,#0C,#C3,#C3,#86,#0C   ; ....GGGGG...
+    db #0C,#0C,#1D,#2E,#0C,#0C   ; .....SS.....
+    db #0C,#0C,#1D,#2E,#0C,#0C   ; .....SS.....
+    db #0C,#0C,#1D,#2E,#0C,#0C   ; .....SS.....
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; plant_lettuce — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_lettuce:
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0D,#0E,#0D,#0E,#0C   ; ...CC..CC...
+    db #0C,#4B,#87,#4B,#87,#0C   ; ..CGGCCGGC..
+    db #0D,#C3,#C3,#C3,#C3,#0E   ; .CGGGGGGGGC.
+    db #0D,#C3,#C3,#C3,#C3,#0E   ; .CGGGGGGGGC.
+    db #4B,#C3,#C3,#C3,#C3,#87   ; CGGGGGGGGGGC
+    db #4B,#C3,#4B,#87,#C3,#87   ; CGGGCGGCGGGC
+    db #4B,#C3,#C3,#C3,#C3,#87   ; CGGGGGGGGGGC
+    db #4B,#C3,#C3,#C3,#C3,#87   ; CGGGGGGGGGGC
+    db #0D,#C3,#C3,#C3,#C3,#0E   ; .CGGGGGGGGC.
+    db #0D,#C3,#C3,#C3,#C3,#0E   ; .CGGGGGGGGC.
+    db #0C,#4B,#C3,#C3,#87,#0C   ; ..CGGGGGGC..
+    db #0C,#0D,#4B,#87,#0E,#0C   ; ...CCGGCC...
+    db #0C,#0C,#0D,#0E,#0C,#0C   ; .....CC.....
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; plant_onions — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_onions:
+    db #0C,#2E,#1D,#0C,#2E,#0C   ; ..S..S..S...
+    db #0C,#2E,#1D,#0C,#2E,#0C   ; ..S..S..S...
+    db #1D,#2E,#3F,#1D,#2E,#0C   ; .SS.SS.SS...
+    db #1D,#2E,#3F,#1D,#2E,#2E   ; .SS.SS.SS.S.
+    db #1D,#2E,#3F,#1D,#2E,#2E   ; .SS.SS.SS.S.
+    db #3F,#2E,#3F,#1D,#2E,#3F   ; SSS.SS.SS.SS
+    db #1D,#2E,#3F,#1D,#2E,#3F   ; .SS.SS.SS.SS
+    db #1D,#2E,#3F,#1D,#2E,#2E   ; .SS.SS.SS.S.
+    db #0C,#2E,#1D,#0C,#2E,#0C   ; ..S..S..S...
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #19,#26,#19,#26,#19,#26   ; .yy..yy..yy.
+    db #33,#33,#33,#33,#33,#33   ; yyyyyyyyyyyy
+    db #33,#33,#33,#33,#33,#33   ; yyyyyyyyyyyy
+    db #33,#33,#33,#33,#33,#33   ; yyyyyyyyyyyy
+    db #33,#33,#33,#33,#33,#33   ; yyyyyyyyyyyy
+    db #19,#26,#19,#26,#19,#26   ; .yy..yy..yy.
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; plant_radishes — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_radishes:
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#C3,#49,#86,#C3,#0C   ; ..GG.GG.GG..
+    db #49,#C3,#C3,#C3,#C3,#86   ; .GGGGGGGGGG.
+    db #49,#C3,#C3,#C3,#C3,#86   ; .GGGGGGGGGG.
+    db #C3,#C3,#C3,#C3,#C3,#C3   ; GGGGGGGGGGGG
+    db #49,#C3,#C3,#C3,#C3,#86   ; .GGGGGGGGGG.
+    db #0C,#C3,#C3,#C3,#C3,#0C   ; ..GGGGGGGG..
+    db #0C,#49,#49,#86,#86,#0C   ; ...G.GG.G...
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#03,#09,#06,#03,#0C   ; ..RR.RR.RR..
+    db #09,#03,#03,#03,#03,#06   ; .RRRRRRRRRR.
+    db #09,#03,#03,#03,#03,#06   ; .RRRRRRRRRR.
+    db #09,#03,#03,#03,#03,#06   ; .RRRRRRRRRR.
+    db #0C,#03,#09,#06,#03,#0C   ; ..RR.RR.RR..
+    db #0C,#F3,#59,#A6,#F3,#0C   ; ..rr.rr.rr..
+    db #0C,#59,#0C,#A6,#59,#0C   ; ...r..r..r..
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; plant_mushrooms — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_mushrooms:
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #0C,#5D,#FF,#AE,#0C,#0C   ; ...PPPP.....
+    db #0C,#FF,#FF,#FF,#0C,#0C   ; ..PPPPPP....
+    db #5D,#FF,#FF,#FF,#AE,#0C   ; .PPPPPPPP...
+    db #5D,#FF,#FF,#FF,#AE,#FF   ; .PPPPPPPP.PP
+    db #0C,#58,#F0,#A4,#5D,#FF   ; ...WWWW..PPP
+    db #0C,#58,#F0,#A4,#FF,#FF   ; ...WWWW.PPPP
+    db #0C,#58,#F0,#A4,#FF,#FF   ; ...WWWW.PPPP
+    db #0C,#58,#F0,#A4,#58,#F0   ; ...WWWW..WWW
+    db #5D,#FF,#AE,#0C,#58,#F0   ; .PPPP....WWW
+    db #FF,#FF,#FF,#0C,#58,#F0   ; PPPPPP...WWW
+    db #FF,#FF,#FF,#AE,#58,#F0   ; PPPPPPP..WWW
+    db #5D,#FF,#FF,#AE,#58,#F0   ; .PPPPPP..WWW
+    db #0C,#F0,#F0,#0C,#0C,#0C   ; ..WWWW......
+    db #0C,#F0,#F0,#0C,#0C,#0C   ; ..WWWW......
+    db #0C,#F0,#F0,#0C,#0C,#0C   ; ..WWWW......
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; plant_medicinal — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_medicinal:
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #4D,#8E,#4D,#8E,#4D,#8E   ; .MM..MM..MM.
+    db #CF,#CF,#CF,#CF,#CF,#CF   ; MMMMMMMMMMMM
+    db #CF,#CF,#CF,#CF,#CF,#CF   ; MMMMMMMMMMMM
+    db #4D,#8E,#4D,#8E,#4D,#8E   ; .MM..MM..MM.
+    db #0C,#86,#49,#86,#49,#0C   ; ..G..GG..G..
+    db #0C,#86,#49,#86,#49,#0C   ; ..G..GG..G..
+    db #0C,#C3,#C3,#C3,#C3,#0C   ; ..GGGGGGGG..
+    db #0C,#86,#49,#86,#49,#0C   ; ..G..GG..G..
+    db #49,#86,#49,#86,#49,#86   ; .GG..GG..GG.
+    db #49,#86,#49,#86,#49,#86   ; .GG..GG..GG.
+    db #49,#C3,#C3,#C3,#C3,#86   ; .GGGGGGGGGG.
+    db #49,#86,#49,#86,#49,#86   ; .GG..GG..GG.
+    db #0C,#86,#49,#86,#49,#0C   ; ..G..GG..G..
+    db #0C,#86,#49,#86,#49,#0C   ; ..G..GG..G..
+    db #0C,#86,#49,#86,#49,#0C   ; ..G..GG..G..
+    db #0C,#0C,#49,#86,#0C,#0C   ; .....GG.....
+    db #0C,#0C,#0C,#0C,#0C,#0C   ; ............
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; plant_tree — 12 x 22 pixels, αδιαφανές, 132 bytes
+plant_tree:
+    db #0C,#0C,#C3,#C3,#0C,#0C   ; ....GGGG....
+    db #0C,#C3,#C3,#C3,#C3,#0C   ; ..GGGGGGGG..
+    db #49,#C3,#C3,#C3,#C3,#86   ; .GGGGGGGGGG.
+    db #C3,#C3,#C3,#C3,#C3,#C3   ; GGGGGGGGGGGG
+    db #C3,#C3,#C3,#C3,#C3,#C3   ; GGGGGGGGGGGG
+    db #C3,#C3,#C3,#C3,#C3,#C3   ; GGGGGGGGGGGG
+    db #49,#C3,#C3,#C3,#C3,#86   ; .GGGGGGGGGG.
+    db #0C,#C3,#C3,#C3,#C3,#0C   ; ..GGGGGGGG..
+    db #0C,#49,#C3,#C3,#86,#0C   ; ...GGGGGG...
+    db #0C,#0C,#F3,#F3,#0C,#0C   ; ....rrrr....
+    db #0C,#0C,#F3,#F3,#0C,#0C   ; ....rrrr....
+    db #0C,#0C,#F3,#F3,#0C,#0C   ; ....rrrr....
+    db #0C,#0C,#F3,#F3,#0C,#0C   ; ....rrrr....
+    db #0C,#0C,#F3,#F3,#0C,#0C   ; ....rrrr....
+    db #0C,#0C,#F3,#F3,#0C,#0C   ; ....rrrr....
+    db #0C,#59,#F3,#F3,#A6,#0C   ; ...rrrrrr...
+    db #0C,#F3,#F3,#F3,#F3,#0C   ; ..rrrrrrrr..
+    db #59,#F3,#F3,#F3,#F3,#A6   ; .rrrrrrrrrr.
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #71,#F3,#F3,#F3,#F3,#B2   ; ,rrrrrrrrrr,
+    db #30,#30,#30,#30,#30,#30   ; ,,,,,,,,,,,,
+
+; --- κατηγορία κάθε φυτού: 0=starch, 1=veg, 2=medicine, 3=morale ---
+plant_class:
+    db 0,0,0,0,0,1,1,1,1,1,2,3
+    ; peas, rice, potatoes, wheat, maize, tomatoes, lettuce, onions, radishes, mushrooms, medicinal, tree
+
 machine_count:
     db 1,4,8
     ; s, m, l
@@ -2719,8 +3116,8 @@ machine_slots:
     db  19, 26   ; l θέση 7
 
 machine_rules:
-    db 1,7,7,7,7,7,7
-    ; oxygen, iron, bioplastic, weapons, processors, robots, food
+    db 1,7,7,7,7,7,7,7,7,7
+    ; oxygen, iron, bioplastic, weapons, processors, robots, food, spares, medical, vitromeat
 
 ; --- θέσεις εικονιδίου/πληρότητας από το ΚΕΝΤΡΟ του θόλου ---
 ; interior_ofs + size*2 -> (icon dx bytes, icon dy) από το κέντρο
@@ -2749,9 +3146,9 @@ palette_fw:
     ; pen 14  FW 19  Sea green     εικονίδια
     ; pen 15  FW 16  Pink          εικονίδια
 
-; --- 172 bytes γέμισμα για τη σελίδα του flip_mode0 ---
+; --- 225 bytes γέμισμα για τη σελίδα του flip_mode0 ---
 sprites_pad:
-    defs 172,#00
+    defs 225,#00
 
 ; --- flip_mode0[b] = b με ανταλλαγμένα pixels ---
 align 256

@@ -176,6 +176,20 @@ def build_machines():
     return out
 
 
+PLANT_CLASSES = ["starch", "veg", "medicine", "morale"]
+
+
+def build_plants():
+    """Τα φυτά του Bio-Dome. Ίδιο μέγεθος με τα μηχανήματα: μπαίνουν στις ίδιες
+    υποδοχές, ώστε ένας θόλος-θερμοκήπιο να γεμίζει με παρτέρια αντί για μηχανές."""
+    out = []
+    for name, cls, top in icons.PLANTS:
+        pens = icons.parse_art(top + icons.PLANT_BED, icons.PLANT_W, icons.PLANT_H,
+                               what=f"plant {name}")
+        out.append(Sprite(f"plant_{name}", pens, "φυτά", False))
+    return out
+
+
 def build_icons():
     """Ένα σετ ανά μέγεθος θόλου — το εικονίδιο κλιμακώνεται μαζί του."""
     out = []
@@ -227,7 +241,8 @@ def check(cond, msg):
         raise CheckFailed(msg)
 
 
-def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines, uniform):
+def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
+           plants, uniform):
     # 1. κωδικοποίηση
     for a, b, want in ((1, 0, 0x80), (0, 1, 0x40), (15, 15, 0xFF),
                        (0, 0, 0x00), (8, 0, 0x02)):
@@ -240,7 +255,7 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines, uni
     for b in range(256):
         check(FLIP_TABLE[FLIP_TABLE[b]] == b, f"flip(flip(#{b:02X})) != #{b:02X}")
 
-    allspr = domes + rings + corr + conns + icon_sprites + slots + machines
+    allspr = domes + rings + corr + conns + icon_sprites + slots + machines + plants
 
     # 3. διαστάσεις
     for s in allspr:
@@ -328,6 +343,13 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines, uni
         check(sizes and all(c in "sml" for c in sizes),
               f"μηχάνημα {name}: άκυρα μεγέθη {sizes!r}")
 
+    # 8γ. τα φυτά χωράνε στις ίδιες υποδοχές με τα μηχανήματα
+    for sp in plants:
+        check((sp.w, sp.h) == (geo.MACHINE_W, geo.MACHINE_H),
+              f"φυτό {sp.name}: {sp.w}x{sp.h} αντί για {geo.MACHINE_W}x{geo.MACHINE_H}")
+    for name, cls, _ in icons.PLANTS:
+        check(cls in PLANT_CLASSES, f"φυτό {name}: άγνωστη κατηγορία {cls!r}")
+
     # 9β. οι θέσεις αποίκων πέφτουν πάνω στον δακτύλιο και δεν πατάνε πόρτα
     for code, (d, fw, fh, cls, dp, rp) in frames.items():
         doors = set()
@@ -372,7 +394,8 @@ class Blob:
         return b"".join(i[1] for i in self.items)
 
 
-def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines, quads):
+def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
+               plants, quads):
     """quads="all": και τα 4 τεταρτημόρια. quads="nw": μόνο το nw — τα υπόλοιπα
     τρία τα παράγει ο Z80 με το flip_mode0 (το ένα τέταρτο της μνήμης)."""
     keep = (lambda n: True) if quads == "all" else (lambda n: n.endswith("_nw"))
@@ -426,6 +449,12 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
         blob.add(sp.name, sp.data(), sp, sp.category)
 
     # πόσα μηχανήματα χωράει κάθε μέγεθος
+    blob.add("plants", b"", None, "—")
+    for sp in plants:
+        blob.add(sp.name, sp.data(), sp, sp.category)
+    blob.add("plant_class", bytes(PLANT_CLASSES.index(c) for _, c, _ in icons.PLANTS),
+             None, "πίνακες δωματίου")
+
     blob.add("machine_count", bytes(geo.MACHINE_COUNT[c] for c, _ in geo.DOME_SIZES),
              None, "πίνακες δωματίου")
 
@@ -538,6 +567,12 @@ def emit_asm(blob, frames, uniform, quads):
              % (len(icons.MACHINES), ", ".join(n for n, _, _ in icons.MACHINES)))
     L.append("MACH_SLOTS  equ %d           ; θέσεις ανά μέγεθος στον πίνακα" % geo.MAX_MACHINES)
     L.append("")
+    L.append("PLANT_SIZE  equ %d          ; ίδιες διαστάσεις με τα μηχανήματα"
+             % (icons.PLANT_W // 2 * icons.PLANT_H))
+    L.append("PLANT_TYPES equ %d          ; plants + type*PLANT_SIZE" % len(icons.PLANTS))
+    for i, (n, c, _) in enumerate(icons.PLANTS):
+        L.append("            ; %2d %-10s %s" % (i, n, c))
+    L.append("")
     L.append("CONN_W      equ %d" % (geo.CONN_W // 2))
     L.append("CONN_H      equ %d" % geo.CONN_H)
     L.append("CONN_DIRS   equ %d           ; n,ne,e,se,s,sw,w,nw" % len(geo.DIRS))
@@ -560,6 +595,13 @@ def emit_asm(blob, frames, uniform, quads):
                       "    db " + ",".join("#%02X" % b for b in data)]
                 for pen, name, fw_, rgb, ch, use in PALETTE:
                     L.append("    ; pen %2d  FW %2d  %-13s %s" % (pen, fw_, name, use))
+                continue
+            if label == "plant_class":
+                L += ["", "; --- κατηγορία κάθε φυτού: %s ---"
+                      % ", ".join("%d=%s" % (i, c) for i, c in enumerate(PLANT_CLASSES)),
+                      "plant_class:",
+                      "    db " + ",".join(str(b) for b in data),
+                      "    ; " + ", ".join(n for n, _, _ in icons.PLANTS)]
                 continue
             if label in ("machine_count", "machine_rules"):
                 names = ([c for c, _ in geo.DOME_SIZES] if label == "machine_count"
@@ -763,13 +805,16 @@ def composite_pens(blob, frames, code, icon_type, people, with_ring=True):
         for corner, ox, oy in (("nw", 0, 0), ("ne", qw, 0), ("sw", 0, qh), ("se", qw, qh)):
             paste_pens(out, quad(kind, corner), ox, oy)
 
-    allowed = [(n, sz) for n, sz, _ in icons.MACHINES if code in sz]
+    greenhouse = icons.ROOM_ICONS[icon_type][0] == "greenhouse"
+    allowed = ([(n, "") for n, _, _ in icons.PLANTS] if greenhouse
+               else [(n, sz) for n, sz, _ in icons.MACHINES if code in sz])
+    prefix = "plant_" if greenhouse else "mach_"
     for what, x, y, w, h in geo.interior(code, d, fw, fh):
         if what == "icon":
             blit(f"icon_{code}_{icons.ROOM_ICONS[icon_type][0]}", w, h, False, x, y)
         else:
             k = int(what[len("machine"):])
-            blit(f"mach_{allowed[k % len(allowed)][0]}", w, h, False, x, y)
+            blit(f"{prefix}{allowed[k % len(allowed)][0]}", w, h, False, x, y)
 
     if with_ring:
         for name, x, y in geo.conn_points(d, fw, fh):
@@ -869,16 +914,17 @@ def main():
     icon_sprites = build_icons()
     machines = build_machines()
     slots = build_corridor_slots(frames)
+    plants = build_plants()
 
     try:
         verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
-               args.uniform_quads)
+               plants, args.uniform_quads)
     except CheckFailed as e:
         print("ΑΠΟΤΥΧΙΑ ΕΠΑΛΗΘΕΥΣΗΣ: %s" % e, file=sys.stderr)
         return 1
 
     blob = build_blob(frames, domes, rings, corr, conns, icon_sprites, slots,
-                      machines, args.quads)
+                      machines, plants, args.quads)
     asm = emit_asm(blob, frames, args.uniform_quads, args.quads)
     binary = blob.data()
 
@@ -927,6 +973,7 @@ def main():
         ("slots", geo.SLOT_W, geo.SLOT_H, [(s.name, s.pens) for s in slots]),
         ("machines", geo.MACHINE_W, geo.MACHINE_H,
          [(s.name, s.pens) for s in machines]),
+        ("plants", icons.PLANT_W, icons.PLANT_H, [(s.name, s.pens) for s in plants]),
     ]
     with open(os.path.join(args.out, "aseprite_dump.txt"), "w", encoding="utf-8") as f:
         f.write(emit_aseprite_dump(groups))

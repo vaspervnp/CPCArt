@@ -131,12 +131,29 @@
   mach_processors       #8978    132  12x22 px       αδιαφανές  μηχανήματα
   mach_robots           #89FC    132  12x22 px       αδιαφανές  μηχανήματα
   mach_food             #8A80    132  12x22 px       αδιαφανές  μηχανήματα
-  machine_count         #8B04      3                            πίνακες δωματίου
-  machine_slots         #8B07     48                            πίνακες δωματίου
-  machine_rules         #8B37      7                            πίνακες δωματίου
-  interior_ofs          #8B3E      6                            πίνακες δωματίου
-  palette_fw            #8B44     16                            παλέτα
-  sprites_pad           #8B54    172                            στοίχιση
-  flip_mode0            #8C00    256                            πίνακας καθρεφτισμού
+  mach_spares           #8B04    132  12x22 px       αδιαφανές  μηχανήματα
+  mach_medical          #8B88    132  12x22 px       αδιαφανές  μηχανήματα
+  mach_vitromeat        #8C0C    132  12x22 px       αδιαφανές  μηχανήματα
+# plants                #8C90      -                            (ομάδα)
+  plant_peas            #8C90    132  12x22 px       αδιαφανές  φυτά
+  plant_rice            #8D14    132  12x22 px       αδιαφανές  φυτά
+  plant_potatoes        #8D98    132  12x22 px       αδιαφανές  φυτά
+  plant_wheat           #8E1C    132  12x22 px       αδιαφανές  φυτά
+  plant_maize           #8EA0    132  12x22 px       αδιαφανές  φυτά
+  plant_tomatoes        #8F24    132  12x22 px       αδιαφανές  φυτά
+  plant_lettuce         #8FA8    132  12x22 px       αδιαφανές  φυτά
+  plant_onions          #902C    132  12x22 px       αδιαφανές  φυτά
+  plant_radishes        #90B0    132  12x22 px       αδιαφανές  φυτά
+  plant_mushrooms       #9134    132  12x22 px       αδιαφανές  φυτά
+  plant_medicinal       #91B8    132  12x22 px       αδιαφανές  φυτά
+  plant_tree            #923C    132  12x22 px       αδιαφανές  φυτά
+  plant_class           #92C0     12                            πίνακες δωματίου
+  machine_count         #92CC      3                            πίνακες δωματίου
+  machine_slots         #92CF     48                            πίνακες δωματίου
+  machine_rules         #92FF     10                            πίνακες δωματίου
+  interior_ofs          #9309      6                            πίνακες δωματίου
+  palette_fw            #930F     16                            παλέτα
+  sprites_pad           #931F    225                            στοίχιση
+  flip_mode0            #9400    256                            πίνακας καθρεφτισμού
 
-  ΣΥΝΟΛΟ                       36096
+  ΣΥΝΟΛΟ                       38144
