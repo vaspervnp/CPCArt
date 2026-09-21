@@ -23,6 +23,7 @@ from palette import (PALETTE, FW, RGB, PEN_CHARS, pens_to_ascii, PEN_OUTSIDE,
                      PEN_DOME_FLOOR)
 import geometry as geo
 import icons
+import structures as st
 
 
 # --------------------------------------------------------------------------
@@ -179,6 +180,15 @@ def build_machines():
 PLANT_CLASSES = ["starch", "veg", "medicine", "morale"]
 
 
+def build_structures():
+    """Εξωτερικά κτίσματα — ΟΧΙ μηχανές θόλου. Έχουν μάσκα και δικά τους μεγέθη."""
+    out = []
+    for key, _, _, _ in st.STRUCTURES:
+        for name, pens in st.build(key):
+            out.append(Sprite(name, pens, "εξωτερικές δομές", True))
+    return out
+
+
 def build_plants():
     """Τα φυτά του Bio-Dome. Ίδιο μέγεθος με τα μηχανήματα: μπαίνουν στις ίδιες
     υποδοχές, ώστε ένας θόλος-θερμοκήπιο να γεμίζει με παρτέρια αντί για μηχανές."""
@@ -242,7 +252,7 @@ def check(cond, msg):
 
 
 def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
-           plants, uniform):
+           plants, structs, uniform):
     # 1. κωδικοποίηση
     for a, b, want in ((1, 0, 0x80), (0, 1, 0x40), (15, 15, 0xFF),
                        (0, 0, 0x00), (8, 0, 0x02)):
@@ -255,7 +265,8 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
     for b in range(256):
         check(FLIP_TABLE[FLIP_TABLE[b]] == b, f"flip(flip(#{b:02X})) != #{b:02X}")
 
-    allspr = domes + rings + corr + conns + icon_sprites + slots + machines + plants
+    allspr = (domes + rings + corr + conns + icon_sprites + slots + machines
+              + plants + structs)
 
     # 3. διαστάσεις
     for s in allspr:
@@ -395,7 +406,7 @@ class Blob:
 
 
 def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
-               plants, quads):
+               plants, structs, quads):
     """quads="all": και τα 4 τεταρτημόρια. quads="nw": μόνο το nw — τα υπόλοιπα
     τρία τα παράγει ο Z80 με το flip_mode0 (το ένα τέταρτο της μνήμης)."""
     keep = (lambda n: True) if quads == "all" else (lambda n: n.endswith("_nw"))
@@ -454,6 +465,17 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
         blob.add(sp.name, sp.data(), sp, sp.category)
     blob.add("plant_class", bytes(PLANT_CLASSES.index(c) for _, c, _ in icons.PLANTS),
              None, "πίνακες δωματίου")
+
+    blob.add("structures", b"", None, "—")
+    for sp in structs:
+        blob.add(sp.name, sp.data(), sp, sp.category)
+
+    # διαστάσεις κάθε παραλλαγής: 4 θέσεις ανά δομή, (w bytes, h) — 0,0 = δεν υπάρχει
+    dims = bytearray()
+    for _, _, sizes, _ in st.STRUCTURES:
+        for i in range(4):
+            dims += bytes([sizes[i][1] // 2, sizes[i][2]]) if i < len(sizes) else b"\x00\x00"
+    blob.add("struct_dims", dims, None, "πίνακες δομών")
 
     blob.add("machine_count", bytes(geo.MACHINE_COUNT[c] for c, _ in geo.DOME_SIZES),
              None, "πίνακες δωματίου")
@@ -570,6 +592,11 @@ def emit_asm(blob, frames, uniform, quads):
     L.append("PLANT_SIZE  equ %d          ; ίδιες διαστάσεις με τα μηχανήματα"
              % (icons.PLANT_W // 2 * icons.PLANT_H))
     L.append("PLANT_TYPES equ %d          ; plants + type*PLANT_SIZE" % len(icons.PLANTS))
+    L.append("")
+    L.append("; Εξωτερικές δομές: αυτοτελή κτίσματα στο έδαφος, ΟΧΙ μηχανές θόλου.")
+    L.append("; Κάθε παραλλαγή έχει δική της ετικέτα· διαστάσεις στο struct_dims.")
+    L.append("STRUCT_KINDS equ %d          ; %s" % (len(st.STRUCTURES),
+             ", ".join(k for k, _, _, _ in st.STRUCTURES)))
     for i, (n, c, _) in enumerate(icons.PLANTS):
         L.append("            ; %2d %-10s %s" % (i, n, c))
     L.append("")
@@ -595,6 +622,17 @@ def emit_asm(blob, frames, uniform, quads):
                       "    db " + ",".join("#%02X" % b for b in data)]
                 for pen, name, fw_, rgb, ch, use in PALETTE:
                     L.append("    ; pen %2d  FW %2d  %-13s %s" % (pen, fw_, name, use))
+                continue
+            if label == "struct_dims":
+                L += ["", "; --- διαστάσεις εξωτερικών δομών, 4 θέσεις ανά δομή ---",
+                      "; struct_dims + kind*8 + size*2 -> (w bytes, h)· 0,0 = δεν υπάρχει",
+                      "struct_dims:"]
+                i = 0
+                for key, _, sizes, doc in st.STRUCTURES:
+                    vals = ",".join("%3d,%3d" % (data[i + 2 * k], data[i + 2 * k + 1])
+                                    for k in range(4))
+                    L.append("    db %s   ; %s — %s" % (vals, key, doc))
+                    i += 8
                 continue
             if label == "plant_class":
                 L += ["", "; --- κατηγορία κάθε φυτού: %s ---"
@@ -915,16 +953,17 @@ def main():
     machines = build_machines()
     slots = build_corridor_slots(frames)
     plants = build_plants()
+    structs = build_structures()
 
     try:
         verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
-               plants, args.uniform_quads)
+               plants, structs, args.uniform_quads)
     except CheckFailed as e:
         print("ΑΠΟΤΥΧΙΑ ΕΠΑΛΗΘΕΥΣΗΣ: %s" % e, file=sys.stderr)
         return 1
 
     blob = build_blob(frames, domes, rings, corr, conns, icon_sprites, slots,
-                      machines, plants, args.quads)
+                      machines, plants, structs, args.quads)
     asm = emit_asm(blob, frames, args.uniform_quads, args.quads)
     binary = blob.data()
 
@@ -974,6 +1013,9 @@ def main():
         ("machines", geo.MACHINE_W, geo.MACHINE_H,
          [(s.name, s.pens) for s in machines]),
         ("plants", icons.PLANT_W, icons.PLANT_H, [(s.name, s.pens) for s in plants]),
+        # όλες οι παραλλαγές στον ίδιο καμβά, μόνο για το Aseprite
+        ("structures", st.SIZES_4[-1][1], st.SIZES_4[-1][2],
+         [(s.name, pad_to(s.pens, st.SIZES_4[-1][1], st.SIZES_4[-1][2])) for s in structs]),
     ]
     with open(os.path.join(args.out, "aseprite_dump.txt"), "w", encoding="utf-8") as f:
         f.write(emit_aseprite_dump(groups))

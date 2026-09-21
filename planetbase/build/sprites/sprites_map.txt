@@ -148,12 +148,28 @@
   plant_medicinal       #91B8    132  12x22 px       αδιαφανές  φυτά
   plant_tree            #923C    132  12x22 px       αδιαφανές  φυτά
   plant_class           #92C0     12                            πίνακες δωματίου
-  machine_count         #92CC      3                            πίνακες δωματίου
-  machine_slots         #92CF     48                            πίνακες δωματίου
-  machine_rules         #92FF     10                            πίνακες δωματίου
-  interior_ofs          #9309      6                            πίνακες δωματίου
-  palette_fw            #930F     16                            παλέτα
-  sprites_pad           #931F    225                            στοίχιση
-  flip_mode0            #9400    256                            πίνακας καθρεφτισμού
+# structures            #92CC      -                            (ομάδα)
+  solar_s               #92CC    128  8x16 px        mask+data  εξωτερικές δομές
+  solar_m               #934C    512  16x32 px       mask+data  εξωτερικές δομές
+  solar_l               #954C   1152  24x48 px       mask+data  εξωτερικές δομές
+  solar_xl              #99CC   2048  32x64 px       mask+data  εξωτερικές δομές
+  turbine_s             #A1CC    128  8x16 px        mask+data  εξωτερικές δομές
+  turbine_m             #A24C    512  16x32 px       mask+data  εξωτερικές δομές
+  turbine_l             #A44C   1152  24x48 px       mask+data  εξωτερικές δομές
+  collector_s           #A8CC    128  8x16 px        mask+data  εξωτερικές δομές
+  collector_m           #A94C    512  16x32 px       mask+data  εξωτερικές δομές
+  collector_l           #AB4C   1152  24x48 px       mask+data  εξωτερικές δομές
+  extractor_s           #AFCC    128  8x16 px        mask+data  εξωτερικές δομές
+  extractor_m           #B04C    512  16x32 px       mask+data  εξωτερικές δομές
+  extractor_l           #B24C   1152  24x48 px       mask+data  εξωτερικές δομές
+  mine                  #B6CC   2048  32x64 px       mask+data  εξωτερικές δομές
+  struct_dims           #BECC     40                            πίνακες δομών
+  machine_count         #BEF4      3                            πίνακες δωματίου
+  machine_slots         #BEF7     48                            πίνακες δωματίου
+  machine_rules         #BF27     10                            πίνακες δωματίου
+  interior_ofs          #BF31      6                            πίνακες δωματίου
+  palette_fw            #BF37     16                            παλέτα
+  sprites_pad           #BF47    185                            στοίχιση
+  flip_mode0            #C000    256                            πίνακας καθρεφτισμού
 
-  ΣΥΝΟΛΟ                       38144
+  ΣΥΝΟΛΟ                       49408
