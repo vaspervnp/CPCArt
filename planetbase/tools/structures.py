@@ -33,6 +33,8 @@ STRUCTURES = [
     ("extractor", "water_extractor", SIZES_3, "αντλία νερού"),
     ("mine",      "mine",            SIZES_1, "ορυχείο — ένα μέγεθος"),
     ("airlock",   "airlock",         SIZES_1M, "αεροθάλαμος — ένα μέγεθος"),
+    ("pad",       "landing_pad",     SIZES_1,  "πλατφόρμα προσγείωσης"),
+    ("ship",      "ship",            SIZES_1M, "σκάφος — κάτοψη"),
 ]
 
 
@@ -207,8 +209,84 @@ def airlock(w, h):
     return pens
 
 
+def landing_pad(w, h):
+    """Πλατφόρμα προσγείωσης: οκτάγωνο δάπεδο με σημάδια προσέγγισης.
+
+    Οκτάγωνο και όχι τετράγωνο, ώστε οι τέσσερις γωνίες να δείχνουν το έδαφος
+    από κάτω — γι' αυτό η δομή έχει μάσκα όπως όλες οι υπόλοιπες. Το κεντρικό
+    σημάδι είναι σταυρός, που στην κάτοψη διαβάζεται ως σημείο επαφής
+    ανεξάρτητα από τον προσανατολισμό του σκάφους.
+    """
+    R = h / 2
+    pens = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            vx, vy = _visual(x, y, w, h)
+            # 1/sqrt(2) = 0.707 δίνει ΚΑΝΟΝΙΚΟ οκτάγωνο: στην κορυφή
+            # (a, a*tan22.5) ισχύει |x|+|y| = a*sqrt(2). Μεγαλύτερος
+            # συντελεστής κόβει τις γωνίες και το σχήμα γίνεται ρόμβος·
+            # μικρότερος το ισιώνει προς τετράγωνο.
+            oct_d = max(max(abs(vx), abs(vy)), (abs(vx) + abs(vy)) * 0.707)
+            # σταυρός στο κέντρο: μπράτσα 2 px φαρδιά, οπτικά 4
+            cross = (abs(vx) <= 2 and abs(vy) <= R * 0.42) or \
+                    (abs(vy) <= 2 and abs(vx) <= R * 0.42)
+            if oct_d > R:
+                row.append(PEN_OUTSIDE)
+            elif oct_d > R - 2:
+                # χείλος με φώτα προσέγγισης στις τέσσερις διαγωνίους
+                lit = abs(abs(vx) - abs(vy)) < 3
+                row.append(PEN_YELLOW if lit else PEN_CORR_EDGE)
+            elif oct_d > R - 4:
+                row.append(PEN_SHADOW)              # σκοτεινή ζώνη ασφαλείας
+            elif cross:
+                row.append(PEN_YELLOW)
+            elif oct_d > R - 6:
+                # ρίγες πρόσδεσης, 1 px x 2 γραμμές ώστε να είναι οπτικά τετράγωνες
+                row.append(PEN_CORR_EDGE if ((x + y // 2) & 1) else PEN_CORR_FLOOR)
+            else:
+                row.append(PEN_CORR_FLOOR)          # το δάπεδο
+        pens.append(row)
+    return pens
+
+
+def ship(w, h):
+    """Σκάφος σε κάτοψη: άτρακτος, δύο πτέρυγες, δύο κινητήρες.
+
+    Μισό πλάτος από την πλατφόρμα, ώστε να κάθεται μέσα στο οκτάγωνο και να
+    φαίνεται ότι προσγειώθηκε και δεν το σκεπάζει. Η μύτη δείχνει πάνω· όταν
+    χρειαστεί άλλη κατεύθυνση, το flip_mode0 δίνει τις άλλες τρεις.
+    """
+    R = h / 2
+    pens = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            vx, vy = _visual(x, y, w, h)
+            t = (vy + R) / (2 * R)                  # 0 στη μύτη, 1 στην ουρά
+            body = abs(vx) <= 3 + 4.5 * t           # άτρακτος που ανοίγει προς τα πίσω
+            wing = 0.45 < t < 0.72 and abs(vx) <= R * 0.92
+            engine = t > 0.88 and 3 < abs(vx) <= 9
+            if engine:
+                row.append(PEN_RED if t > 0.94 else PEN_RED_DARK)
+            elif body and t < 0.15:
+                row.append(PEN_CORR_EDGE)           # μύτη
+            elif body and 0.20 < t < 0.45:
+                row.append(PEN_DOME_FLOOR)          # πιλοτήριο
+            elif body:
+                row.append(PEN_CYAN)
+            elif wing:
+                row.append(PEN_CYAN if abs(vx) < R * 0.66 else PEN_DOME_EDGE)
+            else:
+                row.append(PEN_OUTSIDE)
+        pens.append(row)
+    return pens
+
+
 BUILDERS = {
     "mine": mine,
+    "landing_pad": landing_pad,
+    "ship": ship,
     "airlock": airlock,
     "solar_panel": solar_panel,
     "wind_turbine": wind_turbine,

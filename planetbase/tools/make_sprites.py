@@ -24,6 +24,7 @@ from palette import (PALETTE, FW, RGB, PEN_CHARS, pens_to_ascii, PEN_OUTSIDE,
 import geometry as geo
 import palette as palette_mod
 import icons
+import font as hud_font   # το τοπικό font() είναι η PIL γραμματοσειρά των PNG
 import structures as st
 import terrain as terr
 
@@ -237,6 +238,16 @@ def build_corridor_slots(frames):
     for name, art in icons.ROBOTS:
         figures[name] = icons.parse_art(art, icons.COLONIST_W, icons.COLONIST_H,
                                         icons.ROBOT_LEGEND, f"robot {name}")
+    for name, art in icons.CREW:
+        figures[name] = icons.parse_art(art, icons.COLONIST_W, icons.COLONIST_H,
+                                        icons.CREW_LEGEND, f"crew {name}")
+
+    # Κάθε παραλλαγή του SLOT_FIGURES πρέπει να έχει σχέδιο. Χωρίς αυτόν τον
+    # έλεγχο ένα όνομα που λείπει περνάει ως κενή θέση: το μέγεθος βγαίνει
+    # σωστό, οι επαληθεύσεις περνάνε, και η φιγούρα είναι απλώς αόρατη.
+    missing = [f for f in icons.SLOT_FIGURES if f and f not in figures]
+    if missing:
+        raise CheckFailed("φιγούρες θέσεων χωρίς σχέδιο: %s" % ", ".join(missing))
     ox = (geo.SLOT_W - icons.COLONIST_W) // 2
     oy = (geo.SLOT_H - icons.COLONIST_H) // 2
 
@@ -248,7 +259,7 @@ def build_corridor_slots(frames):
             empty = [row[x:x + geo.SLOT_W] for row in full[y:y + geo.SLOT_H]]
             for fig in icons.SLOT_FIGURES:
                 pens = [r[:] for r in empty]
-                for j, frow in enumerate(figures.get(fig, [])):
+                for j, frow in enumerate(figures[fig] if fig else []):
                     for i, pen in enumerate(frow):
                         if pen is not None:
                             pens[oy + j][ox + i] = pen
@@ -403,6 +414,36 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
         check(count and (count & (count - 1)) == 0,
               f"tile_{name}: {count} παραλλαγές — δεν είναι δύναμη του 2, "
               f"οπότε το tile_variants δεν μπορεί να χρησιμοποιηθεί ως mask")
+
+    # 11. κάθε φιγούρα θέσης πρέπει να έχει ΔΙΚΟ της κυρίαρχο pen. Στα 6x6
+    #     οπτικά pixels το χρώμα διαβάζεται πριν το σχήμα, οπότε δύο φιγούρες
+    #     με το ίδιο pen είναι πρακτικά η ίδια φιγούρα. Κι επειδή στέκονται
+    #     πάνω στον δακτύλιο, δεν επιτρέπεται pen εδάφους — θα άλλαζαν χρώμα
+    #     με τον πλανήτη.
+    fig_art = ([("colonist", icons.COLONIST, icons.COLONIST_LEGEND)]
+               + [(n, a, icons.ROBOT_LEGEND) for n, a in icons.ROBOTS]
+               + [(n, a, icons.CREW_LEGEND) for n, a in icons.CREW])
+    dominant = {}
+    for name, art, legend in fig_art:
+        used = {}
+        for row in art:
+            for ch in row:
+                pen = legend[ch]
+                if pen is not None:
+                    used[pen] = used.get(pen, 0) + 1
+        check(used, f"φιγούρα {name}: κανένα ορατό pixel")
+        for pen in used:
+            check(pen not in palette_mod.TERRAIN_PENS,
+                  f"φιγούρα {name}: pen {pen} ανήκει στο έδαφος")
+        top = max(used, key=lambda k: used[k])
+        check(top not in dominant,
+              f"φιγούρα {name}: κυρίαρχο pen {top} — το χρησιμοποιεί ήδη "
+              f"η {dominant.get(top)}")
+        dominant[top] = name
+    drawn = set(dominant.values())
+    for name in icons.SLOT_FIGURES:
+        check(not name or name in drawn,
+              f"το SLOT_FIGURES αναφέρει «{name}» που δεν έχει σχέδιο")
 
     # 9β. οι θέσεις αποίκων πέφτουν πάνω στον δακτύλιο και δεν πατάνε πόρτα
     for code, (d, fw, fh, cls, dp, rp) in frames.items():
@@ -571,6 +612,15 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
         ofs += bytes([((ix - fw // 2) // 2) & 0xFF, (iy - fh // 2) & 0xFF])
     blob.add("interior_ofs", ofs, None, "πίνακες δωματίου")
 
+    # Γραμματοσειρά HUD: ένα ενιαίο μπλοκ, οι γλύφοι με τη σειρά ASCII 32..127,
+    # ώστε η διεύθυνση να είναι font + (ch - 32) * FONT_SIZE χωρίς πίνακα.
+    glyphs = bytearray()
+    for ch in hud_font.charset():
+        for row in hud_font.glyph_pens(ch):
+            for i in range(0, hud_font.WIDTH, 2):
+                glyphs.append(encode_mode0(row[i], row[i + 1]))
+    blob.add("font_gfx", bytes(glyphs), None, "γραμματοσειρά")
+
     blob.add("palette_fw", bytes(FW), None, "παλέτα")
     pad = (-blob.size()) % 256
     if pad:
@@ -648,6 +698,20 @@ def emit_asm(blob, frames, uniform, quads):
         L.append("ICON_%s_SZ   equ %-4d" % (u, n // 2 * n))
     L.append("SLOT_W      equ %d           ; θέση αποίκου στον διάδρομο" % (geo.SLOT_W // 2))
     L.append("SLOT_H      equ %d" % geo.SLOT_H)
+    L.append("FONT_W      equ %d           ; pixel πλάτος κελιού" % hud_font.WIDTH)
+    L.append("FONT_H      equ %d           ; γραμμές ανά κελί" % hud_font.FONT_H)
+    L.append("FONT_BYTES  equ %d           ; bytes ανά γραμμή γλύφου"
+             % (hud_font.WIDTH // 2))
+    L.append("FONT_SIZE   equ %d          ; bytes ανά γλύφο"
+             % (hud_font.WIDTH // 2 * hud_font.FONT_H))
+    L.append("FONT_FIRST  equ %d          ; ο πρώτος γλύφος είναι το κενό"
+             % hud_font.FIRST_CHAR)
+    L.append("FONT_GLYPHS equ %d          ; ASCII %d..%d"
+             % (hud_font.GLYPH_COUNT, hud_font.FIRST_CHAR,
+                hud_font.FIRST_CHAR + hud_font.GLYPH_COUNT - 1))
+    L.append("FONT_COLS   equ %d           ; στήλες κειμένου στα 160 pixel"
+             % hud_font.columns())
+    L.append("            ; γλύφος: font_gfx + (ch - FONT_FIRST) * FONT_SIZE")
     L.append("SLOT_SIZE   equ %d          ; bytes ανά παραλλαγή" % SLOT_SIZE)
     L.append("SLOT_FIGS   equ %d           ; παραλλαγές: %s"
              % (len(icons.SLOT_FIGURES),
@@ -658,7 +722,7 @@ def emit_asm(blob, frames, uniform, quads):
              % (geo.CORR_SLOTS * len(icons.SLOT_FIGURES) * SLOT_SIZE))
     L.append("CORR_SLOTS  equ %d" % geo.CORR_SLOTS)
     L.append("            ; corr_slot_gfx + size*SLOT_BANK + slot*SLOT_STRIDE")
-    L.append("            ; + fig*SLOT_SIZE   (fig: 0 κενή, 1 άποικος, 2..4 ρομπότ)")
+    L.append("            ; + fig*SLOT_SIZE   (0 κενή· 1-4 άποικοι· 5-8 ρομπότ)")
     L.append("")
     L.append("CORR_H_W    equ 4")
     L.append("CORR_H_H    equ 8")
@@ -726,6 +790,27 @@ def emit_asm(blob, frames, uniform, quads):
                       "; στα tiles της ΕΠΟΜΕΝΗΣ κλάσης.", "tile_variants:",
                       "    db " + ",".join(str(b) for b in data),
                       "    ; " + ", ".join(n for n, _, _, _ in terr.CLASSES)]
+                continue
+            if label == "font_gfx":
+                L += ["", "; --- γραμματοσειρά HUD %dx%d, %d γλύφοι, ASCII %d..%d ---"
+                      % (hud_font.WIDTH, hud_font.FONT_H, hud_font.GLYPH_COUNT,
+                         hud_font.FIRST_CHAR,
+                         hud_font.FIRST_CHAR + hud_font.GLYPH_COUNT - 1),
+                      "; γλύφος: font_gfx + (ch - FONT_FIRST) * FONT_SIZE",
+                      "; %d στήλες στα 160 pixel· η τελευταία στήλη κάθε κελιού"
+                      % hud_font.columns(),
+                      "; είναι το διάστιχο, εκτός από τις μπάρες που ενώνονται.",
+                      "font_gfx:"]
+                gs = hud_font.glyph_size()
+                for i, ch in enumerate(hud_font.charset()):
+                    g = data[i * gs:(i + 1) * gs]
+                    note = hud_font.HUD_CHARS.get(ch)
+                    name = note if note else ("«%s»" % ch if ch != " " else "κενό")
+                    L.append("    ; %3d %s" % (hud_font.FIRST_CHAR + i, name))
+                    bpl = hud_font.WIDTH // 2
+                    for r in range(hud_font.FONT_H):
+                        row = g[r * bpl:(r + 1) * bpl]
+                        L.append("    db " + ",".join("#%02X" % b for b in row))
                 continue
             if label == "planet_pens":
                 L += ["", "; --- planet_pens + planet*4 -> FW για τα pens 7, 11, 12, 14 ---",
@@ -1277,7 +1362,7 @@ def main():
         print("  μόνο το nw: %d bytes, σύνολο %.1f KB."
               % (quad_bytes // 4, (len(binary) - quad_bytes * 3 // 4) / 1024))
     print()
-    print("  Όλες οι επαληθεύσεις (1-10) πέρασαν.")
+    print("  Όλες οι επαληθεύσεις (1-11) πέρασαν.")
     return 0
 
 
