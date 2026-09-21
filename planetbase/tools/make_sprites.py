@@ -519,8 +519,9 @@ ASM_HEADER = """\
 ;
 ; Δεδομένα γραμμικά (γραμμή-γραμμή), ΟΧΙ στη διάταξη της μνήμης οθόνης.
 ;
-; Θόλοι, δακτύλιοι, διάδρομοι και σημεία σύνδεσης έχουν ΜΑΣΚΑ, σε μορφή
-; «mask, data, mask, data...» ανά γραμμή:
+; Θόλοι, δακτύλιοι, διάδρομοι, σημεία σύνδεσης και εξωτερικές δομές έχουν ΜΑΣΚΑ,
+; σε μορφή «mask, data, mask, data...» ανά γραμμή. ΠΡΟΣΟΧΗ: οι σταθερές _W δίνουν
+; bytes ΔΕΔΟΜΕΝΩΝ ανά γραμμή — σε sprite με μάσκα η γραμμή καταλαμβάνει 2x αυτό:
 ;       ld a,(hl) : inc hl : and (de) : ld b,a
 ;       ld a,(hl) : inc hl : or b     : ld (de),a : inc de
 ; Τα εικονίδια και τα επικαλύμματα πληρότητας είναι αδιαφανή (μόνο data).
@@ -551,7 +552,8 @@ def emit_asm(blob, frames, uniform, quads):
         _, fw, fh, *_ = frames[code]
         u = code.upper()
         L.append("DOME_%s_D    equ %-4d      ; οπτική διάμετρος" % (u, d))
-        L.append("DOME_%s_W    equ %-4d      ; bytes ανά γραμμή τεταρτημορίου" % (u, fw // 4))
+        L.append("DOME_%s_W    equ %-4d      ; bytes ΔΕΔΟΜΕΝΩΝ ανά γραμμή (η γραμμή είναι 2x, mask+data)"
+                 % (u, fw // 4))
         L.append("DOME_%s_H    equ %-4d      ; γραμμές τεταρτημορίου" % (u, fh // 2))
         L.append("DOME_%s_SZ   equ %-4d      ; bytes ανά τεταρτημόριο (mask+data)"
                  % (u, fw // 4 * 2 * (fh // 2)))
