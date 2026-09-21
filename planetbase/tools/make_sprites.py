@@ -212,29 +212,36 @@ def build_icons():
 
 
 def build_corridor_slots(frames):
-    """Θέσεις αποίκων πάνω στον δακτύλιο, σε δύο παραλλαγές: κενή και με άποικο.
+    """Θέσεις στον δακτύλιο, σε μία παραλλαγή ανά φιγούρα — και μία κενή.
 
     Κόβονται από το ΣΥΝΘΕΤΟ πλαίσιο (θόλος + δακτύλιος), ώστε η κενή παραλλαγή
     να επαναφέρει ακριβώς ό,τι υπήρχε εκεί. Έτσι ένα αδιαφανές blit αρκεί και
-    για να εμφανιστεί και για να σβηστεί ένας άποικος.
+    για να εμφανιστεί και για να σβηστεί οποιαδήποτε φιγούρα — άποικος ή ρομπότ.
     """
-    fig = icons.parse_art(icons.COLONIST, icons.COLONIST_W, icons.COLONIST_H,
-                          icons.COLONIST_LEGEND, "colonist")
+    figures = {"colonist": icons.parse_art(icons.COLONIST, icons.COLONIST_W,
+                                           icons.COLONIST_H, icons.COLONIST_LEGEND,
+                                           "colonist")}
+    for name, art in icons.ROBOTS:
+        figures[name] = icons.parse_art(art, icons.COLONIST_W, icons.COLONIST_H,
+                                        icons.ROBOT_LEGEND, f"robot {name}")
     ox = (geo.SLOT_W - icons.COLONIST_W) // 2
     oy = (geo.SLOT_H - icons.COLONIST_H) // 2
+
     out = []
     for code, d in geo.DOME_SIZES:
         _, fw, fh, cls, dp, rp = frames[code]
         full = [[dp[y][x] or rp[y][x] for x in range(fw)] for y in range(fh)]
         for k, x, y in geo.corridor_slots(d, fw, fh):
             empty = [row[x:x + geo.SLOT_W] for row in full[y:y + geo.SLOT_H]]
-            out.append(Sprite(f"slot_{code}_{k}_e", empty, "θέσεις διαδρόμου", False))
-            person = [r[:] for r in empty]
-            for j, frow in enumerate(fig):
-                for i, pen in enumerate(frow):
-                    if pen is not None:
-                        person[oy + j][ox + i] = pen
-            out.append(Sprite(f"slot_{code}_{k}_p", person, "θέσεις διαδρόμου", False))
+            for fig in icons.SLOT_FIGURES:
+                pens = [r[:] for r in empty]
+                for j, frow in enumerate(figures.get(fig, [])):
+                    for i, pen in enumerate(frow):
+                        if pen is not None:
+                            pens[oy + j][ox + i] = pen
+                suffix = fig or "empty"
+                out.append(Sprite(f"slot_{code}_{k}_{suffix}", pens,
+                                  "θέσεις διαδρόμου", False))
     return out
 
 
@@ -568,12 +575,16 @@ def emit_asm(blob, frames, uniform, quads):
     L.append("SLOT_W      equ %d           ; θέση αποίκου στον διάδρομο" % (geo.SLOT_W // 2))
     L.append("SLOT_H      equ %d" % geo.SLOT_H)
     L.append("SLOT_SIZE   equ %d          ; bytes ανά παραλλαγή" % SLOT_SIZE)
-    L.append("SLOT_STRIDE equ %d          ; κενή + με άποικο" % (2 * SLOT_SIZE))
+    L.append("SLOT_FIGS   equ %d           ; παραλλαγές: %s"
+             % (len(icons.SLOT_FIGURES),
+                ", ".join(f or "κενή" for f in icons.SLOT_FIGURES)))
+    L.append("SLOT_STRIDE equ %d          ; όλες οι παραλλαγές μιας θέσης"
+             % (len(icons.SLOT_FIGURES) * SLOT_SIZE))
     L.append("SLOT_BANK   equ %d         ; bytes ανά μέγεθος θόλου"
-             % (geo.CORR_SLOTS * 2 * SLOT_SIZE))
+             % (geo.CORR_SLOTS * len(icons.SLOT_FIGURES) * SLOT_SIZE))
     L.append("CORR_SLOTS  equ %d" % geo.CORR_SLOTS)
     L.append("            ; corr_slot_gfx + size*SLOT_BANK + slot*SLOT_STRIDE")
-    L.append("            ; + (0 = κενή, SLOT_SIZE = με άποικο)")
+    L.append("            ; + fig*SLOT_SIZE   (fig: 0 κενή, 1 άποικος, 2..4 ρομπότ)")
     L.append("")
     L.append("CORR_H_W    equ 4")
     L.append("CORR_H_H    equ 8")
@@ -863,7 +874,8 @@ def composite_pens(blob, frames, code, icon_type, people, with_ring=True):
         chosen = set(geo.SLOT_FILL[:people])
         for k, x, y in geo.corridor_slots(d, fw, fh):
             if k in chosen:
-                blit(f"slot_{code}_{k}_p", geo.SLOT_W, geo.SLOT_H, False, x, y)
+                fig = icons.SLOT_FIGURES[1 + k % (len(icons.SLOT_FIGURES) - 1)]
+                blit(f"slot_{code}_{k}_{fig}", geo.SLOT_W, geo.SLOT_H, False, x, y)
     return out
 
 

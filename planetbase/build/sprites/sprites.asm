@@ -37,11 +37,12 @@ ICON_L_SZ   equ 200
 SLOT_W      equ 2           ; θέση αποίκου στον διάδρομο
 SLOT_H      equ 8
 SLOT_SIZE   equ 16          ; bytes ανά παραλλαγή
-SLOT_STRIDE equ 32          ; κενή + με άποικο
-SLOT_BANK   equ 256         ; bytes ανά μέγεθος θόλου
+SLOT_FIGS   equ 5           ; παραλλαγές: κενή, colonist, carrier, driller, engineer
+SLOT_STRIDE equ 80          ; όλες οι παραλλαγές μιας θέσης
+SLOT_BANK   equ 640         ; bytes ανά μέγεθος θόλου
 CORR_SLOTS  equ 8
             ; corr_slot_gfx + size*SLOT_BANK + slot*SLOT_STRIDE
-            ; + (0 = κενή, SLOT_SIZE = με άποικο)
+            ; + fig*SLOT_SIZE   (fig: 0 κενή, 1 άποικος, 2..4 ρομπότ)
 
 CORR_H_W    equ 4
 CORR_H_H    equ 8
@@ -1969,8 +1970,8 @@ icon_l_airlock:
 
 corr_slot_gfx:
 
-; slot_s_0_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_0_e:
+; slot_s_0_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_0_empty:
     db #B0,#70   ; W,,W
     db #B0,#30   ; W,,,
     db #B0,#30   ; W,,,
@@ -1980,8 +1981,8 @@ slot_s_0_e:
     db #D8,#30   ; cW,,
     db #D8,#30   ; cW,,
 
-; slot_s_0_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_0_p:
+; slot_s_0_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_0_colonist:
     db #B0,#70   ; W,,W
     db #B4,#30   ; WY,,
     db #B4,#30   ; WY,,
@@ -1991,8 +1992,41 @@ slot_s_0_p:
     db #78,#38   ; YWY,
     db #D8,#30   ; cW,,
 
-; slot_s_1_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_1_e:
+; slot_s_0_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_0_carrier:
+    db #B0,#70   ; W,,W
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #DC,#30   ; cO,,
+    db #FC,#B8   ; OOO,
+    db #F8,#B8   ; OWO,
+    db #F8,#B8   ; OWO,
+    db #D8,#30   ; cW,,
+
+; slot_s_0_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_0_driller:
+    db #B0,#70   ; W,,W
+    db #E5,#30   ; WM,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CD,#30   ; cM,,
+    db #CD,#30   ; cM,,
+    db #D8,#30   ; cW,,
+
+; slot_s_0_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_0_engineer:
+    db #B0,#70   ; W,,W
+    db #1A,#1A   ; C,C,
+    db #A5,#30   ; WC,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #5A,#1A   ; CWC,
+    db #5A,#1A   ; CWC,
+    db #D8,#30   ; cW,,
+
+; slot_s_1_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_1_empty:
     db #30,#70   ; ,,,W
     db #30,#30   ; ,,,,
     db #30,#30   ; ,,,,
@@ -2002,8 +2036,8 @@ slot_s_1_e:
     db #F0,#30   ; WW,,
     db #CC,#B0   ; ccW,
 
-; slot_s_1_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_1_p:
+; slot_s_1_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_1_colonist:
     db #30,#70   ; ,,,W
     db #34,#30   ; ,Y,,
     db #34,#30   ; ,Y,,
@@ -2013,8 +2047,41 @@ slot_s_1_p:
     db #78,#38   ; YWY,
     db #CC,#B0   ; ccW,
 
-; slot_s_2_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_2_e:
+; slot_s_1_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_1_carrier:
+    db #30,#70   ; ,,,W
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #F8,#B8   ; OWO,
+    db #CC,#B0   ; ccW,
+
+; slot_s_1_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_1_driller:
+    db #30,#70   ; ,,,W
+    db #65,#30   ; ,M,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #65,#30   ; ,M,,
+    db #E5,#30   ; WM,,
+    db #CC,#B0   ; ccW,
+
+; slot_s_1_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_1_engineer:
+    db #30,#70   ; ,,,W
+    db #1A,#1A   ; C,C,
+    db #25,#30   ; ,C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #5A,#1A   ; CWC,
+    db #CC,#B0   ; ccW,
+
+; slot_s_2_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_2_empty:
     db #00,#B0   ;   W,
     db #50,#30   ;  W,,
     db #B0,#30   ; W,,,
@@ -2024,8 +2091,8 @@ slot_s_2_e:
     db #30,#30   ; ,,,,
     db #30,#70   ; ,,,W
 
-; slot_s_2_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_2_p:
+; slot_s_2_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_2_colonist:
     db #00,#B0   ;   W,
     db #14,#30   ;  Y,,
     db #B4,#30   ; WY,,
@@ -2035,8 +2102,41 @@ slot_s_2_p:
     db #38,#38   ; Y,Y,
     db #30,#70   ; ,,,W
 
-; slot_s_3_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_3_e:
+; slot_s_2_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_2_carrier:
+    db #00,#B0   ;   W,
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #B8,#B8   ; O,O,
+    db #30,#70   ; ,,,W
+
+; slot_s_2_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_2_driller:
+    db #00,#B0   ;   W,
+    db #45,#30   ;  M,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #65,#30   ; ,M,,
+    db #65,#30   ; ,M,,
+    db #30,#70   ; ,,,W
+
+; slot_s_2_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_2_engineer:
+    db #00,#B0   ;   W,
+    db #5A,#1A   ; CWC,
+    db #A5,#30   ; WC,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #1A,#1A   ; C,C,
+    db #30,#70   ; ,,,W
+
+; slot_s_3_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_3_empty:
     db #00,#B0   ;   W,
     db #50,#30   ;  W,,
     db #50,#30   ;  W,,
@@ -2046,8 +2146,8 @@ slot_s_3_e:
     db #50,#30   ;  W,,
     db #B0,#30   ; W,,,
 
-; slot_s_3_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_3_p:
+; slot_s_3_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_3_colonist:
     db #00,#B0   ;   W,
     db #14,#30   ;  Y,,
     db #14,#30   ;  Y,,
@@ -2057,8 +2157,41 @@ slot_s_3_p:
     db #78,#38   ; YWY,
     db #B0,#30   ; W,,,
 
-; slot_s_4_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_4_e:
+; slot_s_3_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_3_carrier:
+    db #00,#B0   ;   W,
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #54,#30   ;  O,,
+    db #FC,#B8   ; OOO,
+    db #F8,#B8   ; OWO,
+    db #F8,#B8   ; OWO,
+    db #B0,#30   ; W,,,
+
+; slot_s_3_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_3_driller:
+    db #00,#B0   ;   W,
+    db #45,#30   ;  M,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #45,#30   ;  M,,
+    db #45,#30   ;  M,,
+    db #B0,#30   ; W,,,
+
+; slot_s_3_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_3_engineer:
+    db #00,#B0   ;   W,
+    db #5A,#1A   ; CWC,
+    db #05,#30   ;  C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #5A,#1A   ; CWC,
+    db #5A,#1A   ; CWC,
+    db #B0,#30   ; W,,,
+
+; slot_s_4_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_4_empty:
     db #B0,#30   ; W,,,
     db #50,#30   ;  W,,
     db #50,#30   ;  W,,
@@ -2068,8 +2201,8 @@ slot_s_4_e:
     db #50,#30   ;  W,,
     db #00,#B0   ;   W,
 
-; slot_s_4_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_4_p:
+; slot_s_4_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_4_colonist:
     db #B0,#30   ; W,,,
     db #14,#30   ;  Y,,
     db #14,#30   ;  Y,,
@@ -2079,8 +2212,41 @@ slot_s_4_p:
     db #78,#38   ; YWY,
     db #00,#B0   ;   W,
 
-; slot_s_5_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_5_e:
+; slot_s_4_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_4_carrier:
+    db #B0,#30   ; W,,,
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #54,#30   ;  O,,
+    db #FC,#B8   ; OOO,
+    db #F8,#B8   ; OWO,
+    db #F8,#B8   ; OWO,
+    db #00,#B0   ;   W,
+
+; slot_s_4_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_4_driller:
+    db #B0,#30   ; W,,,
+    db #45,#30   ;  M,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #45,#30   ;  M,,
+    db #45,#30   ;  M,,
+    db #00,#B0   ;   W,
+
+; slot_s_4_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_4_engineer:
+    db #B0,#30   ; W,,,
+    db #5A,#1A   ; CWC,
+    db #05,#30   ;  C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #5A,#1A   ; CWC,
+    db #5A,#1A   ; CWC,
+    db #00,#B0   ;   W,
+
+; slot_s_5_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_5_empty:
     db #30,#70   ; ,,,W
     db #30,#30   ; ,,,,
     db #30,#30   ; ,,,,
@@ -2090,8 +2256,8 @@ slot_s_5_e:
     db #50,#30   ;  W,,
     db #00,#B0   ;   W,
 
-; slot_s_5_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_5_p:
+; slot_s_5_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_5_colonist:
     db #30,#70   ; ,,,W
     db #34,#30   ; ,Y,,
     db #34,#30   ; ,Y,,
@@ -2101,8 +2267,41 @@ slot_s_5_p:
     db #78,#38   ; YWY,
     db #00,#B0   ;   W,
 
-; slot_s_6_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_6_e:
+; slot_s_5_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_5_carrier:
+    db #30,#70   ; ,,,W
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #F8,#B8   ; OWO,
+    db #00,#B0   ;   W,
+
+; slot_s_5_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_5_driller:
+    db #30,#70   ; ,,,W
+    db #65,#30   ; ,M,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #E5,#30   ; WM,,
+    db #45,#30   ;  M,,
+    db #00,#B0   ;   W,
+
+; slot_s_5_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_5_engineer:
+    db #30,#70   ; ,,,W
+    db #1A,#1A   ; C,C,
+    db #25,#30   ; ,C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #5A,#1A   ; CWC,
+    db #00,#B0   ;   W,
+
+; slot_s_6_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_6_empty:
     db #CC,#B0   ; ccW,
     db #F0,#30   ; WW,,
     db #30,#30   ; ,,,,
@@ -2112,8 +2311,8 @@ slot_s_6_e:
     db #30,#30   ; ,,,,
     db #30,#70   ; ,,,W
 
-; slot_s_6_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_6_p:
+; slot_s_6_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_6_colonist:
     db #CC,#B0   ; ccW,
     db #B4,#30   ; WY,,
     db #34,#30   ; ,Y,,
@@ -2123,8 +2322,41 @@ slot_s_6_p:
     db #38,#38   ; Y,Y,
     db #30,#70   ; ,,,W
 
-; slot_s_7_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_7_e:
+; slot_s_6_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_6_carrier:
+    db #CC,#B0   ; ccW,
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #B8,#B8   ; O,O,
+    db #30,#70   ; ,,,W
+
+; slot_s_6_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_6_driller:
+    db #CC,#B0   ; ccW,
+    db #E5,#30   ; WM,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #65,#30   ; ,M,,
+    db #65,#30   ; ,M,,
+    db #30,#70   ; ,,,W
+
+; slot_s_6_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_6_engineer:
+    db #CC,#B0   ; ccW,
+    db #5A,#1A   ; CWC,
+    db #25,#30   ; ,C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #1A,#1A   ; C,C,
+    db #30,#70   ; ,,,W
+
+; slot_s_7_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_7_empty:
     db #D8,#30   ; cW,,
     db #D8,#30   ; cW,,
     db #D8,#30   ; cW,,
@@ -2134,8 +2366,8 @@ slot_s_7_e:
     db #B0,#30   ; W,,,
     db #B0,#70   ; W,,W
 
-; slot_s_7_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_s_7_p:
+; slot_s_7_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_7_colonist:
     db #D8,#30   ; cW,,
     db #9C,#30   ; cY,,
     db #9C,#30   ; cY,,
@@ -2145,8 +2377,41 @@ slot_s_7_p:
     db #38,#38   ; Y,Y,
     db #B0,#70   ; W,,W
 
-; slot_m_0_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_0_e:
+; slot_s_7_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_7_carrier:
+    db #D8,#30   ; cW,,
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #DC,#30   ; cO,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #B8,#B8   ; O,O,
+    db #B0,#70   ; W,,W
+
+; slot_s_7_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_7_driller:
+    db #D8,#30   ; cW,,
+    db #CD,#30   ; cM,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #E5,#30   ; WM,,
+    db #E5,#30   ; WM,,
+    db #B0,#70   ; W,,W
+
+; slot_s_7_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_s_7_engineer:
+    db #D8,#30   ; cW,,
+    db #5A,#1A   ; CWC,
+    db #8D,#30   ; cC,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #1A,#1A   ; C,C,
+    db #B0,#70   ; W,,W
+
+; slot_m_0_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_0_empty:
     db #30,#70   ; ,,,W
     db #30,#70   ; ,,,W
     db #B0,#70   ; W,,W
@@ -2156,8 +2421,8 @@ slot_m_0_e:
     db #D8,#30   ; cW,,
     db #D8,#30   ; cW,,
 
-; slot_m_0_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_0_p:
+; slot_m_0_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_0_colonist:
     db #30,#70   ; ,,,W
     db #34,#70   ; ,Y,W
     db #B4,#70   ; WY,W
@@ -2167,8 +2432,41 @@ slot_m_0_p:
     db #78,#38   ; YWY,
     db #D8,#30   ; cW,,
 
-; slot_m_1_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_1_e:
+; slot_m_0_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_0_carrier:
+    db #30,#70   ; ,,,W
+    db #FC,#F8   ; OOOW
+    db #FC,#F8   ; OOOW
+    db #F4,#70   ; WO,W
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #F8,#B8   ; OWO,
+    db #D8,#30   ; cW,,
+
+; slot_m_0_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_0_driller:
+    db #30,#70   ; ,,,W
+    db #65,#70   ; ,M,W
+    db #CF,#DA   ; MMMW
+    db #CF,#DA   ; MMMW
+    db #CF,#9A   ; MMM,
+    db #E5,#30   ; WM,,
+    db #CD,#30   ; cM,,
+    db #D8,#30   ; cW,,
+
+; slot_m_0_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_0_engineer:
+    db #30,#70   ; ,,,W
+    db #1A,#5A   ; C,CW
+    db #A5,#70   ; WC,W
+    db #0F,#5A   ; CCCW
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #5A,#1A   ; CWC,
+    db #D8,#30   ; cW,,
+
+; slot_m_1_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_1_empty:
     db #30,#A0   ; ,,W 
     db #30,#70   ; ,,,W
     db #30,#30   ; ,,,,
@@ -2178,8 +2476,8 @@ slot_m_1_e:
     db #B0,#30   ; W,,,
     db #D8,#30   ; cW,,
 
-; slot_m_1_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_1_p:
+; slot_m_1_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_1_colonist:
     db #30,#A0   ; ,,W 
     db #34,#70   ; ,Y,W
     db #34,#30   ; ,Y,,
@@ -2189,8 +2487,41 @@ slot_m_1_p:
     db #38,#38   ; Y,Y,
     db #D8,#30   ; cW,,
 
-; slot_m_2_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_2_e:
+; slot_m_1_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_1_carrier:
+    db #30,#A0   ; ,,W 
+    db #FC,#F8   ; OOOW
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #B8,#B8   ; O,O,
+    db #D8,#30   ; cW,,
+
+; slot_m_1_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_1_driller:
+    db #30,#A0   ; ,,W 
+    db #65,#70   ; ,M,W
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #65,#30   ; ,M,,
+    db #E5,#30   ; WM,,
+    db #D8,#30   ; cW,,
+
+; slot_m_1_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_1_engineer:
+    db #30,#A0   ; ,,W 
+    db #1A,#5A   ; C,CW
+    db #25,#30   ; ,C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #1A,#1A   ; C,C,
+    db #D8,#30   ; cW,,
+
+; slot_m_2_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_2_empty:
     db #50,#30   ;  W,,
     db #B0,#30   ; W,,,
     db #30,#30   ; ,,,,
@@ -2200,8 +2531,8 @@ slot_m_2_e:
     db #30,#70   ; ,,,W
     db #30,#E4   ; ,,Wc
 
-; slot_m_2_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_2_p:
+; slot_m_2_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_2_colonist:
     db #50,#30   ;  W,,
     db #B4,#30   ; WY,,
     db #34,#30   ; ,Y,,
@@ -2211,8 +2542,41 @@ slot_m_2_p:
     db #38,#78   ; Y,YW
     db #30,#E4   ; ,,Wc
 
-; slot_m_3_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_3_e:
+; slot_m_2_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_2_carrier:
+    db #50,#30   ;  W,,
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #B8,#F8   ; O,OW
+    db #30,#E4   ; ,,Wc
+
+; slot_m_2_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_2_driller:
+    db #50,#30   ;  W,,
+    db #E5,#30   ; WM,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #65,#30   ; ,M,,
+    db #65,#70   ; ,M,W
+    db #30,#E4   ; ,,Wc
+
+; slot_m_2_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_2_engineer:
+    db #50,#30   ;  W,,
+    db #1A,#1A   ; C,C,
+    db #25,#30   ; ,C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #1A,#5A   ; C,CW
+    db #30,#E4   ; ,,Wc
+
+; slot_m_3_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_3_empty:
     db #B0,#30   ; W,,,
     db #B0,#30   ; W,,,
     db #B0,#70   ; W,,W
@@ -2222,8 +2586,8 @@ slot_m_3_e:
     db #30,#E4   ; ,,Wc
     db #30,#E4   ; ,,Wc
 
-; slot_m_3_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_3_p:
+; slot_m_3_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_3_colonist:
     db #B0,#30   ; W,,,
     db #B4,#30   ; WY,,
     db #B4,#70   ; WY,W
@@ -2233,8 +2597,41 @@ slot_m_3_p:
     db #38,#6C   ; Y,Yc
     db #30,#E4   ; ,,Wc
 
-; slot_m_4_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_4_e:
+; slot_m_3_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_3_carrier:
+    db #B0,#30   ; W,,,
+    db #FC,#B8   ; OOO,
+    db #FC,#F8   ; OOOW
+    db #F4,#70   ; WO,W
+    db #FC,#F8   ; OOOW
+    db #B8,#F8   ; O,OW
+    db #B8,#EC   ; O,Oc
+    db #30,#E4   ; ,,Wc
+
+; slot_m_3_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_3_driller:
+    db #B0,#30   ; W,,,
+    db #E5,#30   ; WM,,
+    db #CF,#DA   ; MMMW
+    db #CF,#DA   ; MMMW
+    db #CF,#DA   ; MMMW
+    db #65,#70   ; ,M,W
+    db #65,#E4   ; ,MWc
+    db #30,#E4   ; ,,Wc
+
+; slot_m_3_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_3_engineer:
+    db #B0,#30   ; W,,,
+    db #1A,#1A   ; C,C,
+    db #A5,#70   ; WC,W
+    db #0F,#5A   ; CCCW
+    db #0F,#5A   ; CCCW
+    db #1A,#5A   ; C,CW
+    db #1A,#4E   ; C,Cc
+    db #30,#E4   ; ,,Wc
+
+; slot_m_4_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_4_empty:
     db #30,#E4   ; ,,Wc
     db #30,#E4   ; ,,Wc
     db #30,#70   ; ,,,W
@@ -2244,8 +2641,8 @@ slot_m_4_e:
     db #B0,#30   ; W,,,
     db #B0,#30   ; W,,,
 
-; slot_m_4_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_4_p:
+; slot_m_4_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_4_colonist:
     db #30,#E4   ; ,,Wc
     db #34,#E4   ; ,YWc
     db #34,#70   ; ,Y,W
@@ -2255,8 +2652,41 @@ slot_m_4_p:
     db #38,#38   ; Y,Y,
     db #B0,#30   ; W,,,
 
-; slot_m_5_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_5_e:
+; slot_m_4_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_4_carrier:
+    db #30,#E4   ; ,,Wc
+    db #FC,#EC   ; OOOc
+    db #FC,#F8   ; OOOW
+    db #74,#70   ; ,O,W
+    db #FC,#F8   ; OOOW
+    db #B8,#F8   ; O,OW
+    db #B8,#B8   ; O,O,
+    db #B0,#30   ; W,,,
+
+; slot_m_4_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_4_driller:
+    db #30,#E4   ; ,,Wc
+    db #65,#E4   ; ,MWc
+    db #CF,#DA   ; MMMW
+    db #CF,#DA   ; MMMW
+    db #CF,#DA   ; MMMW
+    db #E5,#70   ; WM,W
+    db #E5,#30   ; WM,,
+    db #B0,#30   ; W,,,
+
+; slot_m_4_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_4_engineer:
+    db #30,#E4   ; ,,Wc
+    db #1A,#4E   ; C,Cc
+    db #25,#70   ; ,C,W
+    db #0F,#5A   ; CCCW
+    db #0F,#5A   ; CCCW
+    db #1A,#5A   ; C,CW
+    db #1A,#1A   ; C,C,
+    db #B0,#30   ; W,,,
+
+; slot_m_5_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_5_empty:
     db #30,#E4   ; ,,Wc
     db #30,#70   ; ,,,W
     db #30,#30   ; ,,,,
@@ -2266,8 +2696,8 @@ slot_m_5_e:
     db #B0,#30   ; W,,,
     db #50,#30   ;  W,,
 
-; slot_m_5_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_5_p:
+; slot_m_5_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_5_colonist:
     db #30,#E4   ; ,,Wc
     db #34,#70   ; ,Y,W
     db #34,#30   ; ,Y,,
@@ -2277,8 +2707,41 @@ slot_m_5_p:
     db #38,#38   ; Y,Y,
     db #50,#30   ;  W,,
 
-; slot_m_6_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_6_e:
+; slot_m_5_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_5_carrier:
+    db #30,#E4   ; ,,Wc
+    db #FC,#F8   ; OOOW
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #B8,#B8   ; O,O,
+    db #50,#30   ;  W,,
+
+; slot_m_5_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_5_driller:
+    db #30,#E4   ; ,,Wc
+    db #65,#70   ; ,M,W
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #65,#30   ; ,M,,
+    db #E5,#30   ; WM,,
+    db #50,#30   ;  W,,
+
+; slot_m_5_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_5_engineer:
+    db #30,#E4   ; ,,Wc
+    db #1A,#5A   ; C,CW
+    db #25,#30   ; ,C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #1A,#1A   ; C,C,
+    db #50,#30   ;  W,,
+
+; slot_m_6_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_6_empty:
     db #D8,#30   ; cW,,
     db #B0,#30   ; W,,,
     db #30,#30   ; ,,,,
@@ -2288,8 +2751,8 @@ slot_m_6_e:
     db #30,#70   ; ,,,W
     db #30,#A0   ; ,,W 
 
-; slot_m_6_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_6_p:
+; slot_m_6_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_6_colonist:
     db #D8,#30   ; cW,,
     db #B4,#30   ; WY,,
     db #34,#30   ; ,Y,,
@@ -2299,8 +2762,41 @@ slot_m_6_p:
     db #38,#78   ; Y,YW
     db #30,#A0   ; ,,W 
 
-; slot_m_7_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_7_e:
+; slot_m_6_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_6_carrier:
+    db #D8,#30   ; cW,,
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #B8,#F8   ; O,OW
+    db #30,#A0   ; ,,W 
+
+; slot_m_6_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_6_driller:
+    db #D8,#30   ; cW,,
+    db #E5,#30   ; WM,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #65,#30   ; ,M,,
+    db #65,#70   ; ,M,W
+    db #30,#A0   ; ,,W 
+
+; slot_m_6_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_6_engineer:
+    db #D8,#30   ; cW,,
+    db #1A,#1A   ; C,C,
+    db #25,#30   ; ,C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #1A,#5A   ; C,CW
+    db #30,#A0   ; ,,W 
+
+; slot_m_7_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_7_empty:
     db #D8,#30   ; cW,,
     db #D8,#30   ; cW,,
     db #B0,#30   ; W,,,
@@ -2310,8 +2806,8 @@ slot_m_7_e:
     db #30,#70   ; ,,,W
     db #30,#70   ; ,,,W
 
-; slot_m_7_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_m_7_p:
+; slot_m_7_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_7_colonist:
     db #D8,#30   ; cW,,
     db #9C,#30   ; cY,,
     db #B4,#30   ; WY,,
@@ -2321,8 +2817,41 @@ slot_m_7_p:
     db #38,#78   ; Y,YW
     db #30,#70   ; ,,,W
 
-; slot_l_0_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_0_e:
+; slot_m_7_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_7_carrier:
+    db #D8,#30   ; cW,,
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #F4,#30   ; WO,,
+    db #FC,#F8   ; OOOW
+    db #B8,#F8   ; O,OW
+    db #B8,#F8   ; O,OW
+    db #30,#70   ; ,,,W
+
+; slot_m_7_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_7_driller:
+    db #D8,#30   ; cW,,
+    db #CD,#30   ; cM,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#DA   ; MMMW
+    db #E5,#70   ; WM,W
+    db #65,#70   ; ,M,W
+    db #30,#70   ; ,,,W
+
+; slot_m_7_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_m_7_engineer:
+    db #D8,#30   ; cW,,
+    db #5A,#1A   ; CWC,
+    db #A5,#30   ; WC,,
+    db #0F,#1A   ; CCC,
+    db #0F,#5A   ; CCCW
+    db #1A,#5A   ; C,CW
+    db #1A,#5A   ; C,CW
+    db #30,#70   ; ,,,W
+
+; slot_l_0_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_0_empty:
     db #30,#A0   ; ,,W 
     db #30,#A0   ; ,,W 
     db #30,#70   ; ,,,W
@@ -2332,8 +2861,8 @@ slot_l_0_e:
     db #B0,#70   ; W,,W
     db #B0,#70   ; W,,W
 
-; slot_l_0_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_0_p:
+; slot_l_0_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_0_colonist:
     db #30,#A0   ; ,,W 
     db #34,#A0   ; ,YW 
     db #34,#70   ; ,Y,W
@@ -2343,8 +2872,41 @@ slot_l_0_p:
     db #38,#78   ; Y,YW
     db #B0,#70   ; W,,W
 
-; slot_l_1_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_1_e:
+; slot_l_0_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_0_carrier:
+    db #30,#A0   ; ,,W 
+    db #FC,#A8   ; OOO 
+    db #FC,#F8   ; OOOW
+    db #74,#70   ; ,O,W
+    db #FC,#F8   ; OOOW
+    db #B8,#F8   ; O,OW
+    db #B8,#F8   ; O,OW
+    db #B0,#70   ; W,,W
+
+; slot_l_0_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_0_driller:
+    db #30,#A0   ; ,,W 
+    db #65,#A0   ; ,MW 
+    db #CF,#DA   ; MMMW
+    db #CF,#DA   ; MMMW
+    db #CF,#DA   ; MMMW
+    db #E5,#70   ; WM,W
+    db #E5,#70   ; WM,W
+    db #B0,#70   ; W,,W
+
+; slot_l_0_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_0_engineer:
+    db #30,#A0   ; ,,W 
+    db #1A,#0A   ; C,C 
+    db #25,#70   ; ,C,W
+    db #0F,#5A   ; CCCW
+    db #0F,#5A   ; CCCW
+    db #1A,#5A   ; C,CW
+    db #1A,#5A   ; C,CW
+    db #B0,#70   ; W,,W
+
+; slot_l_1_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_1_empty:
     db #30,#30   ; ,,,,
     db #30,#30   ; ,,,,
     db #30,#30   ; ,,,,
@@ -2354,8 +2916,8 @@ slot_l_1_e:
     db #CC,#B0   ; ccW,
     db #0C,#D8   ; ..cW
 
-; slot_l_1_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_1_p:
+; slot_l_1_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_1_colonist:
     db #30,#30   ; ,,,,
     db #34,#30   ; ,Y,,
     db #34,#30   ; ,Y,,
@@ -2365,8 +2927,41 @@ slot_l_1_p:
     db #6C,#38   ; YcY,
     db #0C,#D8   ; ..cW
 
-; slot_l_2_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_2_e:
+; slot_l_1_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_1_carrier:
+    db #30,#30   ; ,,,,
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #F8,#B8   ; OWO,
+    db #EC,#B8   ; OcO,
+    db #0C,#D8   ; ..cW
+
+; slot_l_1_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_1_driller:
+    db #30,#30   ; ,,,,
+    db #65,#30   ; ,M,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #E5,#30   ; WM,,
+    db #CD,#B0   ; cMW,
+    db #0C,#D8   ; ..cW
+
+; slot_l_1_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_1_engineer:
+    db #30,#30   ; ,,,,
+    db #1A,#1A   ; C,C,
+    db #25,#30   ; ,C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #5A,#1A   ; CWC,
+    db #4E,#1A   ; CcC,
+    db #0C,#D8   ; ..cW
+
+; slot_l_2_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_2_empty:
     db #50,#30   ;  W,,
     db #B0,#30   ; W,,,
     db #30,#30   ; ,,,,
@@ -2376,8 +2971,8 @@ slot_l_2_e:
     db #30,#70   ; ,,,W
     db #30,#E4   ; ,,Wc
 
-; slot_l_2_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_2_p:
+; slot_l_2_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_2_colonist:
     db #50,#30   ;  W,,
     db #B4,#30   ; WY,,
     db #34,#30   ; ,Y,,
@@ -2387,8 +2982,41 @@ slot_l_2_p:
     db #38,#78   ; Y,YW
     db #30,#E4   ; ,,Wc
 
-; slot_l_3_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_3_e:
+; slot_l_2_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_2_carrier:
+    db #50,#30   ;  W,,
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #B8,#F8   ; O,OW
+    db #30,#E4   ; ,,Wc
+
+; slot_l_2_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_2_driller:
+    db #50,#30   ;  W,,
+    db #E5,#30   ; WM,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #65,#30   ; ,M,,
+    db #65,#70   ; ,M,W
+    db #30,#E4   ; ,,Wc
+
+; slot_l_2_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_2_engineer:
+    db #50,#30   ;  W,,
+    db #1A,#1A   ; C,C,
+    db #25,#30   ; ,C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #1A,#5A   ; C,CW
+    db #30,#E4   ; ,,Wc
+
+; slot_l_3_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_3_empty:
     db #50,#30   ;  W,,
     db #50,#30   ;  W,,
     db #B0,#30   ; W,,,
@@ -2398,8 +3026,8 @@ slot_l_3_e:
     db #B0,#70   ; W,,W
     db #B0,#70   ; W,,W
 
-; slot_l_3_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_3_p:
+; slot_l_3_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_3_colonist:
     db #50,#30   ;  W,,
     db #14,#30   ;  Y,,
     db #B4,#30   ; WY,,
@@ -2409,8 +3037,41 @@ slot_l_3_p:
     db #38,#78   ; Y,YW
     db #B0,#70   ; W,,W
 
-; slot_l_4_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_4_e:
+; slot_l_3_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_3_carrier:
+    db #50,#30   ;  W,,
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #F4,#30   ; WO,,
+    db #FC,#F8   ; OOOW
+    db #B8,#F8   ; O,OW
+    db #B8,#F8   ; O,OW
+    db #B0,#70   ; W,,W
+
+; slot_l_3_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_3_driller:
+    db #50,#30   ;  W,,
+    db #45,#30   ;  M,,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#DA   ; MMMW
+    db #E5,#70   ; WM,W
+    db #E5,#70   ; WM,W
+    db #B0,#70   ; W,,W
+
+; slot_l_3_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_3_engineer:
+    db #50,#30   ;  W,,
+    db #5A,#1A   ; CWC,
+    db #A5,#30   ; WC,,
+    db #0F,#1A   ; CCC,
+    db #0F,#5A   ; CCCW
+    db #1A,#5A   ; C,CW
+    db #1A,#5A   ; C,CW
+    db #B0,#70   ; W,,W
+
+; slot_l_4_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_4_empty:
     db #B0,#70   ; W,,W
     db #B0,#70   ; W,,W
     db #B0,#70   ; W,,W
@@ -2420,8 +3081,8 @@ slot_l_4_e:
     db #50,#30   ;  W,,
     db #50,#30   ;  W,,
 
-; slot_l_4_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_4_p:
+; slot_l_4_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_4_colonist:
     db #B0,#70   ; W,,W
     db #B4,#70   ; WY,W
     db #B4,#70   ; WY,W
@@ -2431,8 +3092,41 @@ slot_l_4_p:
     db #78,#38   ; YWY,
     db #50,#30   ;  W,,
 
-; slot_l_5_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_5_e:
+; slot_l_4_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_4_carrier:
+    db #B0,#70   ; W,,W
+    db #FC,#F8   ; OOOW
+    db #FC,#F8   ; OOOW
+    db #F4,#70   ; WO,W
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #F8,#B8   ; OWO,
+    db #50,#30   ;  W,,
+
+; slot_l_4_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_4_driller:
+    db #B0,#70   ; W,,W
+    db #E5,#70   ; WM,W
+    db #CF,#DA   ; MMMW
+    db #CF,#DA   ; MMMW
+    db #CF,#9A   ; MMM,
+    db #E5,#30   ; WM,,
+    db #45,#30   ;  M,,
+    db #50,#30   ;  W,,
+
+; slot_l_4_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_4_engineer:
+    db #B0,#70   ; W,,W
+    db #1A,#5A   ; C,CW
+    db #A5,#70   ; WC,W
+    db #0F,#5A   ; CCCW
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #5A,#1A   ; CWC,
+    db #50,#30   ;  W,,
+
+; slot_l_5_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_5_empty:
     db #30,#E4   ; ,,Wc
     db #30,#70   ; ,,,W
     db #30,#30   ; ,,,,
@@ -2442,8 +3136,8 @@ slot_l_5_e:
     db #B0,#30   ; W,,,
     db #50,#30   ;  W,,
 
-; slot_l_5_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_5_p:
+; slot_l_5_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_5_colonist:
     db #30,#E4   ; ,,Wc
     db #34,#70   ; ,Y,W
     db #34,#30   ; ,Y,,
@@ -2453,8 +3147,41 @@ slot_l_5_p:
     db #38,#38   ; Y,Y,
     db #50,#30   ;  W,,
 
-; slot_l_6_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_6_e:
+; slot_l_5_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_5_carrier:
+    db #30,#E4   ; ,,Wc
+    db #FC,#F8   ; OOOW
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #B8,#B8   ; O,O,
+    db #50,#30   ;  W,,
+
+; slot_l_5_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_5_driller:
+    db #30,#E4   ; ,,Wc
+    db #65,#70   ; ,M,W
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #65,#30   ; ,M,,
+    db #E5,#30   ; WM,,
+    db #50,#30   ;  W,,
+
+; slot_l_5_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_5_engineer:
+    db #30,#E4   ; ,,Wc
+    db #1A,#5A   ; C,CW
+    db #25,#30   ; ,C,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #1A,#1A   ; C,C,
+    db #50,#30   ;  W,,
+
+; slot_l_6_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_6_empty:
     db #0C,#D8   ; ..cW
     db #CC,#B0   ; ccW,
     db #F0,#30   ; WW,,
@@ -2464,8 +3191,8 @@ slot_l_6_e:
     db #30,#30   ; ,,,,
     db #30,#30   ; ,,,,
 
-; slot_l_6_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_6_p:
+; slot_l_6_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_6_colonist:
     db #0C,#D8   ; ..cW
     db #9C,#B0   ; cYW,
     db #B4,#30   ; WY,,
@@ -2475,8 +3202,41 @@ slot_l_6_p:
     db #38,#38   ; Y,Y,
     db #30,#30   ; ,,,,
 
-; slot_l_7_e — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_7_e:
+; slot_l_6_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_6_carrier:
+    db #0C,#D8   ; ..cW
+    db #FC,#B8   ; OOO,
+    db #FC,#B8   ; OOO,
+    db #74,#30   ; ,O,,
+    db #FC,#B8   ; OOO,
+    db #B8,#B8   ; O,O,
+    db #B8,#B8   ; O,O,
+    db #30,#30   ; ,,,,
+
+; slot_l_6_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_6_driller:
+    db #0C,#D8   ; ..cW
+    db #CD,#B0   ; cMW,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #CF,#9A   ; MMM,
+    db #65,#30   ; ,M,,
+    db #65,#30   ; ,M,,
+    db #30,#30   ; ,,,,
+
+; slot_l_6_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_6_engineer:
+    db #0C,#D8   ; ..cW
+    db #4E,#1A   ; CcC,
+    db #A5,#30   ; WC,,
+    db #0F,#1A   ; CCC,
+    db #0F,#1A   ; CCC,
+    db #1A,#1A   ; C,C,
+    db #1A,#1A   ; C,C,
+    db #30,#30   ; ,,,,
+
+; slot_l_7_empty — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_7_empty:
     db #B0,#70   ; W,,W
     db #B0,#70   ; W,,W
     db #B0,#70   ; W,,W
@@ -2486,8 +3246,8 @@ slot_l_7_e:
     db #30,#A0   ; ,,W 
     db #30,#A0   ; ,,W 
 
-; slot_l_7_p — 4 x 8 pixels, αδιαφανές, 16 bytes
-slot_l_7_p:
+; slot_l_7_colonist — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_7_colonist:
     db #B0,#70   ; W,,W
     db #B4,#70   ; WY,W
     db #B4,#70   ; WY,W
@@ -2495,6 +3255,39 @@ slot_l_7_p:
     db #3C,#78   ; YYYW
     db #38,#78   ; Y,YW
     db #38,#28   ; Y,Y 
+    db #30,#A0   ; ,,W 
+
+; slot_l_7_carrier — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_7_carrier:
+    db #B0,#70   ; W,,W
+    db #FC,#F8   ; OOOW
+    db #FC,#F8   ; OOOW
+    db #F4,#70   ; WO,W
+    db #FC,#F8   ; OOOW
+    db #B8,#F8   ; O,OW
+    db #B8,#A8   ; O,O 
+    db #30,#A0   ; ,,W 
+
+; slot_l_7_driller — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_7_driller:
+    db #B0,#70   ; W,,W
+    db #E5,#70   ; WM,W
+    db #CF,#DA   ; MMMW
+    db #CF,#DA   ; MMMW
+    db #CF,#DA   ; MMMW
+    db #65,#70   ; ,M,W
+    db #65,#A0   ; ,MW 
+    db #30,#A0   ; ,,W 
+
+; slot_l_7_engineer — 4 x 8 pixels, αδιαφανές, 16 bytes
+slot_l_7_engineer:
+    db #B0,#70   ; W,,W
+    db #1A,#5A   ; C,CW
+    db #A5,#70   ; WC,W
+    db #0F,#5A   ; CCCW
+    db #0F,#5A   ; CCCW
+    db #1A,#5A   ; C,CW
+    db #1A,#0A   ; C,C 
     db #30,#A0   ; ,,W 
 
 ; --- θέσεις αποίκων πάνω στον δακτύλιο ---
@@ -3716,9 +4509,9 @@ palette_fw:
     ; pen 14  FW 19  Sea green     εικονίδια
     ; pen 15  FW 16  Pink          εικονίδια
 
-; --- 185 bytes γέμισμα για τη σελίδα του flip_mode0 ---
+; --- 57 bytes γέμισμα για τη σελίδα του flip_mode0 ---
 sprites_pad:
-    defs 185,#00
+    defs 57,#00
 
 ; --- flip_mode0[b] = b με ανταλλαγμένα pixels ---
 align 256
