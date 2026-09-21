@@ -194,12 +194,19 @@ def build_terrain():
     return out
 
 
+# Το μεγαλύτερο πλαίσιο που εμφανίζεται σε οποιαδήποτε δομή — ο καμβάς του
+# φύλλου Aseprite. Υπολογίζεται, δεν υποτίθεται.
+STRUCT_MAX_W = max(w for _, _, sizes, _, _ in st.STRUCTURES for _, w, _ in sizes)
+STRUCT_MAX_H = max(h for _, _, sizes, _, _ in st.STRUCTURES for _, _, h in sizes)
+
+
 def build_structures():
-    """Εξωτερικά κτίσματα — ΟΧΙ μηχανές θόλου. Έχουν μάσκα και δικά τους μεγέθη."""
+    """Εξωτερικά κτίσματα — ΟΧΙ μηχανές θόλου. Δικά τους μεγέθη, και μάσκα εκτός
+    από την πλατφόρμα προσγείωσης που είναι χτιστό δάπεδο (st.STRUCTURES)."""
     out = []
-    for key, _, _, _ in st.STRUCTURES:
+    for key, _, _, masked, _ in st.STRUCTURES:
         for name, pens in st.build(key):
-            out.append(Sprite(name, pens, "εξωτερικές δομές", True))
+            out.append(Sprite(name, pens, "εξωτερικές δομές", masked))
     return out
 
 
@@ -579,7 +586,7 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
 
     # διαστάσεις κάθε παραλλαγής: 4 θέσεις ανά δομή, (w bytes, h) — 0,0 = δεν υπάρχει
     dims = bytearray()
-    for _, _, sizes, _ in st.STRUCTURES:
+    for _, _, sizes, _, _ in st.STRUCTURES:
         for i in range(4):
             dims += bytes([sizes[i][1] // 2, sizes[i][2]]) if i < len(sizes) else b"\x00\x00"
     blob.add("struct_dims", dims, None, "πίνακες δομών")
@@ -747,7 +754,7 @@ def emit_asm(blob, frames, uniform, quads):
     L.append("; Εξωτερικές δομές: αυτοτελή κτίσματα στο έδαφος, ΟΧΙ μηχανές θόλου.")
     L.append("; Κάθε παραλλαγή έχει δική της ετικέτα· διαστάσεις στο struct_dims.")
     L.append("STRUCT_KINDS equ %d          ; %s" % (len(st.STRUCTURES),
-             ", ".join(k for k, _, _, _ in st.STRUCTURES)))
+             ", ".join(k for k, _, _, _, _ in st.STRUCTURES)))
     for i, (n, c, _) in enumerate(icons.PLANTS):
         L.append("            ; %2d %-10s %s" % (i, n, c))
     L.append("")
@@ -824,7 +831,7 @@ def emit_asm(blob, frames, uniform, quads):
                       "; struct_dims + kind*8 + size*2 -> (w bytes, h)· 0,0 = δεν υπάρχει",
                       "struct_dims:"]
                 i = 0
-                for key, _, sizes, doc in st.STRUCTURES:
+                for key, _, sizes, _, doc in st.STRUCTURES:
                     vals = ",".join("%3d,%3d" % (data[i + 2 * k], data[i + 2 * k + 1])
                                     for k in range(4))
                     L.append("    db %s   ; %s — %s" % (vals, key, doc))
@@ -1326,8 +1333,11 @@ def main():
         ("plants", icons.PLANT_W, icons.PLANT_H, [(s.name, s.pens) for s in plants]),
         # όλες οι παραλλαγές στον ίδιο καμβά, μόνο για το Aseprite
         ("terrain", terr.TILE_W, terr.TILE_H, [(s.name, s.pens) for s in tiles]),
-        ("structures", st.SIZES_4[-1][1], st.SIZES_4[-1][2],
-         [(s.name, pad_to(s.pens, st.SIZES_4[-1][1], st.SIZES_4[-1][2])) for s in structs]),
+        # Ο καμβάς είναι το ΠΡΑΓΜΑΤΙΚΟ μέγιστο όλων των δομών, όχι το τελευταίο
+        # μέγεθος του ηλιακού: όταν έφυγε το solar_xl, το μεγαλύτερο έγινε η
+        # πλατφόρμα (32x64) και το γέμισμα έσκαγε.
+        ("structures", STRUCT_MAX_W, STRUCT_MAX_H,
+         [(s.name, pad_to(s.pens, STRUCT_MAX_W, STRUCT_MAX_H)) for s in structs]),
     ]
     with open(os.path.join(args.out, "aseprite_dump.txt"), "w", encoding="utf-8") as f:
         f.write(emit_aseprite_dump(groups))
