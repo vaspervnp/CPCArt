@@ -54,194 +54,263 @@
   icon_s_greenhouse     #7918     72  12x12 px       αδιαφανές  εικονίδια δωματίων
   icon_s_storage        #7960     72  12x12 px       αδιαφανές  εικονίδια δωματίων
   icon_s_airlock        #79A8     72  12x12 px       αδιαφανές  εικονίδια δωματίων
-# room_icons_m          #79F0      -                            (ομάδα)
-  icon_m_empty          #79F0    128  16x16 px       αδιαφανές  εικονίδια δωματίων
-  icon_m_control        #7A70    128  16x16 px       αδιαφανές  εικονίδια δωματίων
-  icon_m_quarters       #7AF0    128  16x16 px       αδιαφανές  εικονίδια δωματίων
-  icon_m_canteen        #7B70    128  16x16 px       αδιαφανές  εικονίδια δωματίων
-  icon_m_oxygen         #7BF0    128  16x16 px       αδιαφανές  εικονίδια δωματίων
-  icon_m_greenhouse     #7C70    128  16x16 px       αδιαφανές  εικονίδια δωματίων
-  icon_m_storage        #7CF0    128  16x16 px       αδιαφανές  εικονίδια δωματίων
-  icon_m_airlock        #7D70    128  16x16 px       αδιαφανές  εικονίδια δωματίων
-# room_icons_l          #7DF0      -                            (ομάδα)
-  icon_l_empty          #7DF0    200  20x20 px       αδιαφανές  εικονίδια δωματίων
-  icon_l_control        #7EB8    200  20x20 px       αδιαφανές  εικονίδια δωματίων
-  icon_l_quarters       #7F80    200  20x20 px       αδιαφανές  εικονίδια δωματίων
-  icon_l_canteen        #8048    200  20x20 px       αδιαφανές  εικονίδια δωματίων
-  icon_l_oxygen         #8110    200  20x20 px       αδιαφανές  εικονίδια δωματίων
-  icon_l_greenhouse     #81D8    200  20x20 px       αδιαφανές  εικονίδια δωματίων
-  icon_l_storage        #82A0    200  20x20 px       αδιαφανές  εικονίδια δωματίων
-  icon_l_airlock        #8368    200  20x20 px       αδιαφανές  εικονίδια δωματίων
-# corr_slot_gfx         #8430      -                            (ομάδα)
-  slot_s_0_empty        #8430     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_0_colonist     #8440     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_0_carrier      #8450     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_0_driller      #8460     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_0_engineer     #8470     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_1_empty        #8480     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_1_colonist     #8490     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_1_carrier      #84A0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_1_driller      #84B0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_1_engineer     #84C0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_2_empty        #84D0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_2_colonist     #84E0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_2_carrier      #84F0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_2_driller      #8500     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_2_engineer     #8510     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_3_empty        #8520     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_3_colonist     #8530     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_3_carrier      #8540     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_3_driller      #8550     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_3_engineer     #8560     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_4_empty        #8570     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_4_colonist     #8580     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_4_carrier      #8590     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_4_driller      #85A0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_4_engineer     #85B0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_5_empty        #85C0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_5_colonist     #85D0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_5_carrier      #85E0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_5_driller      #85F0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_5_engineer     #8600     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_6_empty        #8610     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_6_colonist     #8620     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_6_carrier      #8630     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_6_driller      #8640     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_6_engineer     #8650     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_7_empty        #8660     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_7_colonist     #8670     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_7_carrier      #8680     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_7_driller      #8690     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_s_7_engineer     #86A0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_0_empty        #86B0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_0_colonist     #86C0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_0_carrier      #86D0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_0_driller      #86E0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_0_engineer     #86F0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_1_empty        #8700     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_1_colonist     #8710     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_1_carrier      #8720     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_1_driller      #8730     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_1_engineer     #8740     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_2_empty        #8750     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_2_colonist     #8760     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_2_carrier      #8770     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_2_driller      #8780     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_2_engineer     #8790     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_3_empty        #87A0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_3_colonist     #87B0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_3_carrier      #87C0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_3_driller      #87D0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_3_engineer     #87E0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_4_empty        #87F0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_4_colonist     #8800     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_4_carrier      #8810     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_4_driller      #8820     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_4_engineer     #8830     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_5_empty        #8840     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_5_colonist     #8850     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_5_carrier      #8860     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_5_driller      #8870     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_5_engineer     #8880     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_6_empty        #8890     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_6_colonist     #88A0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_6_carrier      #88B0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_6_driller      #88C0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_6_engineer     #88D0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_7_empty        #88E0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_7_colonist     #88F0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_7_carrier      #8900     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_7_driller      #8910     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_m_7_engineer     #8920     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_0_empty        #8930     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_0_colonist     #8940     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_0_carrier      #8950     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_0_driller      #8960     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_0_engineer     #8970     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_1_empty        #8980     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_1_colonist     #8990     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_1_carrier      #89A0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_1_driller      #89B0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_1_engineer     #89C0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_2_empty        #89D0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_2_colonist     #89E0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_2_carrier      #89F0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_2_driller      #8A00     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_2_engineer     #8A10     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_3_empty        #8A20     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_3_colonist     #8A30     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_3_carrier      #8A40     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_3_driller      #8A50     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_3_engineer     #8A60     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_4_empty        #8A70     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_4_colonist     #8A80     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_4_carrier      #8A90     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_4_driller      #8AA0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_4_engineer     #8AB0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_5_empty        #8AC0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_5_colonist     #8AD0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_5_carrier      #8AE0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_5_driller      #8AF0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_5_engineer     #8B00     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_6_empty        #8B10     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_6_colonist     #8B20     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_6_carrier      #8B30     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_6_driller      #8B40     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_6_engineer     #8B50     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_7_empty        #8B60     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_7_colonist     #8B70     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_7_carrier      #8B80     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_7_driller      #8B90     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  slot_l_7_engineer     #8BA0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
-  corr_slots            #8BB0     48                            πίνακες δωματίου
-  corr_fill             #8BE0      8                            πίνακες δωματίου
-# machines              #8BE8      -                            (ομάδα)
-  mach_oxygen           #8BE8    132  12x22 px       αδιαφανές  μηχανήματα
-  mach_iron             #8C6C    132  12x22 px       αδιαφανές  μηχανήματα
-  mach_bioplastic       #8CF0    132  12x22 px       αδιαφανές  μηχανήματα
-  mach_weapons          #8D74    132  12x22 px       αδιαφανές  μηχανήματα
-  mach_processors       #8DF8    132  12x22 px       αδιαφανές  μηχανήματα
-  mach_robots           #8E7C    132  12x22 px       αδιαφανές  μηχανήματα
-  mach_food             #8F00    132  12x22 px       αδιαφανές  μηχανήματα
-  mach_spares           #8F84    132  12x22 px       αδιαφανές  μηχανήματα
-  mach_medical          #9008    132  12x22 px       αδιαφανές  μηχανήματα
-  mach_vitromeat        #908C    132  12x22 px       αδιαφανές  μηχανήματα
-# plants                #9110      -                            (ομάδα)
-  plant_peas            #9110    132  12x22 px       αδιαφανές  φυτά
-  plant_rice            #9194    132  12x22 px       αδιαφανές  φυτά
-  plant_potatoes        #9218    132  12x22 px       αδιαφανές  φυτά
-  plant_wheat           #929C    132  12x22 px       αδιαφανές  φυτά
-  plant_maize           #9320    132  12x22 px       αδιαφανές  φυτά
-  plant_tomatoes        #93A4    132  12x22 px       αδιαφανές  φυτά
-  plant_lettuce         #9428    132  12x22 px       αδιαφανές  φυτά
-  plant_onions          #94AC    132  12x22 px       αδιαφανές  φυτά
-  plant_radishes        #9530    132  12x22 px       αδιαφανές  φυτά
-  plant_mushrooms       #95B4    132  12x22 px       αδιαφανές  φυτά
-  plant_medicinal       #9638    132  12x22 px       αδιαφανές  φυτά
-  plant_tree            #96BC    132  12x22 px       αδιαφανές  φυτά
-  plant_class           #9740     12                            πίνακες δωματίου
-# structures            #974C      -                            (ομάδα)
-  solar_s               #974C    128  8x16 px        mask+data  εξωτερικές δομές
-  solar_m               #97CC    512  16x32 px       mask+data  εξωτερικές δομές
-  solar_l               #99CC   1152  24x48 px       mask+data  εξωτερικές δομές
-  solar_xl              #9E4C   2048  32x64 px       mask+data  εξωτερικές δομές
-  turbine_s             #A64C    128  8x16 px        mask+data  εξωτερικές δομές
-  turbine_m             #A6CC    512  16x32 px       mask+data  εξωτερικές δομές
-  turbine_l             #A8CC   1152  24x48 px       mask+data  εξωτερικές δομές
-  collector_s           #AD4C    128  8x16 px        mask+data  εξωτερικές δομές
-  collector_m           #ADCC    512  16x32 px       mask+data  εξωτερικές δομές
-  collector_l           #AFCC   1152  24x48 px       mask+data  εξωτερικές δομές
-  extractor_s           #B44C    128  8x16 px        mask+data  εξωτερικές δομές
-  extractor_m           #B4CC    512  16x32 px       mask+data  εξωτερικές δομές
-  extractor_l           #B6CC   1152  24x48 px       mask+data  εξωτερικές δομές
-  mine                  #BB4C   2048  32x64 px       mask+data  εξωτερικές δομές
-  struct_dims           #C34C     40                            πίνακες δομών
-  machine_count         #C374      3                            πίνακες δωματίου
-  machine_slots         #C377     48                            πίνακες δωματίου
-  machine_rules         #C3A7     10                            πίνακες δωματίου
-  interior_ofs          #C3B1      6                            πίνακες δωματίου
-  palette_fw            #C3B7     16                            παλέτα
-  sprites_pad           #C3C7     57                            στοίχιση
-  flip_mode0            #C400    256                            πίνακας καθρεφτισμού
+  icon_s_factory        #79F0     72  12x12 px       αδιαφανές  εικονίδια δωματίων
+  icon_s_lab            #7A38     72  12x12 px       αδιαφανές  εικονίδια δωματίων
+  icon_s_medbay         #7A80     72  12x12 px       αδιαφανές  εικονίδια δωματίων
+  icon_s_lounge         #7AC8     72  12x12 px       αδιαφανές  εικονίδια δωματίων
+# room_icons_m          #7B10      -                            (ομάδα)
+  icon_m_empty          #7B10    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+  icon_m_control        #7B90    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+  icon_m_quarters       #7C10    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+  icon_m_canteen        #7C90    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+  icon_m_oxygen         #7D10    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+  icon_m_greenhouse     #7D90    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+  icon_m_storage        #7E10    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+  icon_m_airlock        #7E90    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+  icon_m_factory        #7F10    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+  icon_m_lab            #7F90    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+  icon_m_medbay         #8010    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+  icon_m_lounge         #8090    128  16x16 px       αδιαφανές  εικονίδια δωματίων
+# room_icons_l          #8110      -                            (ομάδα)
+  icon_l_empty          #8110    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+  icon_l_control        #81D8    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+  icon_l_quarters       #82A0    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+  icon_l_canteen        #8368    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+  icon_l_oxygen         #8430    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+  icon_l_greenhouse     #84F8    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+  icon_l_storage        #85C0    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+  icon_l_airlock        #8688    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+  icon_l_factory        #8750    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+  icon_l_lab            #8818    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+  icon_l_medbay         #88E0    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+  icon_l_lounge         #89A8    200  20x20 px       αδιαφανές  εικονίδια δωματίων
+# corr_slot_gfx         #8A70      -                            (ομάδα)
+  slot_s_0_empty        #8A70     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_0_colonist     #8A80     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_0_carrier      #8A90     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_0_driller      #8AA0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_0_engineer     #8AB0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_1_empty        #8AC0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_1_colonist     #8AD0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_1_carrier      #8AE0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_1_driller      #8AF0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_1_engineer     #8B00     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_2_empty        #8B10     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_2_colonist     #8B20     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_2_carrier      #8B30     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_2_driller      #8B40     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_2_engineer     #8B50     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_3_empty        #8B60     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_3_colonist     #8B70     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_3_carrier      #8B80     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_3_driller      #8B90     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_3_engineer     #8BA0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_4_empty        #8BB0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_4_colonist     #8BC0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_4_carrier      #8BD0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_4_driller      #8BE0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_4_engineer     #8BF0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_5_empty        #8C00     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_5_colonist     #8C10     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_5_carrier      #8C20     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_5_driller      #8C30     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_5_engineer     #8C40     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_6_empty        #8C50     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_6_colonist     #8C60     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_6_carrier      #8C70     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_6_driller      #8C80     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_6_engineer     #8C90     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_7_empty        #8CA0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_7_colonist     #8CB0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_7_carrier      #8CC0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_7_driller      #8CD0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_s_7_engineer     #8CE0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_0_empty        #8CF0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_0_colonist     #8D00     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_0_carrier      #8D10     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_0_driller      #8D20     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_0_engineer     #8D30     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_1_empty        #8D40     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_1_colonist     #8D50     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_1_carrier      #8D60     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_1_driller      #8D70     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_1_engineer     #8D80     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_2_empty        #8D90     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_2_colonist     #8DA0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_2_carrier      #8DB0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_2_driller      #8DC0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_2_engineer     #8DD0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_3_empty        #8DE0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_3_colonist     #8DF0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_3_carrier      #8E00     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_3_driller      #8E10     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_3_engineer     #8E20     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_4_empty        #8E30     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_4_colonist     #8E40     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_4_carrier      #8E50     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_4_driller      #8E60     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_4_engineer     #8E70     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_5_empty        #8E80     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_5_colonist     #8E90     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_5_carrier      #8EA0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_5_driller      #8EB0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_5_engineer     #8EC0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_6_empty        #8ED0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_6_colonist     #8EE0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_6_carrier      #8EF0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_6_driller      #8F00     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_6_engineer     #8F10     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_7_empty        #8F20     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_7_colonist     #8F30     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_7_carrier      #8F40     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_7_driller      #8F50     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_m_7_engineer     #8F60     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_0_empty        #8F70     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_0_colonist     #8F80     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_0_carrier      #8F90     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_0_driller      #8FA0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_0_engineer     #8FB0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_1_empty        #8FC0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_1_colonist     #8FD0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_1_carrier      #8FE0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_1_driller      #8FF0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_1_engineer     #9000     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_2_empty        #9010     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_2_colonist     #9020     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_2_carrier      #9030     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_2_driller      #9040     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_2_engineer     #9050     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_3_empty        #9060     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_3_colonist     #9070     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_3_carrier      #9080     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_3_driller      #9090     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_3_engineer     #90A0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_4_empty        #90B0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_4_colonist     #90C0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_4_carrier      #90D0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_4_driller      #90E0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_4_engineer     #90F0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_5_empty        #9100     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_5_colonist     #9110     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_5_carrier      #9120     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_5_driller      #9130     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_5_engineer     #9140     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_6_empty        #9150     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_6_colonist     #9160     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_6_carrier      #9170     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_6_driller      #9180     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_6_engineer     #9190     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_7_empty        #91A0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_7_colonist     #91B0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_7_carrier      #91C0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_7_driller      #91D0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  slot_l_7_engineer     #91E0     16  4x8 px         αδιαφανές  θέσεις διαδρόμου
+  corr_slots            #91F0     48                            πίνακες δωματίου
+  corr_fill             #9220      8                            πίνακες δωματίου
+# machines              #9228      -                            (ομάδα)
+  mach_oxygen           #9228    132  12x22 px       αδιαφανές  μηχανήματα
+  mach_iron             #92AC    132  12x22 px       αδιαφανές  μηχανήματα
+  mach_bioplastic       #9330    132  12x22 px       αδιαφανές  μηχανήματα
+  mach_weapons          #93B4    132  12x22 px       αδιαφανές  μηχανήματα
+  mach_processors       #9438    132  12x22 px       αδιαφανές  μηχανήματα
+  mach_robots           #94BC    132  12x22 px       αδιαφανές  μηχανήματα
+  mach_food             #9540    132  12x22 px       αδιαφανές  μηχανήματα
+  mach_spares           #95C4    132  12x22 px       αδιαφανές  μηχανήματα
+  mach_medical          #9648    132  12x22 px       αδιαφανές  μηχανήματα
+  mach_vitromeat        #96CC    132  12x22 px       αδιαφανές  μηχανήματα
+# plants                #9750      -                            (ομάδα)
+  plant_peas            #9750    132  12x22 px       αδιαφανές  φυτά
+  plant_rice            #97D4    132  12x22 px       αδιαφανές  φυτά
+  plant_potatoes        #9858    132  12x22 px       αδιαφανές  φυτά
+  plant_wheat           #98DC    132  12x22 px       αδιαφανές  φυτά
+  plant_maize           #9960    132  12x22 px       αδιαφανές  φυτά
+  plant_tomatoes        #99E4    132  12x22 px       αδιαφανές  φυτά
+  plant_lettuce         #9A68    132  12x22 px       αδιαφανές  φυτά
+  plant_onions          #9AEC    132  12x22 px       αδιαφανές  φυτά
+  plant_radishes        #9B70    132  12x22 px       αδιαφανές  φυτά
+  plant_mushrooms       #9BF4    132  12x22 px       αδιαφανές  φυτά
+  plant_medicinal       #9C78    132  12x22 px       αδιαφανές  φυτά
+  plant_tree            #9CFC    132  12x22 px       αδιαφανές  φυτά
+  plant_class           #9D80     12                            πίνακες δωματίου
+# terrain               #9D8C      -                            (ομάδα)
+  tile_ground_0         #9D8C     64  8x16 px        αδιαφανές  έδαφος
+  tile_ground_1         #9DCC     64  8x16 px        αδιαφανές  έδαφος
+  tile_ground_2         #9E0C     64  8x16 px        αδιαφανές  έδαφος
+  tile_ground_3         #9E4C     64  8x16 px        αδιαφανές  έδαφος
+  tile_dust_0           #9E8C     64  8x16 px        αδιαφανές  έδαφος
+  tile_dust_1           #9ECC     64  8x16 px        αδιαφανές  έδαφος
+  tile_dust_2           #9F0C     64  8x16 px        αδιαφανές  έδαφος
+  tile_dust_3           #9F4C     64  8x16 px        αδιαφανές  έδαφος
+  tile_rock_0           #9F8C     64  8x16 px        αδιαφανές  έδαφος
+  tile_rock_1           #9FCC     64  8x16 px        αδιαφανές  έδαφος
+  tile_rock_2           #A00C     64  8x16 px        αδιαφανές  έδαφος
+  tile_rock_3           #A04C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_0       #A08C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_1       #A0CC     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_2       #A10C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_3       #A14C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_4       #A18C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_5       #A1CC     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_6       #A20C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_7       #A24C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_8       #A28C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_9       #A2CC     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_10      #A30C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_11      #A34C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_12      #A38C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_13      #A3CC     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_14      #A40C     64  8x16 px        αδιαφανές  έδαφος
+  tile_mountain_15      #A44C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_0          #A48C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_1          #A4CC     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_2          #A50C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_3          #A54C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_4          #A58C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_5          #A5CC     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_6          #A60C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_7          #A64C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_8          #A68C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_9          #A6CC     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_10         #A70C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_11         #A74C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_12         #A78C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_13         #A7CC     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_14         #A80C     64  8x16 px        αδιαφανές  έδαφος
+  tile_water_15         #A84C     64  8x16 px        αδιαφανές  έδαφος
+  tile_deepwater_0      #A88C     64  8x16 px        αδιαφανές  έδαφος
+  tile_deepwater_1      #A8CC     64  8x16 px        αδιαφανές  έδαφος
+  tile_deepwater_2      #A90C     64  8x16 px        αδιαφανές  έδαφος
+  tile_deepwater_3      #A94C     64  8x16 px        αδιαφανές  έδαφος
+  tile_crater_0         #A98C     64  8x16 px        αδιαφανές  έδαφος
+  tile_crater_1         #A9CC     64  8x16 px        αδιαφανές  έδαφος
+  tile_foundation_0     #AA0C     64  8x16 px        αδιαφανές  έδαφος
+  tile_foundation_1     #AA4C     64  8x16 px        αδιαφανές  έδαφος
+  ore_overlay_0         #AA8C    128  8x16 px        mask+data  έδαφος
+  ore_overlay_1         #AB0C    128  8x16 px        mask+data  έδαφος
+  tile_base             #AB8C     16                            πίνακες εδάφους
+  planet_pens           #AB9C     16                            πίνακες εδάφους
+# structures            #ABAC      -                            (ομάδα)
+  solar_s               #ABAC    128  8x16 px        mask+data  εξωτερικές δομές
+  solar_m               #AC2C    512  16x32 px       mask+data  εξωτερικές δομές
+  solar_l               #AE2C   1152  24x48 px       mask+data  εξωτερικές δομές
+  solar_xl              #B2AC   2048  32x64 px       mask+data  εξωτερικές δομές
+  turbine_s             #BAAC    128  8x16 px        mask+data  εξωτερικές δομές
+  turbine_m             #BB2C    512  16x32 px       mask+data  εξωτερικές δομές
+  turbine_l             #BD2C   1152  24x48 px       mask+data  εξωτερικές δομές
+  collector_s           #C1AC    128  8x16 px        mask+data  εξωτερικές δομές
+  collector_m           #C22C    512  16x32 px       mask+data  εξωτερικές δομές
+  collector_l           #C42C   1152  24x48 px       mask+data  εξωτερικές δομές
+  extractor_s           #C8AC    128  8x16 px        mask+data  εξωτερικές δομές
+  extractor_m           #C92C    512  16x32 px       mask+data  εξωτερικές δομές
+  extractor_l           #CB2C   1152  24x48 px       mask+data  εξωτερικές δομές
+  mine                  #CFAC   2048  32x64 px       mask+data  εξωτερικές δομές
+  struct_dims           #D7AC     40                            πίνακες δομών
+  machine_count         #D7D4      3                            πίνακες δωματίου
+  machine_slots         #D7D7     48                            πίνακες δωματίου
+  machine_rules         #D807     10                            πίνακες δωματίου
+  interior_ofs          #D811      6                            πίνακες δωματίου
+  palette_fw            #D817     16                            παλέτα
+  sprites_pad           #D827    217                            στοίχιση
+  flip_mode0            #D900    256                            πίνακας καθρεφτισμού
 
-  ΣΥΝΟΛΟ                       50432
+  ΣΥΝΟΛΟ                       55808

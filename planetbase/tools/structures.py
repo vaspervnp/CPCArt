@@ -14,7 +14,9 @@ import math
 from palette import (PEN_OUTSIDE, PEN_SHADOW, PEN_DOME_FLOOR, PEN_DOME_EDGE,
                      PEN_CORR_FLOOR, PEN_CORR_EDGE, PEN_COLONIST)
 
-PEN_ORANGE, PEN_CYAN, PEN_PASTEL_Y, PEN_RED_DARK = 7, 10, 12, 13
+# Τα pens 7, 11, 12, 14 ανήκουν στο έδαφος και αλλάζουν ανά πλανήτη· οι δομές
+# δεν τα αγγίζουν, αλλιώς θα άλλαζαν χρώμα μαζί με τον πλανήτη.
+PEN_PINK, PEN_CYAN, PEN_YELLOW, PEN_RED_DARK, PEN_RED = 15, 10, 6, 13, 8
 
 # Τα μεγέθη κάθε δομής: (κωδικός, πλάτος σε pixels, γραμμές).
 # Κάθε ένα είναι οπτικά τετράγωνο (πλάτος x2 == ύψος).
@@ -100,8 +102,9 @@ def power_collector(w, h):
             elif r > R - 3:
                 row.append(PEN_CORR_EDGE)
             else:
+                # κίτρινο εναλλάξ με κόκκινο — το παστέλ κίτρινο πήγε στο έδαφος
                 band = int((R - r) / max(2, R / 5)) % 2
-                row.append(PEN_COLONIST if band else PEN_PASTEL_Y)
+                row.append(PEN_YELLOW if band else PEN_RED)
         pens.append(row)
     return pens
 
@@ -162,7 +165,7 @@ def mine(w, h):
             elif r <= R * 0.42:
                 row.append(PEN_RED_DARK)                    # μετάλλευμα
             elif abs(vx) <= belt or abs(vy) <= belt:
-                row.append(PEN_ORANGE)                      # ταινίες μεταφοράς
+                row.append(PEN_PINK)                      # ταινίες μεταφοράς
             else:
                 row.append(PEN_CORR_FLOOR)
         pens.append(row)

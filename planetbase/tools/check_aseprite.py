@@ -42,7 +42,9 @@ def main():
         print("δεν υπάρχει ο φάκελος sprites/ — τρέξε πρώτα το make_aseprite.lua",
               file=sys.stderr)
         return 1
-    rgb2pen = {c: i for i, c in enumerate(RGB)}
+    # ΟΧΙ αντίστροφη αναζήτηση χρώμα->pen: δύο pens μπορεί να έχουν το ίδιο
+    # firmware χρώμα σε έναν πλανήτη (στον Desert τα 10 και 14 είναι και τα δύο
+    # FW 10). Συγκρίνουμε με το χρώμα που ΠΕΡΙΜΕΝΟΥΜΕ.
     checked = bad = 0
     for group, (w, h, frames) in read_dump(DUMP).items():
         base = os.path.join(SPRITES, f"{PREFIX}{group}_cpc_mode0_sheet")
@@ -58,11 +60,11 @@ def main():
                 for x in range(w):
                     r, g, b, a = sheet.getpixel((box["x"] + x, box["y"] + y))
                     want = int(hexes[y * w + x], 16)
-                    got = 0 if a == 0 else rgb2pen.get((r, g, b), -1)
-                    if got != want:
+                    ok = (a == 0) if want == 0 else ((r, g, b) == RGB[want] and a != 0)
+                    if not ok:
                         if bad < 10:
-                            print(f"  {group}/{name} ({x},{y}): sheet={got} dump={want}",
-                                  file=sys.stderr)
+                            print(f"  {group}/{name} ({x},{y}): sheet=({r},{g},{b},{a}) "
+                                  f"αλλά pen {want} είναι {RGB[want]}", file=sys.stderr)
                         bad += 1
                     checked += 1
     print("ελέγχθηκαν %d pixels σε %d ομάδες" % (checked, len(read_dump(DUMP))))

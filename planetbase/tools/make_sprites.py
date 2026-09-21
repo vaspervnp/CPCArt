@@ -22,8 +22,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from palette import (PALETTE, FW, RGB, PEN_CHARS, pens_to_ascii, PEN_OUTSIDE,
                      PEN_DOME_FLOOR)
 import geometry as geo
+import palette as palette_mod
 import icons
 import structures as st
+import terrain as terr
 
 
 # --------------------------------------------------------------------------
@@ -180,6 +182,17 @@ def build_machines():
 PLANT_CLASSES = ["starch", "veg", "medicine", "morale"]
 
 
+def build_terrain():
+    """Τα tiles του κόσμου. Όλα αδιαφανή· μόνο το ore_overlay έχει μάσκα."""
+    out = []
+    for name, _, _, _ in terr.CLASSES:
+        for sprite_name, pens in terr.build_class(name):
+            out.append(Sprite(sprite_name, pens, "έδαφος", False))
+    for sprite_name, pens in terr.build_ore():
+        out.append(Sprite(sprite_name, pens, "έδαφος", True))
+    return out
+
+
 def build_structures():
     """Εξωτερικά κτίσματα — ΟΧΙ μηχανές θόλου. Έχουν μάσκα και δικά τους μεγέθη."""
     out = []
@@ -259,7 +272,7 @@ def check(cond, msg):
 
 
 def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
-           plants, structs, uniform):
+           plants, structs, tiles, uniform):
     # 1. κωδικοποίηση
     for a, b, want in ((1, 0, 0x80), (0, 1, 0x40), (15, 15, 0xFF),
                        (0, 0, 0x00), (8, 0, 0x02)):
@@ -273,7 +286,7 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
         check(FLIP_TABLE[FLIP_TABLE[b]] == b, f"flip(flip(#{b:02X})) != #{b:02X}")
 
     allspr = (domes + rings + corr + conns + icon_sprites + slots + machines
-              + plants + structs)
+              + plants + structs + tiles)
 
     # 3. διαστάσεις
     for s in allspr:
@@ -368,6 +381,22 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
     for name, cls, _ in icons.PLANTS:
         check(cls in PLANT_CLASSES, f"φυτό {name}: άγνωστη κατηγορία {cls!r}")
 
+    # 10. το έδαφος: σωστό μέγεθος, σωστό πλήθος, και ΚΑΝΕΝΑ άλλο sprite δεν
+    #     πατάει τα pens του εδάφους — αλλιώς θα άλλαζε χρώμα ανά πλανήτη
+    for sp in tiles:
+        want = terr.TILE_W, terr.TILE_H
+        check((sp.w, sp.h) == want, f"{sp.name}: {sp.w}x{sp.h} αντί για {want[0]}x{want[1]}")
+    for name, count, _, _ in terr.CLASSES:
+        got = sum(1 for sp in tiles if sp.name.startswith(f"tile_{name}_"))
+        check(got == count, f"tile_{name}: {got} παραλλαγές αντί για {count}")
+    terrain_pens = set(palette_mod.TERRAIN_PENS)
+    for sp in icon_sprites + machines + plants + structs + slots + domes + rings + corr + conns:
+        used = {p for row in sp.pens for p in row}
+        bad = used & terrain_pens
+        check(not bad, f"{sp.name}: χρησιμοποιεί pens εδάφους {sorted(bad)}")
+    budget = sum(len(sp.data()) for sp in tiles)
+    check(budget == 3584, f"έδαφος: {budget} bytes αντί για 3584")
+
     # 9β. οι θέσεις αποίκων πέφτουν πάνω στον δακτύλιο και δεν πατάνε πόρτα
     for code, (d, fw, fh, cls, dp, rp) in frames.items():
         doors = set()
@@ -413,7 +442,7 @@ class Blob:
 
 
 def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
-               plants, structs, quads):
+               plants, structs, tiles, quads):
     """quads="all": και τα 4 τεταρτημόρια. quads="nw": μόνο το nw — τα υπόλοιπα
     τρία τα παράγει ο Z80 με το flip_mode0 (το ένα τέταρτο της μνήμης)."""
     keep = (lambda n: True) if quads == "all" else (lambda n: n.endswith("_nw"))
@@ -472,6 +501,23 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
         blob.add(sp.name, sp.data(), sp, sp.category)
     blob.add("plant_class", bytes(PLANT_CLASSES.index(c) for _, c, _ in icons.PLANTS),
              None, "πίνακες δωματίου")
+
+    blob.add("terrain", b"", None, "—")
+    for sp in tiles:
+        blob.add(sp.name, sp.data(), sp, sp.category)
+
+    # Δείκτες κλάσης εδάφους: ΜΕΤΑΤΟΠΙΣΕΙΣ από την αρχή του μπλοκ, όχι απόλυτες
+    # διευθύνσεις — έτσι το .bin μένει ανεξάρτητο θέσης και ταυτόσημο με το .asm.
+    base = bytearray()
+    for name, _, _, _ in terr.CLASSES:
+        off = blob.marks[f"tile_{name}_0"]
+        base += bytes([off & 0xFF, off >> 8])
+    blob.add("tile_base", base, None, "πίνακες εδάφους")
+
+    pens = bytearray()
+    for _, fw, _ in palette_mod.PLANETS:
+        pens += bytes(fw)
+    blob.add("planet_pens", pens, None, "πίνακες εδάφους")
 
     blob.add("structures", b"", None, "—")
     for sp in structs:
@@ -565,6 +611,20 @@ def emit_asm(blob, frames, uniform, quads):
         L.append("DOME_%s_SZ   equ %-4d      ; bytes ανά τεταρτημόριο (mask+data)"
                  % (u, fw // 4 * 2 * (fh // 2)))
     L.append("")
+    L.append("; --- έδαφος: το tile είναι 16x16 ΟΠΤΙΚΑ, δηλαδή τετράγωνο ---")
+    L.append("TILE_W      equ %d           ; bytes ανά γραμμή (8 px)" % (terr.TILE_W // 2))
+    L.append("TILE_H      equ %d" % terr.TILE_H)
+    L.append("TILE_SZ     equ %d          ; αδιαφανές" % (terr.TILE_W // 2 * terr.TILE_H))
+    L.append("AUTOTILE    equ %d          ; παραλλαγές σε βουνό και νερό" % terr.AUTOTILE)
+    L.append("ORE_OVL_SZ  equ %d         ; ore_overlay — ΜΕ ΜΑΣΚΑ, πάνω από βουνό"
+             % (terr.TILE_W // 2 * 2 * terr.TILE_H))
+    L.append("TER_CLASSES equ %d           ; %s"
+             % (len(terr.CLASSES), ", ".join(n for n, _, _, _ in terr.CLASSES)))
+    L.append("PLANETS     equ %d           ; %s"
+             % (len(palette_mod.PLANETS), ", ".join(n for n, _, _ in palette_mod.PLANETS)))
+    L.append("")
+    L.append("ROOM_TYPES  equ %d          ; %s"
+             % (len(icons.ROOM_ICONS), ", ".join(n for n, _ in icons.ROOM_ICONS)))
     for code, _ in geo.DOME_SIZES:
         n = icons.ICON_SIZES[code]
         u = code.upper()
@@ -635,6 +695,22 @@ def emit_asm(blob, frames, uniform, quads):
                       "    db " + ",".join("#%02X" % b for b in data)]
                 for pen, name, fw_, rgb, ch, use in PALETTE:
                     L.append("    ; pen %2d  FW %2d  %-13s %s" % (pen, fw_, name, use))
+                continue
+            if label == "tile_base":
+                L += ["", "; --- αρχή κάθε κλάσης εδάφους, ως ΜΕΤΑΤΟΠΙΣΗ από την αρχή",
+                      ";     του μπλοκ. Πραγματική διεύθυνση = base + tile_base[class].",
+                      ";     tile_base[class] + variant*TILE_SZ ---", "tile_base:"]
+                for i, (name, cnt, auto, doc) in enumerate(terr.CLASSES):
+                    off = data[2 * i] | (data[2 * i + 1] << 8)
+                    L.append("    dw #%04X   ; %d %-10s %2d %s"
+                             % (off, i, name, cnt, "autotile" if auto else "παραλλαγές"))
+                continue
+            if label == "planet_pens":
+                L += ["", "; --- planet_pens + planet*4 -> FW για τα pens 7, 11, 12, 14 ---",
+                      "planet_pens:"]
+                for i, (name, fw, doc) in enumerate(palette_mod.PLANETS):
+                    L.append("    db %3d,%3d,%3d,%3d   ; %d %-7s %s"
+                             % (fw[0], fw[1], fw[2], fw[3], i, name, doc))
                 continue
             if label == "struct_dims":
                 L += ["", "; --- διαστάσεις εξωτερικών δομών, 4 θέσεις ανά δομή ---",
@@ -719,6 +795,7 @@ def emit_asm(blob, frames, uniform, quads):
 
 
 ASM_BYTE_RE = re.compile(r"^\s*db\s+(.*)$", re.I)
+ASM_WORD_RE = re.compile(r"^\s*dw\s+(.*)$", re.I)
 ASM_DEFS_RE = re.compile(r"^\s*defs\s+(\d+)\s*,\s*#([0-9A-Fa-f]{1,2})\s*$", re.I)
 
 
@@ -731,6 +808,15 @@ def parse_asm_bytes(text):
         m = ASM_DEFS_RE.match(line)
         if m:
             out.extend(bytes([int(m.group(2), 16)]) * int(m.group(1)))
+            continue
+        m = ASM_WORD_RE.match(line)
+        if m:
+            for tok in m.group(1).split(","):
+                tok = tok.strip()
+                if tok:
+                    v = int(tok[1:], 16) if tok.startswith("#") else int(tok, 10)
+                    out.append(v & 0xFF)        # little-endian, όπως ο Z80
+                    out.append(v >> 8)
             continue
         m = ASM_BYTE_RE.match(line)
         if m:
@@ -796,7 +882,8 @@ def sprite_from_bytes(data, bw, h, masked):
     return pens
 
 
-def render(pens, scale=4, grid=False):
+def render(pens, scale=4, grid=False, rgb=None):
+    pal = rgb or RGB
     w, h = len(pens[0]), len(pens)
     pw, ph = 2 * scale, 1 * scale
     img = Image.new("RGB", (w * pw, h * ph))
@@ -804,7 +891,7 @@ def render(pens, scale=4, grid=False):
     for y in range(h):
         for x in range(w):
             p = pens[y][x]
-            col = CHECKER[(x + y) & 1] if p == PEN_OUTSIDE else RGB[p]
+            col = CHECKER[(x + y) & 1] if p == PEN_OUTSIDE else pal[p]
             d.rectangle([x * pw, y * ph, (x + 1) * pw - 1, (y + 1) * ph - 1], fill=col)
     if grid and scale >= 3:
         for x in range(1, w):
@@ -876,6 +963,96 @@ def composite_pens(blob, frames, code, icon_type, people, with_ring=True):
             if k in chosen:
                 fig = icons.SLOT_FIGURES[1 + k % (len(icons.SLOT_FIGURES) - 1)]
                 blit(f"slot_{code}_{k}_{fig}", geo.SLOT_W, geo.SLOT_H, False, x, y)
+    return out
+
+
+# Σκηνή ελέγχου: 20x10 tiles = 160x160 — όσο το πλάτος μιας οθόνης CPC.
+# g έδαφος · d σκόνη · r βράχος · m βουνό · w ρηχό · W βαθύ · c κρατήρας
+SCENE = [
+    "ggggggggggmmmmmmmmmm",
+    "ggggggggggmmmmmmmmmm",
+    "ggggggggddmmmmmmmmmm",
+    "ggggggggddgggwwwwwww",
+    "ggggggggggggwwwWWwww",
+    "ggggggggggggwwwWWwww",
+    "gggggggggggrwwwwwwww",
+    "ggggggggggrrgggggggg",
+    "ggggggggggggggcggggg",
+    "gggggggggggggggggggg",
+]
+SCENE_CLASS = {"g": "ground", "d": "dust", "r": "rock", "m": "mountain",
+               "w": "water", "W": "deepwater", "c": "crater", "f": "foundation"}
+ORE_AT = [(12, 1), (16, 2)]          # (στήλη, γραμμή) tiles βουνού με φλέβα
+
+
+def scene_pens(blob, frames):
+    """Έδαφος με θόλο, διάδρομο, ακτή και βουνό με μετάλλευμα.
+
+    Αυτή είναι η μόνη προεπισκόπηση που βάζει τις μάσκες πάνω σε ΜΗ μαύρο φόντο —
+    κάθε άλλη έχει τους θόλους πάνω στο μαύρο, όπου ένα λάθος στη μάσκα δεν
+    φαίνεται ποτέ.
+    """
+    data = blob.data()
+    tw, th = terr.TILE_W, terr.TILE_H
+    cols, rows = len(SCENE[0]), len(SCENE)
+    out = [[PEN_OUTSIDE] * (cols * tw) for _ in range(rows * th)]
+
+    # Το βαθύ νερό μετράει ως νερό για το autotile του ρηχού: είναι η ίδια μάζα.
+    SAME = {"deepwater": "water"}
+
+    def cls_at(cx, cy):
+        if 0 <= cx < cols and 0 <= cy < rows:
+            return SCENE_CLASS[SCENE[cy][cx]]
+        return None
+
+    def same_as(cx, cy, name):
+        got = cls_at(cx, cy)
+        return got is not None and SAME.get(got, got) == SAME.get(name, name)
+
+    def put(label, w, h, masked, ox, oy):
+        off = blob.marks[label]
+        n = (w // 2) * (2 if masked else 1) * h
+        paste_pens(out, sprite_from_bytes(data[off:off + n], w // 2, h, masked), ox, oy)
+
+    for cy in range(rows):
+        for cx in range(cols):
+            name = cls_at(cx, cy)
+            count = next(c for n, c, _, _ in terr.CLASSES if n == name)
+            if count == terr.AUTOTILE:
+                # bit0 N, bit1 E, bit2 S, bit3 W — αναμμένο όταν ο γείτονας είναι ίδιος
+                idx = ((terr.N if same_as(cx, cy - 1, name) else 0)
+                       | (terr.E if same_as(cx + 1, cy, name) else 0)
+                       | (terr.S if same_as(cx, cy + 1, name) else 0)
+                       | (terr.W if same_as(cx - 1, cy, name) else 0))
+            else:
+                idx = (cx * 3 + cy * 5) % count
+            put(f"tile_{name}_{idx}", tw, th, False, cx * tw, cy * th)
+
+    for cx, cy in ORE_AT:
+        put(f"ore_overlay_{(cx + cy) % 2}", tw, th, True, cx * tw, cy * th)
+
+    # μικρός θόλος στα αριστερά: 4x4 tiles
+    d, fw, fh, cls, dp, rp = frames["s"]
+    ox, oy = 1 * tw, 4 * th
+    qw, qh = fw // 2, fh // 2
+    for kind in ("ring", "dome"):
+        for corner, dx, dy in (("nw", 0, 0), ("ne", qw, 0), ("sw", 0, qh), ("se", qw, qh)):
+            put(f"{kind}_s_{corner}", qw, qh, True, ox + dx, oy + dy)
+    for name, x, y in geo.conn_points(d, fw, fh):
+        put(f"conn_{name}", geo.CONN_W, geo.CONN_H, True, ox + x, oy + y)
+    for what, x, y, w, h in geo.interior("s", d, fw, fh):
+        if what == "icon":
+            put("icon_s_greenhouse", w, h, False, ox + x, oy + y)
+        else:
+            put("plant_tomatoes", w, h, False, ox + x, oy + y)
+    for k, x, y in geo.corridor_slots(d, fw, fh):
+        if k in (0, 3, 5):
+            put(f"slot_s_{k}_colonist", geo.SLOT_W, geo.SLOT_H, False, ox + x, oy + y)
+
+    # διάδρομος προς τα ανατολικά, στο ύψος του κέντρου του θόλου
+    cy_px = oy + fh // 2 - geo.CORRIDOR_W // 2
+    for i in range(6):
+        put("corr_h", 8, 8, True, ox + fw + i * 8, cy_px)
     return out
 
 
@@ -968,16 +1145,17 @@ def main():
     slots = build_corridor_slots(frames)
     plants = build_plants()
     structs = build_structures()
+    tiles = build_terrain()
 
     try:
         verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
-               plants, structs, args.uniform_quads)
+               plants, structs, tiles, args.uniform_quads)
     except CheckFailed as e:
         print("ΑΠΟΤΥΧΙΑ ΕΠΑΛΗΘΕΥΣΗΣ: %s" % e, file=sys.stderr)
         return 1
 
     blob = build_blob(frames, domes, rings, corr, conns, icon_sprites, slots,
-                      machines, plants, structs, args.quads)
+                      machines, plants, structs, tiles, args.quads)
     asm = emit_asm(blob, frames, args.uniform_quads, args.quads)
     binary = blob.data()
 
@@ -1009,6 +1187,10 @@ def main():
         render(composite_pens(blob, frames, code, 5, 5)).save(
             os.path.join(prev, "composite_%s.png" % code))
     render(composite_pens(blob, frames, "l", 5, 5)).save(os.path.join(prev, "composite.png"))
+    render(scene_pens(blob, frames), 3).save(os.path.join(prev, "scene.png"))
+    for i, (name, _, _) in enumerate(palette_mod.PLANETS):
+        render(scene_pens(blob, frames), 2, rgb=palette_mod.planet_rgb(i)).save(
+            os.path.join(prev, "planet_%s.png" % name))
 
     # dump για το Aseprite: ΠΑΝΤΑ και τα 4 τεταρτημόρια, ακόμη και με --quads nw.
     # Τα .aseprite είναι το εικαστικό· τι αποθηκεύεται τελικά το λέει το sprites_map.txt.
@@ -1028,6 +1210,7 @@ def main():
          [(s.name, s.pens) for s in machines]),
         ("plants", icons.PLANT_W, icons.PLANT_H, [(s.name, s.pens) for s in plants]),
         # όλες οι παραλλαγές στον ίδιο καμβά, μόνο για το Aseprite
+        ("terrain", terr.TILE_W, terr.TILE_H, [(s.name, s.pens) for s in tiles]),
         ("structures", st.SIZES_4[-1][1], st.SIZES_4[-1][2],
          [(s.name, pad_to(s.pens, st.SIZES_4[-1][1], st.SIZES_4[-1][2])) for s in structs]),
     ]
@@ -1064,7 +1247,7 @@ def main():
         print("  μόνο το nw: %d bytes, σύνολο %.1f KB."
               % (quad_bytes // 4, (len(binary) - quad_bytes * 3 // 4) / 1024))
     print()
-    print("  Όλες οι επαληθεύσεις (1-9) πέρασαν.")
+    print("  Όλες οι επαληθεύσεις (1-10) πέρασαν.")
     return 0
 
 
