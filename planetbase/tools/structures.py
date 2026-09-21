@@ -23,6 +23,7 @@ PEN_PINK, PEN_CYAN, PEN_YELLOW, PEN_RED_DARK, PEN_RED = 15, 10, 6, 13, 8
 SIZES_4 = [("s", 8, 16), ("m", 16, 32), ("l", 24, 48), ("xl", 32, 64)]
 SIZES_3 = [("s", 8, 16), ("m", 16, 32), ("l", 24, 48)]
 SIZES_1 = [("", 32, 64)]            # δομές που έχουν ένα μόνο μέγεθος
+SIZES_1M = [("", 16, 32)]           # ... και οι μικρότερες από αυτές
 
 # (όνομα, συνάρτηση, μεγέθη, σχόλιο)  — τα μεγέθη ακολουθούν το Planetbase
 STRUCTURES = [
@@ -31,6 +32,7 @@ STRUCTURES = [
     ("collector", "power_collector", SIZES_3, "συσσωρευτής ενέργειας"),
     ("extractor", "water_extractor", SIZES_3, "αντλία νερού"),
     ("mine",      "mine",            SIZES_1, "ορυχείο — ένα μέγεθος"),
+    ("airlock",   "airlock",         SIZES_1M, "αεροθάλαμος — ένα μέγεθος"),
 ]
 
 
@@ -172,8 +174,42 @@ def mine(w, h):
     return pens
 
 
+def airlock(w, h):
+    """Αεροθάλαμος: θάλαμος με δύο αντικριστές πόρτες και ζώνη κινδύνου.
+
+    Συμμετρικός πάνω-κάτω, ώστε να κουμπώνει με διάδρομο από όποια πλευρά
+    χρειαστεί· στο Planetbase ο αεροθάλαμος συνδέεται με ΜΙΑ εσωτερική δομή.
+    Οι ρίγες κινδύνου είναι τα ίδια χρώματα με το εικονίδιο δωματίου `airlock`,
+    ώστε να διαβάζεται αμέσως τι είναι.
+    """
+    R = h / 2
+    pens = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            vx, vy = _visual(x, y, w, h)
+            oct_d = max(max(abs(vx), abs(vy)), (abs(vx) + abs(vy)) * 0.78)
+            door = abs(vx) <= R * 0.30 and abs(vy) > abs(vx)
+            if oct_d > R:
+                row.append(PEN_OUTSIDE)
+            elif oct_d > R - 2:
+                # το άνοιγμα της πόρτας κόβει τον εξωτερικό τοίχο
+                row.append(PEN_CORR_FLOOR if door else PEN_CORR_EDGE)
+            elif oct_d > R - 5:
+                # ζώνη κινδύνου: ρίγες 1 px x 2 γραμμές, οπτικά τετράγωνες
+                row.append(PEN_CORR_FLOOR if door
+                           else (PEN_RED if ((x + y // 2) & 1) else PEN_YELLOW))
+            elif oct_d > R - 6:
+                row.append(PEN_CORR_EDGE)
+            else:
+                row.append(PEN_DOME_FLOOR)      # ο θάλαμος, υπό πίεση
+        pens.append(row)
+    return pens
+
+
 BUILDERS = {
     "mine": mine,
+    "airlock": airlock,
     "solar_panel": solar_panel,
     "wind_turbine": wind_turbine,
     "power_collector": power_collector,

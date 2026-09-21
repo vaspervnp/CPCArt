@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Παράγει όλα τα sprites Mode 0 του colony sim προγραμματιστικά.
 
-    python3 tools/make_sprites.py [--quads all|nw] [--uniform-quads] [--out DIR]
+    python3 tools/make_sprites.py [--quads nw|all] [--uniform-quads] [--out DIR]
 
 Βγάζει: sprites.asm (RASM), sprites.bin, sprites_map.txt, dump για το Aseprite
 και PNG προεπισκοπήσεις. Τίποτα δεν φορτώνεται από έτοιμα γραφικά.
@@ -901,6 +901,23 @@ def render(pens, scale=4, grid=False, rgb=None):
     return img
 
 
+def quad_pens(blob, data, kind, code, corner, qw, qh):
+    """Τα pens ενός τεταρτημορίου: από το blob, ή παραγμένα από το nw.
+
+    Με --quads nw μόνο το nw υπάρχει· αυτό εδώ κάνει ακριβώς ό,τι θα κάνει ο Z80,
+    οπότε κάθε προεπισκόπηση επαληθεύει και την παραγωγή.
+    """
+    stride, label = qw // 2 * 2, f"{kind}_{code}_{corner}"
+    derive = None
+    if label not in blob.marks:
+        label, derive = f"{kind}_{code}_nw", corner
+    off = blob.marks[label]
+    rows = [list(data[off + y * stride:off + (y + 1) * stride]) for y in range(qh)]
+    if derive:
+        rows = derive_quad(rows, derive, True)
+    return sprite_from_bytes(bytes(b for r in rows for b in r), qw // 2, qh, True)
+
+
 def paste_pens(dst, src, ox, oy):
     """Σύνθεση με μάσκα: τα διαφανή pixels δεν γράφονται."""
     for y, row in enumerate(src):
@@ -922,21 +939,7 @@ def composite_pens(blob, frames, code, icon_type, people, with_ring=True):
         paste_pens(out, sprite_from_bytes(data[off:off + n], w // 2, h, masked), ox, oy)
 
     def quad(kind, corner):
-        """Τα pens ενός τεταρτημορίου: από το blob, ή παραγμένα από το nw.
-
-        Όταν τρέχει με --quads nw, αυτό εδώ κάνει ακριβώς ό,τι θα κάνει ο Z80,
-        οπότε η προεπισκόπηση επαληθεύει και την παραγωγή.
-        """
-        stride, label = qw // 2 * 2, f"{kind}_{code}_{corner}"
-        if label not in blob.marks:
-            label, derive = f"{kind}_{code}_nw", corner
-        else:
-            derive = None
-        off = blob.marks[label]
-        rows = [list(data[off + y * stride:off + (y + 1) * stride]) for y in range(qh)]
-        if derive:
-            rows = derive_quad(rows, derive, True)
-        return sprite_from_bytes(bytes(b for r in rows for b in r), qw // 2, qh, True)
+        return quad_pens(blob, data, kind, code, corner, qw, qh)
 
     order = (["ring"] if with_ring else []) + ["dome"]
     for kind in order:
@@ -1037,7 +1040,8 @@ def scene_pens(blob, frames):
     qw, qh = fw // 2, fh // 2
     for kind in ("ring", "dome"):
         for corner, dx, dy in (("nw", 0, 0), ("ne", qw, 0), ("sw", 0, qh), ("se", qw, qh)):
-            put(f"{kind}_s_{corner}", qw, qh, True, ox + dx, oy + dy)
+            paste_pens(out, quad_pens(blob, data, kind, "s", corner, qw, qh),
+                       ox + dx, oy + dy)
     for name, x, y in geo.conn_points(d, fw, fh):
         put(f"conn_{name}", geo.CONN_W, geo.CONN_H, True, ox + x, oy + y)
     for what, x, y, w, h in geo.interior("s", d, fw, fh):
@@ -1051,8 +1055,11 @@ def scene_pens(blob, frames):
 
     # διάδρομος προς τα ανατολικά, στο ύψος του κέντρου του θόλου
     cy_px = oy + fh // 2 - geo.CORRIDOR_W // 2
-    for i in range(6):
+    for i in range(5):
         put("corr_h", 8, 8, True, ox + fw + i * 8, cy_px)
+    # αεροθάλαμος στο τέλος του διαδρόμου — η έξοδος της βάσης προς τα έξω
+    aw, ah = st.SIZES_1M[0][1], st.SIZES_1M[0][2]
+    put("airlock", aw, ah, True, ox + fw + 5 * 8, oy + fh // 2 - ah // 2)
     return out
 
 
@@ -1130,9 +1137,10 @@ def main():
 
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--quads", choices=("all", "nw"), default="all",
-                    help="all: και τα 4 τεταρτημόρια (γρήγορο). "
-                         "nw: μόνο το nw, τα άλλα 3 παράγονται με το flip_mode0")
+    ap.add_argument("--quads", choices=("all", "nw"), default="nw",
+                    help="nw (προεπιλογή): μόνο το nw, τα άλλα 3 παράγονται με το "
+                         "flip_mode0. all: και τα 4 αποθηκευμένα — γρηγορότερο blit, "
+                         "τριπλάσια μνήμη στα τεταρτημόρια")
     ap.add_argument("--uniform-quads", action="store_true",
                     help="όλα τα μεγέθη σε τεταρτημόριο 32x64 (αλλιώς σφιχτό πλαίσιο ανά μέγεθος)")
     ap.add_argument("--out", default=os.path.join(root, "build", "sprites"))
@@ -1239,7 +1247,7 @@ def main():
     if args.quads == "nw":
         print("  Αποθηκεύεται μόνο το nw (%d bytes)· τα ne/sw/se παράγονται με το"
               % quad_bytes)
-        print("  flip_mode0. Με --quads all θα ήταν %d bytes (σύνολο %.1f KB)."
+        print("  flip_mode0 — η προεπιλογή. Με --quads all: %d bytes (σύνολο %.1f KB)."
               % (quad_bytes * 4, (len(binary) + quad_bytes * 3) / 1024))
     else:
         print("  Τα τεταρτημόρια είναι %d bytes από αυτά. Με --quads nw κρατιέται"
