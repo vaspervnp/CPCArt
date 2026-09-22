@@ -452,6 +452,25 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
         check(not name or name in drawn,
               f"το SLOT_FIGURES αναφέρει «{name}» που δεν έχει σχέδιο")
 
+    # 13. κάθε μηχάνημα ανήκει σε ακριβώς ένα δωμάτιο, και κάθε όνομα στο
+    #     ROOM_MACHINES υπάρχει. Με ονόματα αντί για δείκτες, μια μετονομασία
+    #     θα έδειχνε σιωπηλά σε λάθος μηχάνημα — εδώ σπάει το build.
+    #     Το ίδιο μηχάνημα ΕΠΙΤΡΕΠΕΤΑΙ σε πολλά δωμάτια (DESIGN §6.8: οι
+    #     επεξεργαστές είναι και στο control και στο lab)· το ορφανό όχι.
+    rooms = [n for n, _ in icons.ROOM_ICONS]
+    machs = [n for n, _, _ in icons.MACHINES]
+    check(len(machs) <= 16, f"{len(machs)} μηχανήματα — το bitmask είναι 16 bit")
+    seen = {}
+    for room, names in icons.ROOM_MACHINES.items():
+        check(room in rooms, f"ROOM_MACHINES: άγνωστο δωμάτιο «{room}»")
+        check(len(set(names)) == len(names),
+              f"ROOM_MACHINES[{room}]: διπλή εγγραφή")
+        for m in names:
+            check(m in machs, f"ROOM_MACHINES[{room}]: άγνωστο μηχάνημα «{m}»")
+            seen.setdefault(m, []).append(room)
+    for m in machs:
+        check(m in seen, f"το μηχάνημα «{m}» δεν ανήκει σε κανένα δωμάτιο")
+
     # 12. ASSET-6: οι λωρίδες διαδρόμου πάνω στο πλέγμα μισού tile.
     #     Οριζόντιος διάδρομος -> y πολλαπλάσιο των 8 γραμμών (μισό tile ύψος).
     #     Κάθετος διάδρομος    -> x πολλαπλάσιο των 4 pixel (μισό tile πλάτος).
@@ -634,6 +653,14 @@ def build_blob(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
     for name, sizes, _ in icons.MACHINES:
         rules.append(sum(1 << i for i, c in enumerate("sml") if c in sizes))
     blob.add("machine_rules", rules, None, "πίνακες δωματίου")
+
+    # ποια μηχανήματα δέχεται κάθε τύπος δωματίου — bitmask 12 bit, little-endian
+    mach_ix = {n: i for i, (n, _, _) in enumerate(icons.MACHINES)}
+    rm = bytearray()
+    for room, _ in icons.ROOM_ICONS:
+        bits = sum(1 << mach_ix[m] for m in icons.ROOM_MACHINES.get(room, ()))
+        rm += bytes([bits & 0xFF, bits >> 8])
+    blob.add("room_machines", rm, None, "πίνακες δωματίου")
 
     # θέσεις εικονιδίου και επικαλύμματος ανά μέγεθος (προσημασμένα bytes)
     ofs = bytearray()
@@ -842,6 +869,18 @@ def emit_asm(blob, frames, uniform, quads):
                     for r in range(hud_font.FONT_H):
                         row = g[r * bpl:(r + 1) * bpl]
                         L.append("    db " + ",".join("#%02X" % b for b in row))
+                continue
+            if label == "room_machines":
+                L += ["", "; --- ποια μηχανήματα δέχεται κάθε τύπος δωματίου ---",
+                      "; room_machines + type*2 -> bitmask 12 bit (little-endian)",
+                      "; bit N = το μηχάνημα N της λίστας machines",
+                      "room_machines:"]
+                for i, (room, _) in enumerate(icons.ROOM_ICONS):
+                    lo, hi = data[2 * i], data[2 * i + 1]
+                    names = icons.ROOM_MACHINES.get(room, ())
+                    L.append("    dw #%04X   ; %2d %-10s %s"
+                             % (lo | (hi << 8), i, room,
+                                ", ".join(names) if names else "—"))
                 continue
             if label == "planet_pens":
                 L += ["", "; --- planet_pens + planet*4 -> FW για τα pens 7, 11, 12, 14 ---",
@@ -1396,7 +1435,7 @@ def main():
         print("  μόνο το nw: %d bytes, σύνολο %.1f KB."
               % (quad_bytes // 4, (len(binary) - quad_bytes * 3 // 4) / 1024))
     print()
-    print("  Όλες οι επαληθεύσεις (1-12) πέρασαν.")
+    print("  Όλες οι επαληθεύσεις (1-13) πέρασαν.")
     return 0
 
 
