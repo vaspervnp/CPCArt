@@ -61,6 +61,15 @@ FW_RGB = [
     (0xFF,0xFF,0x00), (0xFF,0xFF,0x80), (0xFF,0xFF,0xFF),
 ]
 
+# Τα ονόματα του firmware για τους ίδιους 27 αριθμούς (εγχειρίδιο του 6128).
+FW_NAMES = [
+    "Black", "Blue", "Bright blue", "Red", "Magenta", "Mauve", "Bright red",
+    "Purple", "Bright magenta", "Green", "Cyan", "Sky blue", "Yellow", "White",
+    "Pastel blue", "Orange", "Pink", "Pastel magenta", "Bright green",
+    "Sea green", "Bright cyan", "Lime", "Pastel green", "Pastel cyan",
+    "Bright yellow", "Pastel yellow", "Bright white",
+]
+
 
 def planet_rgb(planet_index):
     """RGB των 16 pens για έναν πλανήτη — μόνο τα 4 του εδάφους αλλάζουν."""
@@ -94,6 +103,9 @@ PEN_WATER      = 14     # νερό / πάγος — το pen που κυκλών
 assert len(PALETTE) == 16
 assert len(set(PEN_CHARS)) == 16, "κάθε pen χρειάζεται μοναδικό χαρακτήρα"
 assert all(e[0] == i for i, e in enumerate(PALETTE))
+# Το όνομα και το RGB κάθε pen είναι αντίγραφα του αριθμού FW· να μη φύγουν.
+assert all(e[1] == FW_NAMES[e[2]] and e[3] == FW_RGB[e[2]] for e in PALETTE), \
+    "όνομα ή RGB pen που δεν ταιριάζει με τον αριθμό firmware του"
 
 
 def pens_to_ascii(pens):

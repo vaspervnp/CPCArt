@@ -33,6 +33,7 @@ python3 tools/make_sprites.py --uniform-quads   # όλα τα μεγέθη σε 
 | `build/sprites/sprites.asm` | πηγαίος κώδικας RASM, γραμμικά δεδομένα, ASCII σχόλιο ανά γραμμή |
 | `build/sprites/sprites.bin` | τα ίδια bytes σε raw binary |
 | `build/sprites/sprites_map.txt` | offset και μέγεθος κάθε sprite μέσα στο `.bin` |
+| `build/sprites/palette.gpl` | η παλέτα σε μορφή GIMP (ανοίγει και στο Aseprite), για αναφορά όταν ζωγραφίζεις |
 | `build/sprites/preview/` | PNG ανά sprite, `sheet.png`, `composite_{s,m,l}.png` |
 
 Το επικάλυμμα πληρότητας των αρχικών προδιαγραφών (`occupancy`, 5 επίπεδα μέσα
