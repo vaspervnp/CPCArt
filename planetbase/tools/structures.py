@@ -263,13 +263,52 @@ def landing_pad(w, h):
     return pens
 
 
+def outline(pens, pen):
+    """Περίγραμμα γύρω από ένα σχήμα με μάσκα: κάθε διαφανές pixel που απέχει
+    έως 1 pixel οριζόντια και 2 γραμμές κάθετα από το σχήμα γίνεται `pen`.
+    Στο Mode 0 το pixel είναι διπλό σε πλάτος, οπότε το περίγραμμα βγαίνει
+    οπτικά ίσο γύρω γύρω. Το σχήμα πρέπει να αφήνει χώρο στις άκρες."""
+    h, w = len(pens), len(pens[0])
+    assert all(p == PEN_OUTSIDE for p in pens[0] + pens[1] + pens[-1] + pens[-2]), \
+        "το σχήμα αγγίζει πάνω ή κάτω — δεν χωρά περίγραμμα"
+    assert all(r[0] == PEN_OUTSIDE and r[-1] == PEN_OUTSIDE for r in pens), \
+        "το σχήμα αγγίζει δεξιά ή αριστερά — δεν χωρά περίγραμμα"
+    out = [list(r) for r in pens]
+    for y in range(h):
+        for x in range(w):
+            if pens[y][x] == PEN_OUTSIDE and any(
+                    pens[yy][xx] != PEN_OUTSIDE
+                    for yy in range(max(0, y - 2), min(h, y + 3))
+                    for xx in range(max(0, x - 1), min(w, x + 2))):
+                out[y][x] = pen
+    return out
+
+
 def ship(w, h):
-    """Σκάφος σε κάτοψη: άτρακτος, δύο πτέρυγες, δύο κινητήρες.
+    """Σκάφος σε κάτοψη: άτρακτος, δύο πτέρυγες, δύο κινητήρες, και σκούρο
+    περίγραμμα.
 
     Μισό πλάτος από την πλατφόρμα, ώστε να κάθεται μέσα στο οκτάγωνο και να
     φαίνεται ότι προσγειώθηκε και δεν το σκεπάζει. Η μύτη δείχνει πάνω· όταν
     χρειαστεί άλλη κατεύθυνση, το flip_mode0 δίνει τις άλλες τρεις.
+
+    Το περίγραμμα (βήμα 50 του HabitatCPC) υπάρχει για τον barren: εκεί η
+    βάση του εδάφους (pen 7) είναι το ίδιο Cyan με τη γάστρα (pen 10), και
+    χωρίς αυτό η γάστρα χανόταν στο έδαφος. Το pen 1 είναι το μόνο που κρατά
+    αντίθεση με το έδαφος και των τεσσάρων πλανητών και με το δάπεδο της
+    πλατφόρμας — η ίδια λύση με το σκούρο χείλος της πλατφόρμας. Το σχήμα
+    σχεδιάζεται 4 γραμμές πιο κοντό και μπαίνει στη μέση, ώστε το sprite να
+    μένει 16x32· το άνοιγμα των φτερών μένει όσο ήταν, γιατί στο πλάτος το
+    περίγραμμα χωρούσε ήδη.
     """
+    body = _ship_shape(w, h - 4, span=h / 2)
+    blank = [PEN_OUTSIDE] * w
+    return outline([blank, blank] + body + [blank, blank], PEN_SHADOW)
+
+
+def _ship_shape(w, h, span):
+    """Το σχήμα του σκάφους χωρίς περίγραμμα: `h` γραμμές, φτερά έως
+    span*0.92 οπτικά από τον άξονα."""
     R = h / 2
     pens = []
     for y in range(h):
@@ -278,7 +317,7 @@ def ship(w, h):
             vx, vy = _visual(x, y, w, h)
             t = (vy + R) / (2 * R)                  # 0 στη μύτη, 1 στην ουρά
             body = abs(vx) <= 3 + 4.5 * t           # άτρακτος που ανοίγει προς τα πίσω
-            wing = 0.45 < t < 0.72 and abs(vx) <= R * 0.92
+            wing = 0.45 < t < 0.72 and abs(vx) <= span * 0.92
             engine = t > 0.88 and 3 < abs(vx) <= 9
             if engine:
                 row.append(PEN_RED if t > 0.94 else PEN_RED_DARK)
@@ -289,7 +328,7 @@ def ship(w, h):
             elif body:
                 row.append(PEN_CYAN)
             elif wing:
-                row.append(PEN_CYAN if abs(vx) < R * 0.66 else PEN_DOME_EDGE)
+                row.append(PEN_CYAN if abs(vx) < span * 0.66 else PEN_DOME_EDGE)
             else:
                 row.append(PEN_OUTSIDE)
         pens.append(row)
