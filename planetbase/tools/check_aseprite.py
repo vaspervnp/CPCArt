@@ -54,6 +54,13 @@ def main():
         if tags != list(frames):
             print(f"  {group}: τα tags δεν ταιριάζουν με τα frames", file=sys.stderr)
             bad += 1
+        if len(meta["frames"]) != len(frames):
+            # Μπαγιάτικο sheet: άλλος αριθμός frames από τη γεννήτρια. Ως τώρα
+            # αυτό έσκαγε με IndexError αντί να λέει τι φταίει.
+            print(f"  {group}: {len(meta['frames'])} frames στο sheet, {len(frames)} "
+                  f"στη γεννήτρια — ξανάτρεξε το make_aseprite.lua", file=sys.stderr)
+            bad += 1
+            continue
         for i, (name, hexes) in enumerate(frames.items()):
             box = meta["frames"][i]["frame"]
             for y in range(h):

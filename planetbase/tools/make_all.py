@@ -6,6 +6,12 @@
 Το βήμα του Aseprite χρειάζεται το εκτελέσιμο: ορίζεται με τη μεταβλητή
 περιβάλλοντος ASEPRITE. Αν λείπει, τα υπόλοιπα βήματα τρέχουν κανονικά και
 τυπώνεται η εντολή που πρέπει να τρέξει χειροκίνητα.
+
+Από το WSL μπορεί να είναι και .exe των Windows — οι διαδρομές τότε
+μεταφράζονται με το wslpath, αφού το Aseprite δεν ξέρει τι είναι το /home:
+
+    ASEPRITE=/mnt/c/Users/vasilhs/source/repos/aseprite/build/bin/aseprite.exe \
+        python3 tools/make_all.py
 """
 
 import os
@@ -19,6 +25,14 @@ OUT = os.path.join(ROOT, "sprites")
 LUA = os.path.join(HERE, "make_aseprite.lua")
 
 
+def host_path(path, exe):
+    """Διαδρομή όπως τη θέλει το εκτελέσιμο: ένα .exe των Windows που τρέχει
+    από το WSL διαβάζει \\\\wsl.localhost\\..., όχι /home/..."""
+    if not exe.lower().endswith(".exe"):
+        return path
+    return subprocess.check_output(["wslpath", "-w", path], text=True).strip()
+
+
 def run(*cmd):
     print("$ " + " ".join(cmd))
     return subprocess.call(cmd)
@@ -30,10 +44,11 @@ def main(argv):
 
     os.makedirs(OUT, exist_ok=True)
     ase = os.environ.get("ASEPRITE")
-    cmd = [ase or "aseprite", "-b",
-           "--script-param", "in=" + DUMP,
-           "--script-param", "out=" + OUT,
-           "--script", LUA]
+    exe = ase or "aseprite"
+    cmd = [exe, "-b",
+           "--script-param", "in=" + host_path(DUMP, exe),
+           "--script-param", "out=" + host_path(OUT, exe),
+           "--script", host_path(LUA, exe)]
     if not ase:
         print("\nΔεν ορίστηκε ASEPRITE — παράλειψη του βήματος Aseprite.")
         print("Για να φτιαχτούν τα .aseprite τρέξε:")
