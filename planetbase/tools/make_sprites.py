@@ -3,8 +3,8 @@
 
     python3 tools/make_sprites.py [--quads nw|all] [--uniform-quads] [--out DIR]
 
-Βγάζει: sprites.asm (RASM), sprites.bin, sprites_map.txt, palette.gpl (GIMP),
-dump για το Aseprite και PNG προεπισκοπήσεις. Τίποτα δεν φορτώνεται από έτοιμα γραφικά.
+Βγάζει: sprites.asm (RASM), sprites.bin, sprites_map.txt, palette*.gpl (GIMP,
+ένα ανά πλανήτη), dump για το Aseprite και PNG προεπισκοπήσεις. Τίποτα δεν φορτώνεται από έτοιμα γραφικά.
 
 Οι θόλοι, οι δακτύλιοι, οι διάδρομοι και τα σημεία σύνδεσης είναι ΞΕΧΩΡΙΣΤΑ
 sprites με μάσκα (screen = (screen AND mask) OR data), ώστε να συντίθενται
@@ -1022,8 +1022,14 @@ def emit_map(blob):
     return "\n".join(L) + "\n"
 
 
-def emit_gpl():
-    """Η παλέτα σε μορφή GIMP (.gpl) — αναφορά για όποιον ζωγραφίζει.
+def gpl_name(planet):
+    """Το αρχείο .gpl ενός πλανήτη. Ο πρώτος (desert) είναι το palette_fw, η
+    παλέτα με την οποία ξεκινά το παιχνίδι, και κρατά το σκέτο όνομα."""
+    return "palette.gpl" if planet == 0 else "palette_%s.gpl" % palette_mod.PLANETS[planet][0]
+
+
+def emit_gpl(planet):
+    """Η παλέτα ενός πλανήτη σε μορφή GIMP (.gpl) — αναφορά για όποιον ζωγραφίζει.
 
     Η σειρά των γραμμών ΕΙΝΑΙ ο αριθμός του pen, ώστε μια εικόνα indexed με
     αυτή την παλέτα να έχει index == pen. Κάθε γραμμή χρώματος έχει όνομα: το
@@ -1031,33 +1037,46 @@ def emit_gpl():
     pens θα γλιστρούσαν κατά μία θέση.
     """
     P = palette_mod
-    name0 = P.PLANETS[0][0]
+    pname, pfws, pdoc = P.PLANETS[planet]
+    fw = list(FW)
+    for pen, f in zip(P.TERRAIN_PENS, pfws):
+        fw[pen] = f
+    terr = ", ".join(map(str, P.TERRAIN_PENS))
+    if planet == 0:
+        src = ["# Τιμές του πλανήτη %s (%s), όπως το palette_fw: η παλέτα" % (pname, pdoc),
+               "# με την οποία ξεκινά το παιχνίδι."]
+    else:
+        src = ["# Τιμές του πλανήτη %s (%s): το palette_fw, με τα pens %s"
+               % (pname, pdoc, terr),
+               "# από τη σειρά %d του planet_pens." % planet]
     L = ["GIMP Palette",
-         "Name: Habitat CPC Mode 0 (%s)" % name0,
+         "Name: Habitat CPC Mode 0 (%s)" % pname,
          "Columns: 8",
          "#",
          "# ΠΑΡΑΓΕΤΑΙ από το CPCArt/planetbase/tools/make_sprites.py, από το",
          "# tools/palette.py — μην το διορθώνεις με το χέρι.",
          "#",
          "# Τα 16 pens του Mode 0 με τη σειρά: η θέση στη λίστα είναι ο αριθμός",
-         "# του pen. Τιμές του πλανήτη %s, όπως το palette_fw. RGB = τα χρώματα" % name0,
-         "# του firmware (0, 128, 255 ανά κανάλι), τα ίδια με των προεπισκοπήσεων.",
+         "# του pen. RGB = τα χρώματα του firmware (0, 128, 255 ανά κανάλι), τα",
+         "# ίδια με των προεπισκοπήσεων.",
+         *src,
+         "# Ένα αρχείο ανά πλανήτη: "
+         + ", ".join(gpl_name(i) for i in range(len(P.PLANETS))) + ".",
          "#",
          "# Pen 0 είναι το διαφανές. Τα 0-6 είναι καρφωμένα (μάσκες, θόλοι,",
-         "# διάδρομοι). Τα %s είναι του ΕΔΑΦΟΥΣ και αλλάζουν ανά πλανήτη·"
-         % ", ".join(map(str, P.TERRAIN_PENS)),
+         "# διάδρομοι). Τα %s είναι του ΕΔΑΦΟΥΣ και αλλάζουν ανά πλανήτη·" % terr,
          "# εικονίδια, μηχανές και φυτά δεν τα αγγίζουν — δικά τους είναι τα",
          "# %s, συν όσα από τα 1-6 διαβάζονται σωστά." % ", ".join(map(str, P.ICON_PENS)),
          "#"]
     # Ίδιο χρώμα σε δύο pens: σε μετατροπή RGB -> indexed κερδίζει το πρώτο.
     same = {}
-    for pen, fw in enumerate(FW):
-        same.setdefault(fw, []).append(pen)
-    dups = [(fw, pens) for fw, pens in sorted(same.items()) if len(pens) > 1]
+    for pen, f in enumerate(fw):
+        same.setdefault(f, []).append(pen)
+    dups = [(f, pens) for f, pens in sorted(same.items()) if len(pens) > 1]
     if dups:
         L.append("# Ίδιο χρώμα, άλλο pen: "
-                 + ", ".join("%s (%s)" % (" και ".join(map(str, pens)), P.FW_NAMES[fw])
-                             for fw, pens in dups) + ".")
+                 + ", ".join("%s (%s)" % (" και ".join(map(str, pens)), P.FW_NAMES[f])
+                             for f, pens in dups) + ".")
         if all(sum(p in P.TERRAIN_PENS for p in pens) == 1 for _, pens in dups):
             L.append("# Το pen του εδάφους αλλάζει με τον πλανήτη, το άλλο όχι.")
         L += ["# Διάλεξε με τον αριθμό, όχι με το χρώμα. Στο GIMP, Image > Mode >",
@@ -1068,10 +1087,12 @@ def emit_gpl():
     L.append("#   %-8s" % "" + "".join("pen %-16d" % pen for pen in P.TERRAIN_PENS).rstrip())
     for name, fws, _ in P.PLANETS:
         L.append("#   %-8s" % name
-                 + "".join("%-20s" % ("%d %s" % (fw, P.FW_NAMES[fw])) for fw in fws).rstrip())
+                 + "".join("%-20s" % ("%d %s" % (f, P.FW_NAMES[f])) for f in fws).rstrip())
     L.append("#")
-    for pen, name, fw, rgb, ch, use in PALETTE:
-        L.append("%3d %3d %3d\tpen %d %s (fw %d) — %s" % (rgb + (pen, name, fw, use)))
+    for pen, use in enumerate(P.USAGE):
+        f = fw[pen]
+        L.append("%3d %3d %3d\tpen %d %s (fw %d) — %s"
+                 % (P.FW_RGB[f] + (pen, P.FW_NAMES[f], f, use)))
     return "\n".join(L) + "\n"
 
 
@@ -1405,8 +1426,9 @@ def main():
 
     prev = os.path.join(args.out, "preview")
     os.makedirs(prev, exist_ok=True)
+    gpls = [(gpl_name(i), emit_gpl(i)) for i in range(len(palette_mod.PLANETS))]
     for name, text in (("sprites.asm", asm), ("sprites_map.txt", emit_map(blob)),
-                       ("palette.gpl", emit_gpl())):
+                       *gpls):
         with open(os.path.join(args.out, name), "w", encoding="utf-8") as f:
             f.write(text)
     with open(os.path.join(args.out, "sprites.bin"), "wb") as f:

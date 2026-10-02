@@ -106,6 +106,10 @@ assert all(e[0] == i for i, e in enumerate(PALETTE))
 # Το όνομα και το RGB κάθε pen είναι αντίγραφα του αριθμού FW· να μη φύγουν.
 assert all(e[1] == FW_NAMES[e[2]] and e[3] == FW_RGB[e[2]] for e in PALETTE), \
     "όνομα ή RGB pen που δεν ταιριάζει με τον αριθμό firmware του"
+# Το palette_fw ΕΙΝΑΙ ο πρώτος πλανήτης: εκεί ξεκινά το παιχνίδι, και το
+# palette.gpl (χωρίς όνομα πλανήτη) λέει ότι είναι αυτός.
+assert [FW[p] for p in TERRAIN_PENS] == PLANETS[0][1], \
+    "το έδαφος του palette_fw δεν είναι του πρώτου πλανήτη"
 
 
 def pens_to_ascii(pens):
