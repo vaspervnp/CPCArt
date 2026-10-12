@@ -47,10 +47,11 @@ def write_dump(path, s):
 
 
 def write_sheet(s):
-    img = s.sheet(SHEET_COLS)
+    cols = 1 if s.w > 64 else SHEET_COLS
+    img = s.sheet(cols)
     g.write_indexed_png(os.path.join(OUT, s.name + '_sheet.png'), img,
                         transparent_pen0=s.masked)
-    rows = (len(s.frames) + SHEET_COLS - 1) // SHEET_COLS
+    rows = (len(s.frames) + cols - 1) // cols
     doc = {
         'name': s.name,
         'note': s.note,
@@ -58,11 +59,11 @@ def write_sheet(s):
         'masked': s.masked,
         'bytes_per_frame': s.bytes_per_frame(),
         'total_bytes': s.total_bytes(),
-        'sheet': {'cols': SHEET_COLS, 'rows': rows,
-                  'w': SHEET_COLS * s.w, 'h': rows * s.h},
+        'sheet': {'cols': cols, 'rows': rows,
+                  'w': cols * s.w, 'h': rows * s.h},
         'tags': [{'name': t, 'from': a, 'to': b} for t, a, b in s.tag_ranges()],
         'frames': [{'index': i, 'name': n, 'tag': t,
-                    'x': (i % SHEET_COLS) * s.w, 'y': (i // SHEET_COLS) * s.h}
+                    'x': (i % cols) * s.w, 'y': (i // cols) * s.h}
                    for i, (n, t) in enumerate(zip(s.names, s.tags))],
     }
     with open(os.path.join(OUT, s.name + '_sheet.json'), 'w') as f:
@@ -71,7 +72,7 @@ def write_sheet(s):
     return doc
 
 
-ASM_HEAD = """; sprites.asm — Sugar Byte, Amstrad CPC Mode 0
+ASM_HEAD = """; %s.asm — Sugar Byte, %s, Amstrad CPC Mode 0
 ; ΠΑΡΑΓΕΤΑΙ ΑΥΤΟΜΑΤΑ από src/make_all.py — μην το πειράζεις με το χέρι.
 ;
 ; Δεδομένα γραμμικά (γραμμή-γραμμή), ΟΧΙ στη διάταξη της μνήμης οθόνης.
@@ -89,10 +90,10 @@ ASM_HEAD = """; sprites.asm — Sugar Byte, Amstrad CPC Mode 0
 """
 
 
-def write_asm_bin(sets):
-    """Ένα ενιαίο sprites.bin και το sprites.asm που το περιγράφει."""
+def write_asm_bin(sets, stem, title):
+    """Ένα blob .bin και το .asm που το περιγράφει."""
     blob = bytearray()
-    lines = [ASM_HEAD]
+    lines = [ASM_HEAD % (stem, title)]
     offsets = []
 
     for s in sets:
@@ -120,27 +121,31 @@ def write_asm_bin(sets):
                 lines.append('  db ' + ','.join('#%02X' % b for b in data[r:r + 16]))
         lines.append('')
 
-    with open(os.path.join(OUT, 'sprites.bin'), 'wb') as f:
+    with open(os.path.join(OUT, stem + '.bin'), 'wb') as f:
         f.write(blob)
-    with open(os.path.join(OUT, 'sprites.asm'), 'w') as f:
+    with open(os.path.join(OUT, stem + '.asm'), 'w') as f:
         f.write('\n'.join(lines))
     return blob, offsets
 
 
-def write_map(sets, offsets):
-    out = ['Sugar Byte — χάρτης του sprites.bin',
-           '=' * 60, '']
-    for s, (label, off, size) in zip(sets, offsets):
-        out.append('%s  @ %5d (#%04X)  %d bytes  %s'
-                   % (label, off, off, size, s.note))
-        out.append('    %d x %d pixels, %s, %d bytes/καρέ'
-                   % (s.w, s.h, 'με μάσκα' if s.masked else 'αδιαφανές',
-                      s.bytes_per_frame()))
-        for i, (n, t) in enumerate(zip(s.names, s.tags)):
-            out.append('      %3d  %-14s %-11s @ %5d'
-                       % (i, n, t, off + i * s.bytes_per_frame()))
+def write_map(groups):
+    """Ένας χάρτης για όλα τα blobs: ποιο καρέ κάθεται πού, με όνομα και tag."""
+    out = ['Sugar Byte — χάρτης των blobs', '=' * 60, '']
+    for stem, sets, offsets in groups:
+        out.append('--- %s.bin ---' % stem)
         out.append('')
-    out.append('ΣΥΝΟΛΟ %d bytes' % sum(x[2] for x in offsets))
+        for s, (label, off, size) in zip(sets, offsets):
+            out.append('%s  @ %5d (#%04X)  %d bytes  %s'
+                       % (label, off, off, size, s.note))
+            out.append('    %d x %d pixels, %s, %d bytes/καρέ'
+                       % (s.w, s.h, 'με μάσκα' if s.masked else 'αδιαφανές',
+                          s.bytes_per_frame()))
+            for i, (n, t) in enumerate(zip(s.names, s.tags)):
+                out.append('      %3d  %-14s %-11s @ %5d'
+                           % (i, n, t, off + i * s.bytes_per_frame()))
+            out.append('')
+        out.append('ΣΥΝΟΛΟ %s.bin: %d bytes' % (stem, sum(x[2] for x in offsets)))
+        out.append('')
     with open(os.path.join(OUT, 'sprites_map.txt'), 'w') as f:
         f.write('\n'.join(out) + '\n')
 
@@ -166,34 +171,46 @@ def main():
     for s in sets:
         docs.append(write_sheet(s))
         write_dump(os.path.join(DUMPS, s.name + '.txt'), s)
+        cols = 1 if s.w > 64 else (SHEET_COLS if s.w > 8 else 10)
         pv.sheet_png_preview(s, os.path.join(OUT, 'preview_' + s.name.split('_')[0] + '.png'),
-                             cols=SHEET_COLS if s.w > 8 else 10,
-                             scale=3 if s.w > 8 else 6)
+                             cols=cols, scale=3 if s.w > 8 else 6)
         if ASE:
             subprocess.run([ASE, '-b',
                             '--script-param', 'in=' + os.path.join(DUMPS, s.name + '.txt'),
                             '--script-param', 'out=' + os.path.join(OUT, s.name + '.aseprite'),
                             '--script-param', 'mode=frames', '--script', LUA], check=True)
 
-    candy, cells, overlay, hud = sets
-    screen = mk.screen(candy, cells, overlay, hud)
-    g.write_indexed_png(os.path.join(OUT, 'mockup_screen.png'), screen)
-    cv = g.Canvas(mk.SCREEN_W * 6, mk.SCREEN_H * 3, (0, 0, 0))
-    cv.blit_pens(screen, 0, 0, 6, 3)
-    cv.save(os.path.join(OUT, 'mockup_screen_2x1.png'))
+    for name, build in (('mockup_screen', mk.screen),
+                        ('mockup_menu', mk.menu_screen)):
+        shot = build(*sets)
+        g.write_indexed_png(os.path.join(OUT, name + '.png'), shot)
+        cv = g.Canvas(mk.SCREEN_W * 6, mk.SCREEN_H * 3, (0, 0, 0))
+        cv.blit_pens(shot, 0, 0, 6, 3)
+        cv.save(os.path.join(OUT, name + '_2x1.png'))
 
     write_palette()
-    blob, offsets = write_asm_bin(sets)
-    write_map(sets, offsets)
+    by_name = {x.name.split('_')[0]: x for x in sets}
+    groups, blobs = [], {}
+    for stem, keys, title in (('sprites', sp.GAME_SETS, 'το παιχνίδι'),
+                              ('menu', sp.MENU_SETS, 'τίτλος και μενού')):
+        part = [by_name[k] for k in keys]
+        blob, offsets = write_asm_bin(part, stem, title)
+        groups.append((stem, part, offsets))
+        blobs[stem] = blob
+    write_map(groups)
 
     manifest = {
         'project': 'Sugar Byte',
         'machine': 'Amstrad CPC, Mode 0, 160x200, 16 pens, αναλογία pixel 2:1',
+        'screen': {'w': mk.SCREEN_W, 'h': mk.SCREEN_H,
+                   'note': 'overscan σε σελίδα 32 KB· CRTC R1=48, R6=31'},
         'board': {'cols': mk.COLS, 'rows': mk.ROWS,
                   'cell': {'w': g.CW, 'h': g.CH},
                   'origin': {'x': mk.BOARD_X, 'y': mk.BOARD_Y},
                   'pixels': {'w': mk.COLS * g.CW, 'h': mk.ROWS * g.CH},
-                  'hud_x': mk.HUD_X, 'hud_cell': {'w': g.HW, 'h': g.HH}},
+                  'hud_x': mk.HUD_X, 'hud_cell': {'w': g.HW, 'h': g.HH},
+                  'border': {'w': mk.BORDER_W, 'title_h': mk.TITLE_H,
+                             'foot_h': mk.FOOT_H}},
         'palette': [{'pen': i, 'firmware': p[2],
                      'rgb': '#%02X%02X%02X' % p[3], 'name': p[1], 'use': p[4]}
                     for i, p in enumerate(g.PALETTE)],
@@ -203,9 +220,10 @@ def main():
                           enumerate(zip(g.CANDY_PENS,
                                         __import__('shapes').SHAPE_NAMES))],
         'sets': docs,
-        'binary': {'file': 'sprites.bin', 'bytes': len(blob),
-                   'blocks': [{'label': l, 'offset': o, 'bytes': n}
-                              for l, o, n in offsets]},
+        'binaries': [{'file': stem + '.bin', 'bytes': len(blobs[stem]),
+                      'blocks': [{'label': l, 'offset': o, 'bytes': n}
+                                 for l, o, n in offs]}
+                     for stem, _, offs in groups],
     }
     with open(os.path.join(OUT, 'manifest.json'), 'w') as f:
         json.dump(manifest, f, indent=1, ensure_ascii=False)
@@ -215,8 +233,9 @@ def main():
     for s in sets:
         print('%-22s %-8s %5d %10d' % (s.name, '%dx%d' % (s.w, s.h),
                                        len(s.frames), s.total_bytes()))
-    print('%-22s %-8s %5d %10d  (%.1f KB)' % ('ΣΥΝΟΛΟ', '', 
-          sum(len(s.frames) for s in sets), len(blob), len(blob) / 1024.0))
+    for stem in ('sprites', 'menu'):
+        print('%-22s %-8s %5s %10d  (%.1f KB)' % (stem + '.bin', '', '',
+              len(blobs[stem]), len(blobs[stem]) / 1024.0))
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-; sprites.asm — Sugar Byte, Amstrad CPC Mode 0
+; sprites.asm — Sugar Byte, το παιχνίδι, Amstrad CPC Mode 0
 ; ΠΑΡΑΓΕΤΑΙ ΑΥΤΟΜΑΤΑ από src/make_all.py — μην το πειράζεις με το χέρι.
 ;
 ; Δεδομένα γραμμικά (γραμμή-γραμμή), ΟΧΙ στη διάταξη της μνήμης οθόνης.

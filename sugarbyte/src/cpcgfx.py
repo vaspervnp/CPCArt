@@ -153,6 +153,21 @@ def mode0_byte(a, b):
 assert mode0_byte(3, 3) == 0xCC and mode0_byte(1, 0) == 0x80 and mode0_byte(15, 15) == 0xFF
 
 
+def mode0_pens(byte):
+    """Ο αντίστροφος του mode0_byte: byte -> (αριστερό pen, δεξί pen)."""
+    bit = lambda n: (byte >> n) & 1
+    return (bit(7) | bit(3) << 1 | bit(5) << 2 | bit(1) << 3,
+            bit(6) | bit(2) << 1 | bit(4) << 2 | bit(0) << 3)
+
+
+# Ο έλεγχος είναι εδώ και τρέχει σε κάθε import επίτηδες: κάθε φορά που κάποιος
+# ξαναγράφει τον αποκωδικοποιητή «από μνήμη» για να επαληθεύσει κάτι, τον
+# γράφει ανάποδα και βγάζει ψεύτικο συναγερμό σε σωστά δεδομένα.
+assert all(mode0_pens(mode0_byte(a, b)) == (a, b)
+           for a in range(16) for b in range(16)), \
+    'ο κωδικοποιητής και ο αποκωδικοποιητής Mode 0 δεν είναι αντίστροφοι'
+
+
 def encode_opaque(img):
     """Εικόνα -> bytes Mode 0. Το διάφανο γίνεται pen 0."""
     out = bytearray()

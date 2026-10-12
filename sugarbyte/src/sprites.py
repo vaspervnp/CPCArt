@@ -7,7 +7,9 @@ candies θα χρειάζονταν μία έκδοση για κάθε φόντ
 """
 import math
 
+import hudart
 import shapes as sh
+import title as title_art
 from cpcgfx import (CANDY_PENS, CANDY_NAMES, CW, CH, HW, HH, PEN,
                     PEN_GREY, PEN_HI, PEN_JELLY, PEN_LINE, PEN_MASK,
                     SpriteSet, blank, opaque, parse_art, stamp)
@@ -412,7 +414,9 @@ times:W..W W..W .WW. .WW. W..W W..W ...
 plus :... .W. WWW .W. ... ...
 """
 
-# Εικονίδια 4x8 — τέσσερις στήλες μόνο, άρα σύμβολα, όχι εικόνες.
+# Εικονίδια 4x8 — τέσσερις στήλες μόνο, άρα σύμβολα, όχι εικόνες. Μένουν
+# παρότι υπάρχουν και τα 8x16 του icons_gfx: ο κώδικας του παιχνιδιού τα
+# χρησιμοποιεί ήδη, και τα 4x8 είναι αυτά που χωράνε δίπλα σε έναν αριθμό.
 ICONS = """
 moves:.W.. WWWW .W.. .... ...W WWWW ..W. ....
 star :.WW. .WW. WWWW WWWW .WW. .WW. .... ....
@@ -449,7 +453,6 @@ def hud():
         s.add(_glyph(rows), name, 'symbols')
     for name, rows in _parse_glyphs(ICONS):
         s.add(_glyph(rows, PEN_JELLY, top=0), name, 'icons')
-
     # Πλαίσιο HUD, 9 κομμάτια: γωνίες, πλευρές, γέμισμα.
     for ky in ('t', 'm', 'b'):
         for kx in ('l', 'c', 'r'):
@@ -467,8 +470,33 @@ def hud():
                 for y in range(HH):
                     img[y][HW - 1] = PEN_GREY
             s.add(img, 'panel_%s%s' % (ky, kx), 'panel')
+
     return s
 
 
+def text():
+    """Κεφαλαία, χάρακας και μπάρα — ό,τι χρειάζεται ΜΟΝΟ η οθόνη του μενού.
+
+    Ξεχωριστό σετ και όχι ουρά του hud, γιατί μπαίνει σε άλλο blob: το
+    sprites.bin του παιχνιδιού είναι γεμάτο ώς το τελευταίο byte.
+    """
+    s = SpriteSet('text_cpc_mode0', HW, HH, masked=False,
+                  note='κείμενο 4x8 αδιαφανές — κεφαλαία, χάρακας, μπάρα προόδου')
+    for name, rows in _parse_glyphs(hudart.LETTERS):
+        s.add(_glyph(rows, top=2), 'letter_' + name, 'letters')
+    s.add(hudart.rule_tile(), 'rule', 'rule')
+    for name, img in hudart.bar_frames():
+        s.add(img, name, 'bar')
+    return s
+
+
+# Δύο blobs. Το πρώτο μένει φορτωμένο όσο παίζεις· το δεύτερο ζωγραφίζεται μία
+# φορά στο μενού και στην αρχή της πίστας, και μετά ο χώρος του ξαναχρησιμεύει.
+GAME_SETS = ('candy', 'cells', 'overlay', 'hud')
+MENU_SETS = ('text', 'icons', 'title', 'border', 'menu')
+
+
 def all_sets():
-    return [candies(), cells(), overlays(), hud()]
+    return [candies(), cells(), overlays(), hud(),
+            text(), hudart.icons(),
+            title_art.title_set(), title_art.border(), title_art.menu()]

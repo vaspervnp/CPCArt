@@ -1,5 +1,7 @@
-Sugar Byte — χάρτης του sprites.bin
+Sugar Byte — χάρτης των blobs
 ============================================================
+
+--- sprites.bin ---
 
 candy_gfx  @     0 (#0000)  7776 bytes  candies 12x24 με μάσκα — 6 χρώματα x 4 μορφές, βόμβα, υλικά
     12 x 24 pixels, με μάσκα, 288 bytes/καρέ
@@ -92,4 +94,73 @@ hud_gfx  @ 13248 (#33C0)  448 bytes  κελιά HUD 4x8 αδιαφανή — ψ�
        26  panel_bc       panel       @ 13664
        27  panel_br       panel       @ 13680
 
-ΣΥΝΟΛΟ 13696 bytes
+ΣΥΝΟΛΟ sprites.bin: 13696 bytes
+
+--- menu.bin ---
+
+text_gfx  @     0 (#0000)  496 bytes  κείμενο 4x8 αδιαφανές — κεφαλαία, χάρακας, μπάρα προόδου
+    4 x 8 pixels, αδιαφανές, 16 bytes/καρέ
+        0  letter_A       letters     @     0
+        1  letter_B       letters     @    16
+        2  letter_C       letters     @    32
+        3  letter_D       letters     @    48
+        4  letter_E       letters     @    64
+        5  letter_F       letters     @    80
+        6  letter_G       letters     @    96
+        7  letter_H       letters     @   112
+        8  letter_I       letters     @   128
+        9  letter_J       letters     @   144
+       10  letter_K       letters     @   160
+       11  letter_L       letters     @   176
+       12  letter_M       letters     @   192
+       13  letter_N       letters     @   208
+       14  letter_O       letters     @   224
+       15  letter_P       letters     @   240
+       16  letter_Q       letters     @   256
+       17  letter_R       letters     @   272
+       18  letter_S       letters     @   288
+       19  letter_T       letters     @   304
+       20  letter_U       letters     @   320
+       21  letter_V       letters     @   336
+       22  letter_W       letters     @   352
+       23  letter_X       letters     @   368
+       24  letter_Y       letters     @   384
+       25  letter_Z       letters     @   400
+       26  rule           rule        @   416
+       27  bar_l          bar         @   432
+       28  bar_e          bar         @   448
+       29  bar_f          bar         @   464
+       30  bar_r          bar         @   480
+
+icons_gfx  @   496 (#01F0)  512 bytes  εικονίδια HUD 8x16 αδιαφανή — βάζο, βέλη, κλεψύδρα, γλειφιτζούρι, ζελέ, αστέρια, λουκέτο
+    8 x 16 pixels, αδιαφανές, 64 bytes/καρέ
+        0  score          icon        @   496
+        1  moves          icon        @   560
+        2  time           icon        @   624
+        3  goal           icon        @   688
+        4  jelly          icon        @   752
+        5  star_on        icon        @   816
+        6  star_off       icon        @   880
+        7  lock           icon        @   944
+
+title_gfx  @  1008 (#03F0)  3072 bytes  λογότυπο overscan 192x32 αδιαφανές — πάνω μπορντούρα
+    192 x 32 pixels, αδιαφανές, 3072 bytes/καρέ
+        0  sugar_byte     title       @  1008
+
+border_gfx  @  4080 (#0FF0)  768 bytes  μπορντούρα overscan 16x24 αδιαφανή — κορδόνι και γωνία
+    16 x 24 pixels, αδιαφανές, 192 bytes/καρέ
+        0  edge_left      edge        @  4080
+        1  edge_right     edge        @  4272
+        2  edge_bottom    edge        @  4464
+        3  corner         corner      @  4656
+
+menu_gfx  @  4848 (#12F0)  960 bytes  μενού 16x24 αδιαφανές — πιάτο επιλογής και δείκτης
+    16 x 24 pixels, αδιαφανές, 192 bytes/καρέ
+        0  plate_m        plate       @  4848
+        1  plate_l        plate       @  5040
+        2  plate_r        plate       @  5232
+        3  pointer1       pointer     @  5424
+        4  pointer2       pointer     @  5616
+
+ΣΥΝΟΛΟ menu.bin: 5808 bytes
+
