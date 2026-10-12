@@ -139,14 +139,18 @@ def pens_used(img):
 
 # --------------------------------------------------------- κωδικοποίηση CPC
 # Mode 0: δύο pixels το byte, με τα bits μπλεγμένα. Αριστερό pixel a, δεξί b:
-#   a: bit3->b7  bit2->b3  bit1->b5  bit0->b1
-#   b: bit3->b6  bit2->b2  bit1->b4  bit0->b0
+#   a: bit0->b7  bit1->b3  bit2->b5  bit3->b1
+#   b: bit0->b6  bit1->b2  bit2->b4  bit3->b0
+# (pen 3 σε δύο pixels = #CC· pen 1 μόνο αριστερά = #80)
 
 def mode0_byte(a, b):
-    return (((a >> 3) & 1) << 7 | ((a >> 2) & 1) << 3 |
-            ((a >> 1) & 1) << 5 | (a & 1) << 1 |
-            ((b >> 3) & 1) << 6 | ((b >> 2) & 1) << 2 |
-            ((b >> 1) & 1) << 4 | (b & 1))
+    return ((a & 1) << 7 | ((a >> 1) & 1) << 3 |
+            ((a >> 2) & 1) << 5 | ((a >> 3) & 1) << 1 |
+            (b & 1) << 6 | ((b >> 1) & 1) << 2 |
+            ((b >> 2) & 1) << 4 | ((b >> 3) & 1))
+
+
+assert mode0_byte(3, 3) == 0xCC and mode0_byte(1, 0) == 0x80 and mode0_byte(15, 15) == 0xFF
 
 
 def encode_opaque(img):
