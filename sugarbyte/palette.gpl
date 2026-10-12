@@ -1,0 +1,22 @@
+GIMP Palette
+Name: Sugar Byte CPC Mode 0
+Columns: 4
+# Amstrad CPC Mode 0 — 16 pens από τα 27 χρώματα του firmware.
+# Η στήλη FW είναι ο αριθμός για το SCR SET INK / τον Gate Array.
+#
+  0   0   0	pen 00  FW 00  Black — φόντο ταμπλό / μάσκα
+255 255 255	pen 01  FW 26  Bright white — ανταύγεια, ρίγες, γράμματα
+128 128 128	pen 02  FW 13  White — γκρι: πλέγμα, γλάσο, χρώμια
+  0   0 128	pen 03  FW 01  Blue — περίγραμμα, σκιά, ταμπλό HUD
+  0 255 255	pen 04  FW 20  Bright cyan — ζελέ, εφέ, τόνος UI
+255   0   0	pen 05  FW 06  Bright red — ΚΟΚΚΙΝΟ — βάση
+128   0   0	pen 06  FW 03  Red — ΚΟΚΚΙΝΟ — σκιά, σοκολάτα
+255 128   0	pen 07  FW 15  Orange — ΠΟΡΤΟΚΑΛΙ — βάση
+128 128   0	pen 08  FW 12  Yellow — ΠΟΡΤΟΚΑΛΙ+ΚΙΤΡΙΝΟ — σκιά
+255 255   0	pen 09  FW 24  Bright yellow — ΚΙΤΡΙΝΟ — βάση
+  0 255   0	pen 10  FW 18  Bright green — ΠΡΑΣΙΝΟ — βάση
+  0 128   0	pen 11  FW 09  Green — ΠΡΑΣΙΝΟ — σκιά
+  0 128 255	pen 12  FW 11  Sky blue — ΜΠΛΕ — βάση
+  0   0 255	pen 13  FW 02  Bright blue — ΜΠΛΕ — σκιά
+255   0 255	pen 14  FW 08  Bright magenta — ΜΩΒ — βάση
+128   0 128	pen 15  FW 04  Magenta — ΜΩΒ — σκιά

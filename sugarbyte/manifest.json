@@ -1,0 +1,948 @@
+{
+ "project": "Sugar Byte",
+ "machine": "Amstrad CPC, Mode 0, 160x200, 16 pens, αναλογία pixel 2:1",
+ "board": {
+  "cols": 8,
+  "rows": 8,
+  "cell": {
+   "w": 12,
+   "h": 24
+  },
+  "origin": {
+   "x": 0,
+   "y": 4
+  },
+  "pixels": {
+   "w": 96,
+   "h": 192
+  },
+  "hud_x": 96,
+  "hud_cell": {
+   "w": 4,
+   "h": 8
+  }
+ },
+ "palette": [
+  {
+   "pen": 0,
+   "firmware": 0,
+   "rgb": "#000000",
+   "name": "Black",
+   "use": "φόντο ταμπλό / μάσκα"
+  },
+  {
+   "pen": 1,
+   "firmware": 26,
+   "rgb": "#FFFFFF",
+   "name": "Bright white",
+   "use": "ανταύγεια, ρίγες, γράμματα"
+  },
+  {
+   "pen": 2,
+   "firmware": 13,
+   "rgb": "#808080",
+   "name": "White",
+   "use": "γκρι: πλέγμα, γλάσο, χρώμια"
+  },
+  {
+   "pen": 3,
+   "firmware": 1,
+   "rgb": "#000080",
+   "name": "Blue",
+   "use": "περίγραμμα, σκιά, ταμπλό HUD"
+  },
+  {
+   "pen": 4,
+   "firmware": 20,
+   "rgb": "#00FFFF",
+   "name": "Bright cyan",
+   "use": "ζελέ, εφέ, τόνος UI"
+  },
+  {
+   "pen": 5,
+   "firmware": 6,
+   "rgb": "#FF0000",
+   "name": "Bright red",
+   "use": "ΚΟΚΚΙΝΟ — βάση"
+  },
+  {
+   "pen": 6,
+   "firmware": 3,
+   "rgb": "#800000",
+   "name": "Red",
+   "use": "ΚΟΚΚΙΝΟ — σκιά, σοκολάτα"
+  },
+  {
+   "pen": 7,
+   "firmware": 15,
+   "rgb": "#FF8000",
+   "name": "Orange",
+   "use": "ΠΟΡΤΟΚΑΛΙ — βάση"
+  },
+  {
+   "pen": 8,
+   "firmware": 12,
+   "rgb": "#808000",
+   "name": "Yellow",
+   "use": "ΠΟΡΤΟΚΑΛΙ+ΚΙΤΡΙΝΟ — σκιά"
+  },
+  {
+   "pen": 9,
+   "firmware": 24,
+   "rgb": "#FFFF00",
+   "name": "Bright yellow",
+   "use": "ΚΙΤΡΙΝΟ — βάση"
+  },
+  {
+   "pen": 10,
+   "firmware": 18,
+   "rgb": "#00FF00",
+   "name": "Bright green",
+   "use": "ΠΡΑΣΙΝΟ — βάση"
+  },
+  {
+   "pen": 11,
+   "firmware": 9,
+   "rgb": "#008000",
+   "name": "Green",
+   "use": "ΠΡΑΣΙΝΟ — σκιά"
+  },
+  {
+   "pen": 12,
+   "firmware": 11,
+   "rgb": "#0080FF",
+   "name": "Sky blue",
+   "use": "ΜΠΛΕ — βάση"
+  },
+  {
+   "pen": 13,
+   "firmware": 2,
+   "rgb": "#0000FF",
+   "name": "Bright blue",
+   "use": "ΜΠΛΕ — σκιά"
+  },
+  {
+   "pen": 14,
+   "firmware": 8,
+   "rgb": "#FF00FF",
+   "name": "Bright magenta",
+   "use": "ΜΩΒ — βάση"
+  },
+  {
+   "pen": 15,
+   "firmware": 4,
+   "rgb": "#800080",
+   "name": "Magenta",
+   "use": "ΜΩΒ — σκιά"
+  }
+ ],
+ "candy_colours": [
+  {
+   "index": 0,
+   "name": "red",
+   "base": 5,
+   "shade": 6,
+   "shape": "μπαλάκι"
+  },
+  {
+   "index": 1,
+   "name": "orange",
+   "base": 7,
+   "shade": 8,
+   "shape": "εξάγωνο"
+  },
+  {
+   "index": 2,
+   "name": "yellow",
+   "base": 9,
+   "shade": 8,
+   "shape": "τετράγωνο"
+  },
+  {
+   "index": 3,
+   "name": "green",
+   "base": 10,
+   "shade": 11,
+   "shape": "ρόμβος"
+  },
+  {
+   "index": 4,
+   "name": "blue",
+   "base": 12,
+   "shade": 13,
+   "shape": "δάκρυ"
+  },
+  {
+   "index": 5,
+   "name": "purple",
+   "base": 14,
+   "shade": 15,
+   "shape": "καρδιά"
+  }
+ ],
+ "sets": [
+  {
+   "name": "candy_cpc_mode0",
+   "note": "candies 12x24 με μάσκα — 6 χρώματα x 4 μορφές, βόμβα, υλικά",
+   "cell": {
+    "w": 12,
+    "h": 24
+   },
+   "masked": true,
+   "bytes_per_frame": 288,
+   "total_bytes": 7776,
+   "sheet": {
+    "cols": 7,
+    "rows": 4,
+    "w": 84,
+    "h": 96
+   },
+   "tags": [
+    {
+     "name": "plain",
+     "from": 0,
+     "to": 5
+    },
+    {
+     "name": "striped_h",
+     "from": 6,
+     "to": 11
+    },
+    {
+     "name": "striped_v",
+     "from": 12,
+     "to": 17
+    },
+    {
+     "name": "wrapped",
+     "from": 18,
+     "to": 23
+    },
+    {
+     "name": "bomb",
+     "from": 24,
+     "to": 24
+    },
+    {
+     "name": "ingredient",
+     "from": 25,
+     "to": 26
+    }
+   ],
+   "frames": [
+    {
+     "index": 0,
+     "name": "red",
+     "tag": "plain",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "index": 1,
+     "name": "orange",
+     "tag": "plain",
+     "x": 12,
+     "y": 0
+    },
+    {
+     "index": 2,
+     "name": "yellow",
+     "tag": "plain",
+     "x": 24,
+     "y": 0
+    },
+    {
+     "index": 3,
+     "name": "green",
+     "tag": "plain",
+     "x": 36,
+     "y": 0
+    },
+    {
+     "index": 4,
+     "name": "blue",
+     "tag": "plain",
+     "x": 48,
+     "y": 0
+    },
+    {
+     "index": 5,
+     "name": "purple",
+     "tag": "plain",
+     "x": 60,
+     "y": 0
+    },
+    {
+     "index": 6,
+     "name": "red",
+     "tag": "striped_h",
+     "x": 72,
+     "y": 0
+    },
+    {
+     "index": 7,
+     "name": "orange",
+     "tag": "striped_h",
+     "x": 0,
+     "y": 24
+    },
+    {
+     "index": 8,
+     "name": "yellow",
+     "tag": "striped_h",
+     "x": 12,
+     "y": 24
+    },
+    {
+     "index": 9,
+     "name": "green",
+     "tag": "striped_h",
+     "x": 24,
+     "y": 24
+    },
+    {
+     "index": 10,
+     "name": "blue",
+     "tag": "striped_h",
+     "x": 36,
+     "y": 24
+    },
+    {
+     "index": 11,
+     "name": "purple",
+     "tag": "striped_h",
+     "x": 48,
+     "y": 24
+    },
+    {
+     "index": 12,
+     "name": "red",
+     "tag": "striped_v",
+     "x": 60,
+     "y": 24
+    },
+    {
+     "index": 13,
+     "name": "orange",
+     "tag": "striped_v",
+     "x": 72,
+     "y": 24
+    },
+    {
+     "index": 14,
+     "name": "yellow",
+     "tag": "striped_v",
+     "x": 0,
+     "y": 48
+    },
+    {
+     "index": 15,
+     "name": "green",
+     "tag": "striped_v",
+     "x": 12,
+     "y": 48
+    },
+    {
+     "index": 16,
+     "name": "blue",
+     "tag": "striped_v",
+     "x": 24,
+     "y": 48
+    },
+    {
+     "index": 17,
+     "name": "purple",
+     "tag": "striped_v",
+     "x": 36,
+     "y": 48
+    },
+    {
+     "index": 18,
+     "name": "red",
+     "tag": "wrapped",
+     "x": 48,
+     "y": 48
+    },
+    {
+     "index": 19,
+     "name": "orange",
+     "tag": "wrapped",
+     "x": 60,
+     "y": 48
+    },
+    {
+     "index": 20,
+     "name": "yellow",
+     "tag": "wrapped",
+     "x": 72,
+     "y": 48
+    },
+    {
+     "index": 21,
+     "name": "green",
+     "tag": "wrapped",
+     "x": 0,
+     "y": 72
+    },
+    {
+     "index": 22,
+     "name": "blue",
+     "tag": "wrapped",
+     "x": 12,
+     "y": 72
+    },
+    {
+     "index": 23,
+     "name": "purple",
+     "tag": "wrapped",
+     "x": 24,
+     "y": 72
+    },
+    {
+     "index": 24,
+     "name": "colour_bomb",
+     "tag": "bomb",
+     "x": 36,
+     "y": 72
+    },
+    {
+     "index": 25,
+     "name": "cherry",
+     "tag": "ingredient",
+     "x": 48,
+     "y": 72
+    },
+    {
+     "index": 26,
+     "name": "nut",
+     "tag": "ingredient",
+     "x": 60,
+     "y": 72
+    }
+   ]
+  },
+  {
+   "name": "cells_cpc_mode0",
+   "note": "κελιά ταμπλό 12x24, αδιαφανή — φόντο, ζελέ, γλάσο, εμπόδια",
+   "cell": {
+    "w": 12,
+    "h": 24
+   },
+   "masked": false,
+   "bytes_per_frame": 144,
+   "total_bytes": 1440,
+   "sheet": {
+    "cols": 7,
+    "rows": 2,
+    "w": 84,
+    "h": 48
+   },
+   "tags": [
+    {
+     "name": "board",
+     "from": 0,
+     "to": 2
+    },
+    {
+     "name": "jelly",
+     "from": 3,
+     "to": 4
+    },
+    {
+     "name": "icing",
+     "from": 5,
+     "to": 7
+    },
+    {
+     "name": "blocker",
+     "from": 8,
+     "to": 9
+    }
+   ],
+   "frames": [
+    {
+     "index": 0,
+     "name": "plain",
+     "tag": "board",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "index": 1,
+     "name": "plain_alt",
+     "tag": "board",
+     "x": 12,
+     "y": 0
+    },
+    {
+     "index": 2,
+     "name": "hole",
+     "tag": "board",
+     "x": 24,
+     "y": 0
+    },
+    {
+     "index": 3,
+     "name": "jelly1",
+     "tag": "jelly",
+     "x": 36,
+     "y": 0
+    },
+    {
+     "index": 4,
+     "name": "jelly2",
+     "tag": "jelly",
+     "x": 48,
+     "y": 0
+    },
+    {
+     "index": 5,
+     "name": "icing3",
+     "tag": "icing",
+     "x": 60,
+     "y": 0
+    },
+    {
+     "index": 6,
+     "name": "icing2",
+     "tag": "icing",
+     "x": 72,
+     "y": 0
+    },
+    {
+     "index": 7,
+     "name": "icing1",
+     "tag": "icing",
+     "x": 0,
+     "y": 24
+    },
+    {
+     "index": 8,
+     "name": "chocolate",
+     "tag": "blocker",
+     "x": 12,
+     "y": 24
+    },
+    {
+     "index": 9,
+     "name": "licorice",
+     "tag": "blocker",
+     "x": 24,
+     "y": 24
+    }
+   ]
+  },
+  {
+   "name": "overlay_cpc_mode0",
+   "note": "επικαλύψεις 12x24 με μάσκα — δείκτης, κλουβί, εφέ",
+   "cell": {
+    "w": 12,
+    "h": 24
+   },
+   "masked": true,
+   "bytes_per_frame": 288,
+   "total_bytes": 4032,
+   "sheet": {
+    "cols": 7,
+    "rows": 2,
+    "w": 84,
+    "h": 48
+   },
+   "tags": [
+    {
+     "name": "cursor",
+     "from": 0,
+     "to": 1
+    },
+    {
+     "name": "blocker",
+     "from": 2,
+     "to": 3
+    },
+    {
+     "name": "pop",
+     "from": 4,
+     "to": 7
+    },
+    {
+     "name": "beam_h",
+     "from": 8,
+     "to": 9
+    },
+    {
+     "name": "beam_v",
+     "from": 10,
+     "to": 11
+    },
+    {
+     "name": "star",
+     "from": 12,
+     "to": 13
+    }
+   ],
+   "frames": [
+    {
+     "index": 0,
+     "name": "cursor1",
+     "tag": "cursor",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "index": 1,
+     "name": "cursor2",
+     "tag": "cursor",
+     "x": 12,
+     "y": 0
+    },
+    {
+     "index": 2,
+     "name": "cage",
+     "tag": "blocker",
+     "x": 24,
+     "y": 0
+    },
+    {
+     "index": 3,
+     "name": "marmalade",
+     "tag": "blocker",
+     "x": 36,
+     "y": 0
+    },
+    {
+     "index": 4,
+     "name": "pop1",
+     "tag": "pop",
+     "x": 48,
+     "y": 0
+    },
+    {
+     "index": 5,
+     "name": "pop2",
+     "tag": "pop",
+     "x": 60,
+     "y": 0
+    },
+    {
+     "index": 6,
+     "name": "pop3",
+     "tag": "pop",
+     "x": 72,
+     "y": 0
+    },
+    {
+     "index": 7,
+     "name": "pop4",
+     "tag": "pop",
+     "x": 0,
+     "y": 24
+    },
+    {
+     "index": 8,
+     "name": "beam_h1",
+     "tag": "beam_h",
+     "x": 12,
+     "y": 24
+    },
+    {
+     "index": 9,
+     "name": "beam_h2",
+     "tag": "beam_h",
+     "x": 24,
+     "y": 24
+    },
+    {
+     "index": 10,
+     "name": "beam_v1",
+     "tag": "beam_v",
+     "x": 36,
+     "y": 24
+    },
+    {
+     "index": 11,
+     "name": "beam_v2",
+     "tag": "beam_v",
+     "x": 48,
+     "y": 24
+    },
+    {
+     "index": 12,
+     "name": "star1",
+     "tag": "star",
+     "x": 60,
+     "y": 24
+    },
+    {
+     "index": 13,
+     "name": "star2",
+     "tag": "star",
+     "x": 72,
+     "y": 24
+    }
+   ]
+  },
+  {
+   "name": "hud_cpc_mode0",
+   "note": "κελιά HUD 4x8 αδιαφανή — ψηφία, σύμβολα, εικονίδια, πλαίσιο",
+   "cell": {
+    "w": 4,
+    "h": 8
+   },
+   "masked": false,
+   "bytes_per_frame": 16,
+   "total_bytes": 448,
+   "sheet": {
+    "cols": 7,
+    "rows": 4,
+    "w": 28,
+    "h": 32
+   },
+   "tags": [
+    {
+     "name": "digits",
+     "from": 0,
+     "to": 9
+    },
+    {
+     "name": "symbols",
+     "from": 10,
+     "to": 13
+    },
+    {
+     "name": "icons",
+     "from": 14,
+     "to": 18
+    },
+    {
+     "name": "panel",
+     "from": 19,
+     "to": 27
+    }
+   ],
+   "frames": [
+    {
+     "index": 0,
+     "name": "digit_0",
+     "tag": "digits",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "index": 1,
+     "name": "digit_1",
+     "tag": "digits",
+     "x": 4,
+     "y": 0
+    },
+    {
+     "index": 2,
+     "name": "digit_2",
+     "tag": "digits",
+     "x": 8,
+     "y": 0
+    },
+    {
+     "index": 3,
+     "name": "digit_3",
+     "tag": "digits",
+     "x": 12,
+     "y": 0
+    },
+    {
+     "index": 4,
+     "name": "digit_4",
+     "tag": "digits",
+     "x": 16,
+     "y": 0
+    },
+    {
+     "index": 5,
+     "name": "digit_5",
+     "tag": "digits",
+     "x": 20,
+     "y": 0
+    },
+    {
+     "index": 6,
+     "name": "digit_6",
+     "tag": "digits",
+     "x": 24,
+     "y": 0
+    },
+    {
+     "index": 7,
+     "name": "digit_7",
+     "tag": "digits",
+     "x": 0,
+     "y": 8
+    },
+    {
+     "index": 8,
+     "name": "digit_8",
+     "tag": "digits",
+     "x": 4,
+     "y": 8
+    },
+    {
+     "index": 9,
+     "name": "digit_9",
+     "tag": "digits",
+     "x": 8,
+     "y": 8
+    },
+    {
+     "index": 10,
+     "name": "colon",
+     "tag": "symbols",
+     "x": 12,
+     "y": 8
+    },
+    {
+     "index": 11,
+     "name": "slash",
+     "tag": "symbols",
+     "x": 16,
+     "y": 8
+    },
+    {
+     "index": 12,
+     "name": "times",
+     "tag": "symbols",
+     "x": 20,
+     "y": 8
+    },
+    {
+     "index": 13,
+     "name": "plus",
+     "tag": "symbols",
+     "x": 24,
+     "y": 8
+    },
+    {
+     "index": 14,
+     "name": "moves",
+     "tag": "icons",
+     "x": 0,
+     "y": 16
+    },
+    {
+     "index": 15,
+     "name": "star",
+     "tag": "icons",
+     "x": 4,
+     "y": 16
+    },
+    {
+     "index": 16,
+     "name": "goal",
+     "tag": "icons",
+     "x": 8,
+     "y": 16
+    },
+    {
+     "index": 17,
+     "name": "time",
+     "tag": "icons",
+     "x": 12,
+     "y": 16
+    },
+    {
+     "index": 18,
+     "name": "lock",
+     "tag": "icons",
+     "x": 16,
+     "y": 16
+    },
+    {
+     "index": 19,
+     "name": "panel_tl",
+     "tag": "panel",
+     "x": 20,
+     "y": 16
+    },
+    {
+     "index": 20,
+     "name": "panel_tc",
+     "tag": "panel",
+     "x": 24,
+     "y": 16
+    },
+    {
+     "index": 21,
+     "name": "panel_tr",
+     "tag": "panel",
+     "x": 0,
+     "y": 24
+    },
+    {
+     "index": 22,
+     "name": "panel_ml",
+     "tag": "panel",
+     "x": 4,
+     "y": 24
+    },
+    {
+     "index": 23,
+     "name": "panel_mc",
+     "tag": "panel",
+     "x": 8,
+     "y": 24
+    },
+    {
+     "index": 24,
+     "name": "panel_mr",
+     "tag": "panel",
+     "x": 12,
+     "y": 24
+    },
+    {
+     "index": 25,
+     "name": "panel_bl",
+     "tag": "panel",
+     "x": 16,
+     "y": 24
+    },
+    {
+     "index": 26,
+     "name": "panel_bc",
+     "tag": "panel",
+     "x": 20,
+     "y": 24
+    },
+    {
+     "index": 27,
+     "name": "panel_br",
+     "tag": "panel",
+     "x": 24,
+     "y": 24
+    }
+   ]
+  }
+ ],
+ "binary": {
+  "file": "sprites.bin",
+  "bytes": 13696,
+  "blocks": [
+   {
+    "label": "candy_gfx",
+    "offset": 0,
+    "bytes": 7776
+   },
+   {
+    "label": "cells_gfx",
+    "offset": 7776,
+    "bytes": 1440
+   },
+   {
+    "label": "overlay_gfx",
+    "offset": 9216,
+    "bytes": 4032
+   },
+   {
+    "label": "hud_gfx",
+    "offset": 13248,
+    "bytes": 448
+   }
+  ]
+ }
+}

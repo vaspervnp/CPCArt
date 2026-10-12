@@ -1,0 +1,95 @@
+Sugar Byte — χάρτης του sprites.bin
+============================================================
+
+candy_gfx  @     0 (#0000)  7776 bytes  candies 12x24 με μάσκα — 6 χρώματα x 4 μορφές, βόμβα, υλικά
+    12 x 24 pixels, με μάσκα, 288 bytes/καρέ
+        0  red            plain       @     0
+        1  orange         plain       @   288
+        2  yellow         plain       @   576
+        3  green          plain       @   864
+        4  blue           plain       @  1152
+        5  purple         plain       @  1440
+        6  red            striped_h   @  1728
+        7  orange         striped_h   @  2016
+        8  yellow         striped_h   @  2304
+        9  green          striped_h   @  2592
+       10  blue           striped_h   @  2880
+       11  purple         striped_h   @  3168
+       12  red            striped_v   @  3456
+       13  orange         striped_v   @  3744
+       14  yellow         striped_v   @  4032
+       15  green          striped_v   @  4320
+       16  blue           striped_v   @  4608
+       17  purple         striped_v   @  4896
+       18  red            wrapped     @  5184
+       19  orange         wrapped     @  5472
+       20  yellow         wrapped     @  5760
+       21  green          wrapped     @  6048
+       22  blue           wrapped     @  6336
+       23  purple         wrapped     @  6624
+       24  colour_bomb    bomb        @  6912
+       25  cherry         ingredient  @  7200
+       26  nut            ingredient  @  7488
+
+cells_gfx  @  7776 (#1E60)  1440 bytes  κελιά ταμπλό 12x24, αδιαφανή — φόντο, ζελέ, γλάσο, εμπόδια
+    12 x 24 pixels, αδιαφανές, 144 bytes/καρέ
+        0  plain          board       @  7776
+        1  plain_alt      board       @  7920
+        2  hole           board       @  8064
+        3  jelly1         jelly       @  8208
+        4  jelly2         jelly       @  8352
+        5  icing3         icing       @  8496
+        6  icing2         icing       @  8640
+        7  icing1         icing       @  8784
+        8  chocolate      blocker     @  8928
+        9  licorice       blocker     @  9072
+
+overlay_gfx  @  9216 (#2400)  4032 bytes  επικαλύψεις 12x24 με μάσκα — δείκτης, κλουβί, εφέ
+    12 x 24 pixels, με μάσκα, 288 bytes/καρέ
+        0  cursor1        cursor      @  9216
+        1  cursor2        cursor      @  9504
+        2  cage           blocker     @  9792
+        3  marmalade      blocker     @ 10080
+        4  pop1           pop         @ 10368
+        5  pop2           pop         @ 10656
+        6  pop3           pop         @ 10944
+        7  pop4           pop         @ 11232
+        8  beam_h1        beam_h      @ 11520
+        9  beam_h2        beam_h      @ 11808
+       10  beam_v1        beam_v      @ 12096
+       11  beam_v2        beam_v      @ 12384
+       12  star1          star        @ 12672
+       13  star2          star        @ 12960
+
+hud_gfx  @ 13248 (#33C0)  448 bytes  κελιά HUD 4x8 αδιαφανή — ψηφία, σύμβολα, εικονίδια, πλαίσιο
+    4 x 8 pixels, αδιαφανές, 16 bytes/καρέ
+        0  digit_0        digits      @ 13248
+        1  digit_1        digits      @ 13264
+        2  digit_2        digits      @ 13280
+        3  digit_3        digits      @ 13296
+        4  digit_4        digits      @ 13312
+        5  digit_5        digits      @ 13328
+        6  digit_6        digits      @ 13344
+        7  digit_7        digits      @ 13360
+        8  digit_8        digits      @ 13376
+        9  digit_9        digits      @ 13392
+       10  colon          symbols     @ 13408
+       11  slash          symbols     @ 13424
+       12  times          symbols     @ 13440
+       13  plus           symbols     @ 13456
+       14  moves          icons       @ 13472
+       15  star           icons       @ 13488
+       16  goal           icons       @ 13504
+       17  time           icons       @ 13520
+       18  lock           icons       @ 13536
+       19  panel_tl       panel       @ 13552
+       20  panel_tc       panel       @ 13568
+       21  panel_tr       panel       @ 13584
+       22  panel_ml       panel       @ 13600
+       23  panel_mc       panel       @ 13616
+       24  panel_mr       panel       @ 13632
+       25  panel_bl       panel       @ 13648
+       26  panel_bc       panel       @ 13664
+       27  panel_br       panel       @ 13680
+
+ΣΥΝΟΛΟ 13696 bytes
