@@ -1,0 +1,252 @@
+{
+ "source": "carnival.png",
+ "source_kind": "thumb",
+ "title": "Carnival",
+ "count": 78,
+ "names": [
+  "tent_big",
+  "tent_striped",
+  "flag_pole",
+  "ticket",
+  "ticket_booth",
+  "cotton_candy_stand",
+  "ferris_wheel",
+  "tent_pair",
+  "hot_air_balloon",
+  "megaphone",
+  "entrance_arch",
+  "prize_booth",
+  "cannon_circus",
+  "swing_ride",
+  "circus_wagon",
+  "ring_toss",
+  "target_board",
+  "star_prize",
+  "balloon_red",
+  "balloon_bunch",
+  "confetti",
+  "pennant",
+  "flag_bunting",
+  "ride_seat",
+  "stilts",
+  "bumper_car",
+  "top_hat",
+  "magic_wand",
+  "crystal_ball",
+  "poster_star",
+  "cotton_candy",
+  "popcorn_box",
+  "candy_apple",
+  "hot_dog",
+  "corn_dog",
+  "fried_dough",
+  "donut_carnival",
+  "juice_box",
+  "soda_cup",
+  "ice_cream_cone",
+  "striped_pole",
+  "lollipop_purple",
+  "popcorn",
+  "cotton_candy_blue",
+  "cookie_carnival",
+  "carousel",
+  "target_dart",
+  "dart",
+  "chocolate_scoop",
+  "ring_toss_post",
+  "teddy_bear",
+  "goldfish_bag",
+  "shooting_gallery",
+  "mirror_funny",
+  "strength_test",
+  "medal_gold",
+  "trophy",
+  "rubber_duck",
+  "prize_ribbon",
+  "course_flag",
+  "ringmaster",
+  "clown",
+  "juggling_balls",
+  "doll_pink",
+  "juggler",
+  "strongman",
+  "musician",
+  "performer",
+  "lion_face",
+  "elephant",
+  "seal_ball",
+  "horse_carousel",
+  "monkey",
+  "macaw",
+  "cannon",
+  "tightrope_poles",
+  "ride_banner",
+  "fedora"
+ ],
+ "modes": {
+  "0": {
+   "faint": [],
+   "pixels": {
+    "w": 16,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 16,
+   "bytes_per_icon": 256,
+   "total_bytes": 19968,
+   "mean_error_255": 39.6,
+   "numeric_optimum_255": 37.1,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 1,
+     "name": "Blue",
+     "rgb": "#000080"
+    },
+    {
+     "pen": 2,
+     "firmware": 3,
+     "name": "Red",
+     "rgb": "#800000"
+    },
+    {
+     "pen": 3,
+     "firmware": 12,
+     "name": "Yellow",
+     "rgb": "#808000"
+    },
+    {
+     "pen": 4,
+     "firmware": 9,
+     "name": "Green",
+     "rgb": "#008000"
+    },
+    {
+     "pen": 5,
+     "firmware": 10,
+     "name": "Cyan",
+     "rgb": "#008080"
+    },
+    {
+     "pen": 6,
+     "firmware": 13,
+     "name": "White",
+     "rgb": "#808080"
+    },
+    {
+     "pen": 7,
+     "firmware": 15,
+     "name": "Orange",
+     "rgb": "#FF8000"
+    },
+    {
+     "pen": 8,
+     "firmware": 6,
+     "name": "Bright red",
+     "rgb": "#FF0000"
+    },
+    {
+     "pen": 9,
+     "firmware": 24,
+     "name": "Bright yellow",
+     "rgb": "#FFFF00"
+    },
+    {
+     "pen": 10,
+     "firmware": 8,
+     "name": "Bright magenta",
+     "rgb": "#FF00FF"
+    },
+    {
+     "pen": 11,
+     "firmware": 2,
+     "name": "Bright blue",
+     "rgb": "#0000FF"
+    },
+    {
+     "pen": 12,
+     "firmware": 18,
+     "name": "Bright green",
+     "rgb": "#00FF00"
+    },
+    {
+     "pen": 13,
+     "firmware": 20,
+     "name": "Bright cyan",
+     "rgb": "#00FFFF"
+    },
+    {
+     "pen": 14,
+     "firmware": 16,
+     "name": "Pink",
+     "rgb": "#FF8080"
+    },
+    {
+     "pen": 15,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  },
+  "1": {
+   "faint": [
+    "cannon_circus",
+    "top_hat",
+    "magic_wand",
+    "dart",
+    "seal_ball",
+    "cannon"
+   ],
+   "pixels": {
+    "w": 32,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 4,
+   "bytes_per_icon": 256,
+   "total_bytes": 19968,
+   "mean_error_255": 69.3,
+   "numeric_optimum_255": 51.3,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 6,
+     "name": "Bright red",
+     "rgb": "#FF0000"
+    },
+    {
+     "pen": 2,
+     "firmware": 24,
+     "name": "Bright yellow",
+     "rgb": "#FFFF00"
+    },
+    {
+     "pen": 3,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  }
+ },
+ "source_warning": "Η πηγή είναι σμικρυμένη στο 0,2253 του αυθεντικού φύλλου: το 32x32 σώζεται σε ~25x25 θολά pixels. Με το φύλλο των 1540 px το αποτέλεσμα βγαίνει καθαρότερο — άλλαξε μόνο το kind σε full."
+}

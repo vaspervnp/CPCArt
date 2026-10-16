@@ -1,0 +1,229 @@
+{
+ "source": "candy.png",
+ "source_kind": "thumb",
+ "title": "Candy Factory",
+ "count": 62,
+ "names": [
+  "lollipop_pink",
+  "lollipop_blue",
+  "lollipop_red",
+  "candy_cane",
+  "wrapped_pink",
+  "wrapped_green",
+  "wrapped_yellow",
+  "gumball_red",
+  "gumball_green",
+  "gumball_blue",
+  "jelly_orange",
+  "jelly_purple",
+  "coin_chocolate",
+  "peppermint",
+  "gummy_bear",
+  "gummy_worm",
+  "rock_candy",
+  "lollipop_small",
+  "candy_corn",
+  "candy_bits",
+  "chocolate_bar",
+  "chocolate_block",
+  "truffle",
+  "bonbon_cherry",
+  "cupcake",
+  "donut_pink",
+  "donut_chocolate",
+  "ice_cream_cone",
+  "popsicle",
+  "cookie",
+  "gingerbread_man",
+  "macaron",
+  "candy_apple",
+  "caramel_square",
+  "fudge_slab",
+  "wafer_white",
+  "chocolate_bunny",
+  "popcorn_box",
+  "candy_jar",
+  "cauldron",
+  "mixer_stand",
+  "chocolate_fountain",
+  "conveyor_candy",
+  "candy_press",
+  "oven_candy",
+  "icing_machine",
+  "gumball_machine",
+  "wrapping_machine",
+  "sugar_sack",
+  "whisk",
+  "rolling_pin",
+  "candy_box_blue",
+  "gift_box",
+  "candy_bag",
+  "candy_packet",
+  "candy_heart",
+  "price_tag",
+  "candy_sign",
+  "toffee_gold",
+  "taffy_pink",
+  "rainbow_bar",
+  "candy_basket"
+ ],
+ "modes": {
+  "0": {
+   "faint": [],
+   "pixels": {
+    "w": 16,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 16,
+   "bytes_per_icon": 256,
+   "total_bytes": 15872,
+   "mean_error_255": 36.9,
+   "numeric_optimum_255": 35.5,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 1,
+     "name": "Blue",
+     "rgb": "#000080"
+    },
+    {
+     "pen": 2,
+     "firmware": 3,
+     "name": "Red",
+     "rgb": "#800000"
+    },
+    {
+     "pen": 3,
+     "firmware": 12,
+     "name": "Yellow",
+     "rgb": "#808000"
+    },
+    {
+     "pen": 4,
+     "firmware": 4,
+     "name": "Magenta",
+     "rgb": "#800080"
+    },
+    {
+     "pen": 5,
+     "firmware": 10,
+     "name": "Cyan",
+     "rgb": "#008080"
+    },
+    {
+     "pen": 6,
+     "firmware": 13,
+     "name": "White",
+     "rgb": "#808080"
+    },
+    {
+     "pen": 7,
+     "firmware": 15,
+     "name": "Orange",
+     "rgb": "#FF8000"
+    },
+    {
+     "pen": 8,
+     "firmware": 6,
+     "name": "Bright red",
+     "rgb": "#FF0000"
+    },
+    {
+     "pen": 9,
+     "firmware": 24,
+     "name": "Bright yellow",
+     "rgb": "#FFFF00"
+    },
+    {
+     "pen": 10,
+     "firmware": 8,
+     "name": "Bright magenta",
+     "rgb": "#FF00FF"
+    },
+    {
+     "pen": 11,
+     "firmware": 2,
+     "name": "Bright blue",
+     "rgb": "#0000FF"
+    },
+    {
+     "pen": 12,
+     "firmware": 18,
+     "name": "Bright green",
+     "rgb": "#00FF00"
+    },
+    {
+     "pen": 13,
+     "firmware": 16,
+     "name": "Pink",
+     "rgb": "#FF8080"
+    },
+    {
+     "pen": 14,
+     "firmware": 25,
+     "name": "Pastel yellow",
+     "rgb": "#FFFF80"
+    },
+    {
+     "pen": 15,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  },
+  "1": {
+   "faint": [],
+   "pixels": {
+    "w": 32,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 4,
+   "bytes_per_icon": 256,
+   "total_bytes": 15872,
+   "mean_error_255": 51.5,
+   "numeric_optimum_255": 46.1,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 3,
+     "name": "Red",
+     "rgb": "#800000"
+    },
+    {
+     "pen": 2,
+     "firmware": 16,
+     "name": "Pink",
+     "rgb": "#FF8080"
+    },
+    {
+     "pen": 3,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  }
+ },
+ "source_warning": "Η πηγή είναι σμικρυμένη στο 0,2253 του αυθεντικού φύλλου: το 32x32 σώζεται σε ~25x25 θολά pixels. Με το φύλλο των 1540 px το αποτέλεσμα βγαίνει καθαρότερο — άλλαξε μόνο το kind σε full."
+}

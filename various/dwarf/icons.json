@@ -1,0 +1,239 @@
+{
+ "source": "dwarf.png",
+ "source_kind": "thumb",
+ "title": "Dwarven Mine",
+ "count": 68,
+ "names": [
+  "ore_silver",
+  "ingot_silver",
+  "ore_copper",
+  "ingot_copper",
+  "ore_gold",
+  "ingot_gold",
+  "ore_stone",
+  "ingot_iron",
+  "ore_coal",
+  "coal_block",
+  "ore_crystal",
+  "ingot_crystal",
+  "gem_ruby",
+  "gem_sapphire",
+  "gem_emerald",
+  "gem_amethyst",
+  "gem_topaz",
+  "gem_diamond",
+  "geode_purple",
+  "nuggets_gold",
+  "pickaxe",
+  "sledgehammer",
+  "shovel",
+  "maul",
+  "chain",
+  "anvil",
+  "bellows",
+  "file_tool",
+  "crucible",
+  "ladle",
+  "dynamite",
+  "cart_gold",
+  "cart_empty",
+  "torch",
+  "cannon",
+  "sack_coin",
+  "candle",
+  "helmet_mine",
+  "helmet_winged",
+  "axe_double",
+  "hammer_smith",
+  "shield_round",
+  "chainmail",
+  "boot_steel",
+  "gauntlet",
+  "banner_orange",
+  "mug_ale",
+  "rune_tablet",
+  "crown_gold",
+  "forge_machine",
+  "crucible_molten",
+  "molten_metal",
+  "coal_pile",
+  "bucket_water",
+  "barrel_banded",
+  "stone_wall",
+  "support_beam",
+  "ladder_wood",
+  "mine_entrance",
+  "chest_treasure",
+  "gold_pile",
+  "skull",
+  "mushroom_purple",
+  "crystal_cluster",
+  "scroll",
+  "sword_gold",
+  "key_gold",
+  "star_gold"
+ ],
+ "modes": {
+  "0": {
+   "faint": [
+    "coal_pile"
+   ],
+   "pixels": {
+    "w": 16,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 16,
+   "bytes_per_icon": 256,
+   "total_bytes": 17408,
+   "mean_error_255": 33.8,
+   "numeric_optimum_255": 32.8,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 1,
+     "name": "Blue",
+     "rgb": "#000080"
+    },
+    {
+     "pen": 2,
+     "firmware": 3,
+     "name": "Red",
+     "rgb": "#800000"
+    },
+    {
+     "pen": 3,
+     "firmware": 12,
+     "name": "Yellow",
+     "rgb": "#808000"
+    },
+    {
+     "pen": 4,
+     "firmware": 9,
+     "name": "Green",
+     "rgb": "#008000"
+    },
+    {
+     "pen": 5,
+     "firmware": 10,
+     "name": "Cyan",
+     "rgb": "#008080"
+    },
+    {
+     "pen": 6,
+     "firmware": 13,
+     "name": "White",
+     "rgb": "#808080"
+    },
+    {
+     "pen": 7,
+     "firmware": 15,
+     "name": "Orange",
+     "rgb": "#FF8000"
+    },
+    {
+     "pen": 8,
+     "firmware": 6,
+     "name": "Bright red",
+     "rgb": "#FF0000"
+    },
+    {
+     "pen": 9,
+     "firmware": 24,
+     "name": "Bright yellow",
+     "rgb": "#FFFF00"
+    },
+    {
+     "pen": 10,
+     "firmware": 18,
+     "name": "Bright green",
+     "rgb": "#00FF00"
+    },
+    {
+     "pen": 11,
+     "firmware": 20,
+     "name": "Bright cyan",
+     "rgb": "#00FFFF"
+    },
+    {
+     "pen": 12,
+     "firmware": 14,
+     "name": "Pastel blue",
+     "rgb": "#8080FF"
+    },
+    {
+     "pen": 13,
+     "firmware": 4,
+     "name": "Magenta",
+     "rgb": "#800080"
+    },
+    {
+     "pen": 14,
+     "firmware": 25,
+     "name": "Pastel yellow",
+     "rgb": "#FFFF80"
+    },
+    {
+     "pen": 15,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  },
+  "1": {
+   "faint": [
+    "coal_pile"
+   ],
+   "pixels": {
+    "w": 32,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 4,
+   "bytes_per_icon": 256,
+   "total_bytes": 17408,
+   "mean_error_255": 39.6,
+   "numeric_optimum_255": 38.0,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 13,
+     "name": "White",
+     "rgb": "#808080"
+    },
+    {
+     "pen": 2,
+     "firmware": 24,
+     "name": "Bright yellow",
+     "rgb": "#FFFF00"
+    },
+    {
+     "pen": 3,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  }
+ },
+ "source_warning": "Η πηγή είναι σμικρυμένη στο 0,2253 του αυθεντικού φύλλου: το 32x32 σώζεται σε ~25x25 θολά pixels. Με το φύλλο των 1540 px το αποτέλεσμα βγαίνει καθαρότερο — άλλαξε μόνο το kind σε full."
+}

@@ -1,0 +1,232 @@
+{
+ "source": "egypt.png",
+ "source_kind": "thumb",
+ "title": "Ancient Egypt",
+ "count": 60,
+ "names": [
+  "ankh",
+  "scarab",
+  "canopic_jar",
+  "sarcophagus",
+  "pharaoh_mask",
+  "papyrus_scroll",
+  "clay_tablet",
+  "chalice_gold",
+  "ring_turquoise",
+  "shield_blue",
+  "lotus_flower",
+  "papyrus_plant",
+  "coin_gold",
+  "chest_wood",
+  "eye_of_horus",
+  "hieroglyph_tablet",
+  "oil_lamp",
+  "stone_tablet",
+  "ceremonial_stand",
+  "crook_and_flail",
+  "pharaoh_headdress",
+  "offering_cake",
+  "throne",
+  "sun_disc",
+  "winged_scarab",
+  "horus_statue",
+  "feather_maat",
+  "ceremonial_banner",
+  "standard_pole",
+  "pyramid",
+  "column_lotus",
+  "offering_bowl",
+  "jackal",
+  "lapis_blocks",
+  "pyramid_entrance",
+  "sphinx",
+  "shabti",
+  "temple_gate",
+  "tomb_entrance",
+  "palm_tree",
+  "boat_reed",
+  "nile_water",
+  "oasis",
+  "column_stone",
+  "stone_blocks",
+  "shrine",
+  "bastet",
+  "anubis_head",
+  "falcon",
+  "crocodile",
+  "camel",
+  "cobra",
+  "statue_gold",
+  "mummy",
+  "pharaoh_figure",
+  "priest_figure",
+  "worker",
+  "sack_grain",
+  "crook_staff",
+  "bow_arrow"
+ ],
+ "modes": {
+  "0": {
+   "faint": [
+    "cobra"
+   ],
+   "pixels": {
+    "w": 16,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 16,
+   "bytes_per_icon": 256,
+   "total_bytes": 15360,
+   "mean_error_255": 37.1,
+   "numeric_optimum_255": 36.2,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 1,
+     "name": "Blue",
+     "rgb": "#000080"
+    },
+    {
+     "pen": 2,
+     "firmware": 3,
+     "name": "Red",
+     "rgb": "#800000"
+    },
+    {
+     "pen": 3,
+     "firmware": 12,
+     "name": "Yellow",
+     "rgb": "#808000"
+    },
+    {
+     "pen": 4,
+     "firmware": 9,
+     "name": "Green",
+     "rgb": "#008000"
+    },
+    {
+     "pen": 5,
+     "firmware": 10,
+     "name": "Cyan",
+     "rgb": "#008080"
+    },
+    {
+     "pen": 6,
+     "firmware": 13,
+     "name": "White",
+     "rgb": "#808080"
+    },
+    {
+     "pen": 7,
+     "firmware": 15,
+     "name": "Orange",
+     "rgb": "#FF8000"
+    },
+    {
+     "pen": 8,
+     "firmware": 6,
+     "name": "Bright red",
+     "rgb": "#FF0000"
+    },
+    {
+     "pen": 9,
+     "firmware": 24,
+     "name": "Bright yellow",
+     "rgb": "#FFFF00"
+    },
+    {
+     "pen": 10,
+     "firmware": 2,
+     "name": "Bright blue",
+     "rgb": "#0000FF"
+    },
+    {
+     "pen": 11,
+     "firmware": 20,
+     "name": "Bright cyan",
+     "rgb": "#00FFFF"
+    },
+    {
+     "pen": 12,
+     "firmware": 18,
+     "name": "Bright green",
+     "rgb": "#00FF00"
+    },
+    {
+     "pen": 13,
+     "firmware": 16,
+     "name": "Pink",
+     "rgb": "#FF8080"
+    },
+    {
+     "pen": 14,
+     "firmware": 25,
+     "name": "Pastel yellow",
+     "rgb": "#FFFF80"
+    },
+    {
+     "pen": 15,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  },
+  "1": {
+   "faint": [
+    "anubis_head",
+    "cobra"
+   ],
+   "pixels": {
+    "w": 32,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 4,
+   "bytes_per_icon": 256,
+   "total_bytes": 15360,
+   "mean_error_255": 63.1,
+   "numeric_optimum_255": 44.6,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 10,
+     "name": "Cyan",
+     "rgb": "#008080"
+    },
+    {
+     "pen": 2,
+     "firmware": 24,
+     "name": "Bright yellow",
+     "rgb": "#FFFF00"
+    },
+    {
+     "pen": 3,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  }
+ },
+ "source_warning": "Η πηγή είναι σμικρυμένη στο 0,2253 του αυθεντικού φύλλου: το 32x32 σώζεται σε ~25x25 θολά pixels. Με το φύλλο των 1540 px το αποτέλεσμα βγαίνει καθαρότερο — άλλαξε μόνο το kind σε full."
+}

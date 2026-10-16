@@ -1,0 +1,240 @@
+{
+ "source": "lighthouse.png",
+ "source_kind": "full",
+ "title": "Lighthouse Harbor",
+ "count": 68,
+ "names": [
+  "red_stripe",
+  "blue_stripe",
+  "black_stripe",
+  "green_stripe",
+  "orange_stripe",
+  "night_lit",
+  "lantern_room",
+  "light_beam",
+  "fresnel_lens",
+  "keeper_cottage",
+  "rocky_island",
+  "foghorn",
+  "signal_flags",
+  "buoy_light",
+  "weather_vane",
+  "spiral_stairs",
+  "lightkeeper_log",
+  "oil_lamp",
+  "sailboat_red",
+  "sailboat_blue",
+  "sailboat_yellow",
+  "rowboat",
+  "fishing_trawler",
+  "tugboat",
+  "cargo_ship",
+  "ferry",
+  "canoe",
+  "dinghy",
+  "speedboat",
+  "pirate_ship",
+  "life_raft",
+  "submarine",
+  "yacht",
+  "steering_wheel",
+  "ship_anchor",
+  "dock_post",
+  "wooden_pier",
+  "life_ring",
+  "life_vest",
+  "rope_coil",
+  "fishing_net",
+  "crab_pot",
+  "telescope",
+  "binoculars",
+  "compass",
+  "sea_chart",
+  "spyglass_bottle",
+  "message_bottle",
+  "boat_lantern",
+  "oar",
+  "harpoon",
+  "tackle_box",
+  "captain_hat",
+  "rain_slicker",
+  "seagull",
+  "pelican",
+  "crab",
+  "lobster",
+  "starfish",
+  "seashell",
+  "conch",
+  "oyster",
+  "jellyfish",
+  "wave",
+  "whale_tail",
+  "anchor_barnacle",
+  "driftwood",
+  "sea_buoy_flag"
+ ],
+ "modes": {
+  "0": {
+   "faint": [
+    "weather_vane"
+   ],
+   "pixels": {
+    "w": 16,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 16,
+   "bytes_per_icon": 256,
+   "total_bytes": 17408,
+   "mean_error_255": 36.7,
+   "numeric_optimum_255": 35.6,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 1,
+     "name": "Blue",
+     "rgb": "#000080"
+    },
+    {
+     "pen": 2,
+     "firmware": 3,
+     "name": "Red",
+     "rgb": "#800000"
+    },
+    {
+     "pen": 3,
+     "firmware": 12,
+     "name": "Yellow",
+     "rgb": "#808000"
+    },
+    {
+     "pen": 4,
+     "firmware": 9,
+     "name": "Green",
+     "rgb": "#008000"
+    },
+    {
+     "pen": 5,
+     "firmware": 10,
+     "name": "Cyan",
+     "rgb": "#008080"
+    },
+    {
+     "pen": 6,
+     "firmware": 13,
+     "name": "White",
+     "rgb": "#808080"
+    },
+    {
+     "pen": 7,
+     "firmware": 15,
+     "name": "Orange",
+     "rgb": "#FF8000"
+    },
+    {
+     "pen": 8,
+     "firmware": 6,
+     "name": "Bright red",
+     "rgb": "#FF0000"
+    },
+    {
+     "pen": 9,
+     "firmware": 24,
+     "name": "Bright yellow",
+     "rgb": "#FFFF00"
+    },
+    {
+     "pen": 10,
+     "firmware": 2,
+     "name": "Bright blue",
+     "rgb": "#0000FF"
+    },
+    {
+     "pen": 11,
+     "firmware": 20,
+     "name": "Bright cyan",
+     "rgb": "#00FFFF"
+    },
+    {
+     "pen": 12,
+     "firmware": 11,
+     "name": "Sky blue",
+     "rgb": "#0080FF"
+    },
+    {
+     "pen": 13,
+     "firmware": 16,
+     "name": "Pink",
+     "rgb": "#FF8080"
+    },
+    {
+     "pen": 14,
+     "firmware": 25,
+     "name": "Pastel yellow",
+     "rgb": "#FFFF80"
+    },
+    {
+     "pen": 15,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  },
+  "1": {
+   "faint": [
+    "weather_vane",
+    "canoe",
+    "harpoon"
+   ],
+   "pixels": {
+    "w": 32,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 4,
+   "bytes_per_icon": 256,
+   "total_bytes": 17408,
+   "mean_error_255": 44.2,
+   "numeric_optimum_255": 45.0,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 15,
+     "name": "Orange",
+     "rgb": "#FF8000"
+    },
+    {
+     "pen": 2,
+     "firmware": 13,
+     "name": "White",
+     "rgb": "#808080"
+    },
+    {
+     "pen": 3,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  }
+ }
+}

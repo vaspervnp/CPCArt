@@ -1,0 +1,10 @@
+GIMP Palette
+Name: Volcano CPC Mode 1
+Columns: 4
+# Τα 4 pens του Mode 1, από τα 27 χρώματα του firmware.
+# Η στήλη FW είναι ο αριθμός για SCR SET INK / Gate Array.
+#
+  0   0   0	pen 00  FW 00  Black
+255   0   0	pen 01  FW 06  Bright red
+255 128   0	pen 02  FW 15  Orange
+128 128 128	pen 03  FW 13  White

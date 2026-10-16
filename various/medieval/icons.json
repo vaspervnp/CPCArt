@@ -1,0 +1,230 @@
+{
+ "source": "medieval.png",
+ "source_kind": "thumb",
+ "title": "Medieval Market",
+ "count": 63,
+ "names": [
+  "stall_red",
+  "stall_blue",
+  "stall_green",
+  "stall_yellow",
+  "crate_wood",
+  "barrel_banded",
+  "pestle_mortar",
+  "sign_coin",
+  "scales_balance",
+  "fish_stand",
+  "flag_red",
+  "sign_blank",
+  "coin_pouch",
+  "bread_loaf",
+  "baguette",
+  "bread_round",
+  "pie_pastry",
+  "cheese_wedge",
+  "ham_leg",
+  "sausage_links",
+  "fish",
+  "crate_vegetables",
+  "pear",
+  "grapes",
+  "pumpkin",
+  "cabbage",
+  "carrots",
+  "cake_cream",
+  "jar_honey",
+  "ale_mug",
+  "bottle_wine",
+  "mug_ale",
+  "sack_flour",
+  "sweet_roll",
+  "cloth_red",
+  "cloth_blue",
+  "wool_ball",
+  "candles",
+  "jug_clay",
+  "jug_red",
+  "quill_feather",
+  "potion_orange",
+  "potion_purple",
+  "ink_bottle",
+  "leather_hide",
+  "stone_block",
+  "scroll",
+  "letter_sealed",
+  "coins_gold",
+  "silver_plate",
+  "pouch_leather",
+  "shield_round",
+  "sword",
+  "bow",
+  "fence",
+  "hatchet",
+  "hammer",
+  "key_gold",
+  "padlock_plate",
+  "hat_brown",
+  "leather_piece",
+  "cask",
+  "trowel"
+ ],
+ "modes": {
+  "0": {
+   "faint": [],
+   "pixels": {
+    "w": 16,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 16,
+   "bytes_per_icon": 256,
+   "total_bytes": 16128,
+   "mean_error_255": 36.6,
+   "numeric_optimum_255": 36.3,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 1,
+     "name": "Blue",
+     "rgb": "#000080"
+    },
+    {
+     "pen": 2,
+     "firmware": 3,
+     "name": "Red",
+     "rgb": "#800000"
+    },
+    {
+     "pen": 3,
+     "firmware": 12,
+     "name": "Yellow",
+     "rgb": "#808000"
+    },
+    {
+     "pen": 4,
+     "firmware": 9,
+     "name": "Green",
+     "rgb": "#008000"
+    },
+    {
+     "pen": 5,
+     "firmware": 10,
+     "name": "Cyan",
+     "rgb": "#008080"
+    },
+    {
+     "pen": 6,
+     "firmware": 13,
+     "name": "White",
+     "rgb": "#808080"
+    },
+    {
+     "pen": 7,
+     "firmware": 15,
+     "name": "Orange",
+     "rgb": "#FF8000"
+    },
+    {
+     "pen": 8,
+     "firmware": 6,
+     "name": "Bright red",
+     "rgb": "#FF0000"
+    },
+    {
+     "pen": 9,
+     "firmware": 24,
+     "name": "Bright yellow",
+     "rgb": "#FFFF00"
+    },
+    {
+     "pen": 10,
+     "firmware": 2,
+     "name": "Bright blue",
+     "rgb": "#0000FF"
+    },
+    {
+     "pen": 11,
+     "firmware": 18,
+     "name": "Bright green",
+     "rgb": "#00FF00"
+    },
+    {
+     "pen": 12,
+     "firmware": 14,
+     "name": "Pastel blue",
+     "rgb": "#8080FF"
+    },
+    {
+     "pen": 13,
+     "firmware": 16,
+     "name": "Pink",
+     "rgb": "#FF8080"
+    },
+    {
+     "pen": 14,
+     "firmware": 25,
+     "name": "Pastel yellow",
+     "rgb": "#FFFF80"
+    },
+    {
+     "pen": 15,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  },
+  "1": {
+   "faint": [],
+   "pixels": {
+    "w": 32,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 4,
+   "bytes_per_icon": 256,
+   "total_bytes": 16128,
+   "mean_error_255": 43.2,
+   "numeric_optimum_255": 46.9,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 3,
+     "name": "Red",
+     "rgb": "#800000"
+    },
+    {
+     "pen": 2,
+     "firmware": 13,
+     "name": "White",
+     "rgb": "#808080"
+    },
+    {
+     "pen": 3,
+     "firmware": 25,
+     "name": "Pastel yellow",
+     "rgb": "#FFFF80"
+    }
+   ]
+  }
+ },
+ "source_warning": "Η πηγή είναι σμικρυμένη στο 0,2253 του αυθεντικού φύλλου: το 32x32 σώζεται σε ~25x25 θολά pixels. Με το φύλλο των 1540 px το αποτέλεσμα βγαίνει καθαρότερο — άλλαξε μόνο το kind σε full."
+}
