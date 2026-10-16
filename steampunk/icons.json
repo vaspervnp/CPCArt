@@ -1,0 +1,233 @@
+{
+ "source": "steampunk.png (contact sheet x3.5)",
+ "count": 75,
+ "names": [
+  "gear_copper",
+  "gear_brass",
+  "gear_iron",
+  "gear_gold",
+  "gear_silver",
+  "gear_bronze",
+  "gear_small_copper",
+  "gear_small_brass",
+  "gear_pair",
+  "gear_trio",
+  "cog_rim",
+  "spring",
+  "piston",
+  "pipe_straight",
+  "pipe_elbow",
+  "pipe_tee",
+  "valve",
+  "pressure_gauge",
+  "boiler",
+  "chimney",
+  "steam_cloud",
+  "rivet_plate",
+  "chain",
+  "pulley",
+  "cogwheel_crown",
+  "wrench",
+  "hammer",
+  "screwdriver",
+  "pliers",
+  "spanner_double",
+  "oil_can",
+  "blowtorch",
+  "welding_mask",
+  "toolbox",
+  "measuring_tape",
+  "calipers",
+  "magnifying_lens",
+  "compass_brass",
+  "telescope",
+  "sextant",
+  "hourglass_brass",
+  "goggles_brass",
+  "top_hat",
+  "bowler_hat",
+  "aviator_cap",
+  "leather_gloves",
+  "corset_vest",
+  "boots_riveted",
+  "pocket_watch",
+  "monocle",
+  "cravat",
+  "umbrella",
+  "mechanical_arm",
+  "jetpack",
+  "wings_clockwork",
+  "airship",
+  "hot_air_balloon",
+  "locomotive",
+  "train_wheel",
+  "submarine",
+  "automaton",
+  "clockwork_key",
+  "music_box",
+  "telegraph",
+  "typewriter",
+  "phonograph",
+  "lamp_gas",
+  "lightning_coil",
+  "tesla_orb",
+  "energy_core",
+  "crystal_fuel",
+  "coal_lump",
+  "coal_bucket",
+  "blueprint",
+  "wooden_crate_brass"
+ ],
+ "modes": {
+  "0": {
+   "pixels": {
+    "w": 16,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 16,
+   "bytes_per_icon": 256,
+   "total_bytes": 19200,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 1,
+     "name": "Blue",
+     "rgb": "#000080"
+    },
+    {
+     "pen": 2,
+     "firmware": 3,
+     "name": "Red",
+     "rgb": "#800000"
+    },
+    {
+     "pen": 3,
+     "firmware": 12,
+     "name": "Yellow",
+     "rgb": "#808000"
+    },
+    {
+     "pen": 4,
+     "firmware": 9,
+     "name": "Green",
+     "rgb": "#008000"
+    },
+    {
+     "pen": 5,
+     "firmware": 10,
+     "name": "Cyan",
+     "rgb": "#008080"
+    },
+    {
+     "pen": 6,
+     "firmware": 13,
+     "name": "White",
+     "rgb": "#808080"
+    },
+    {
+     "pen": 7,
+     "firmware": 15,
+     "name": "Orange",
+     "rgb": "#FF8000"
+    },
+    {
+     "pen": 8,
+     "firmware": 6,
+     "name": "Bright red",
+     "rgb": "#FF0000"
+    },
+    {
+     "pen": 9,
+     "firmware": 24,
+     "name": "Bright yellow",
+     "rgb": "#FFFF00"
+    },
+    {
+     "pen": 10,
+     "firmware": 18,
+     "name": "Bright green",
+     "rgb": "#00FF00"
+    },
+    {
+     "pen": 11,
+     "firmware": 20,
+     "name": "Bright cyan",
+     "rgb": "#00FFFF"
+    },
+    {
+     "pen": 12,
+     "firmware": 11,
+     "name": "Sky blue",
+     "rgb": "#0080FF"
+    },
+    {
+     "pen": 13,
+     "firmware": 16,
+     "name": "Pink",
+     "rgb": "#FF8080"
+    },
+    {
+     "pen": 14,
+     "firmware": 25,
+     "name": "Pastel yellow",
+     "rgb": "#FFFF80"
+    },
+    {
+     "pen": 15,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  },
+  "1": {
+   "pixels": {
+    "w": 32,
+    "h": 32
+   },
+   "screen_units": {
+    "w": 32,
+    "h": 32
+   },
+   "pens": 4,
+   "bytes_per_icon": 256,
+   "total_bytes": 19200,
+   "palette": [
+    {
+     "pen": 0,
+     "firmware": 0,
+     "name": "Black",
+     "rgb": "#000000"
+    },
+    {
+     "pen": 1,
+     "firmware": 15,
+     "name": "Orange",
+     "rgb": "#FF8000"
+    },
+    {
+     "pen": 2,
+     "firmware": 13,
+     "name": "White",
+     "rgb": "#808080"
+    },
+    {
+     "pen": 3,
+     "firmware": 26,
+     "name": "Bright white",
+     "rgb": "#FFFFFF"
+    }
+   ]
+  }
+ }
+}
