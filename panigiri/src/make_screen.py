@@ -34,9 +34,23 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.dirname(HERE)
 TMP = os.environ.get('TMPDIR', '/tmp')
 
-W, H = 160, 200
-ROW_BYTES = 80
+ROW_BYTES = 80                       # και στους δύο τρόπους
 SCREEN = 0x4000                      # 16384 bytes, #C000-#FFFF
+
+# Και οι δύο τρόποι γεμίζουν ΤΗΝ ΙΔΙΑ οθόνη 16K με 80 bytes τη γραμμή. Αλλάζει
+# μόνο πόσα pixels χωράνε στο byte, και άρα πόσο φαρδύ είναι το pixel:
+#
+#   Mode 0  160x200 pixels, 16 pens, 2 px/byte, pixel 2:1
+#   Mode 1  320x200 pixels,  4 pens, 4 px/byte, pixel 1:1
+#
+# Η ΟΘΟΝΗ βγαίνει ίδια και στους δύο: 320x200 μονάδες, λόγος 1,600.
+MODES = {
+    0: dict(w=160, pens=16, ppb=2, aspect=2, pack=cpcimg.mode0_byte,
+            unpack=cpcimg.mode0_pens),
+    1: dict(w=320, pens=4, ppb=4, aspect=1, pack=cpcimg.mode1_byte,
+            unpack=cpcimg.mode1_pens),
+}
+H = 200
 
 # Βάρη για την απόσταση χρωμάτων: το μάτι βλέπει πιο πολύ το πράσινο.
 WEIGHT = (2.0, 4.0, 3.0)
@@ -88,12 +102,16 @@ FS_STRENGTH = 0.35
 # οπότε οι παλέτες τους βγαίνουν ανεξάρτητα και συγκρίνονται: αν διαφέρουν,
 # η διαφορά είναι πραγματική και όχι τύχη του διαλέκτη.
 PICTURES = {
+    # Ασπρόμαυρη. Οι ΜΟΝΟΙ ουδέτεροι τόνοι του CPC είναι αυτοί οι τρεις:
+    # #000000, #808080, #FFFFFF. Τέταρτος δεν υπάρχει — ό,τι κι αν βάλεις
+    # έχει ορατή απόχρωση (#8080FF μπλε, #FFFF80 κίτρινο). Το Mode 1 σηκώνει
+    # τέσσερις πένες· η τέταρτη μένει αχρησιμοποίητη και παίρνει μαύρο.
     'panigiri': dict(
-        src='panigiri_source.jpg',
-        palette=[0, 1, 3, 6, 9, 10, 11, 12, 13, 14, 15, 16, 22, 23, 25, 26],
+        src='panigiri_source.jpg', mode=1, grey=True,
+        palette=[0, 13, 26],
     ),
     'panigiri_drone': dict(
-        src='panigiri_drone_source.jpg',
+        src='panigiri_drone_source.jpg', mode=0,
         palette=[0, 1, 3, 4, 9, 10, 12, 13, 14, 15, 16, 17, 22, 23, 25, 26],
     ),
 }
@@ -105,30 +123,40 @@ def dist(a, b):
 
 # ------------------------------------------------------- μνήμη οθόνης
 
-def offset(x, y):
-    return (y & 7) * 0x800 + (y >> 3) * ROW_BYTES + (x >> 1)
+def offset(x, y, mode):
+    return (y & 7) * 0x800 + (y >> 3) * ROW_BYTES + x // MODES[mode]['ppb']
 
 
-assert offset(0, 0) == 0
-assert offset(0, 1) == 0x800, 'η επόμενη γραμμή είναι +#800'
-assert offset(0, 8) == ROW_BYTES, 'κάθε 8 γραμμές γυρνάει στην αρχή +80'
-assert offset(159, 199) == 16335, 'η τελευταία ορατή θέση'
-assert offset(1, 0) == 0 and offset(2, 0) == 1, '2 pixels το byte'
+assert offset(0, 0, 0) == 0
+assert offset(0, 1, 0) == 0x800, 'η επόμενη γραμμή είναι +#800'
+assert offset(0, 8, 0) == ROW_BYTES, 'κάθε 8 γραμμές γυρνάει στην αρχή +80'
+assert offset(159, 199, 0) == 16335, 'Mode 0: η τελευταία ορατή θέση'
+assert offset(319, 199, 1) == 16335, 'Mode 1: η ίδια τελευταία θέση'
+assert offset(1, 0, 0) == 0 and offset(2, 0, 0) == 1, 'Mode 0: 2 pixels το byte'
+assert offset(3, 0, 1) == 0 and offset(4, 0, 1) == 1, 'Mode 1: 4 pixels το byte'
 
 
 # ---------------------------------------------------------- εξαγωγή
 
-def load(src):
+def load(src, mode=0, grey=False):
     """Η πηγή σε 160x200 RGB.
 
     LANCZOS: η εικόνα σμικρύνεται 12,5 φορές και χρειάζεται φίλτρο που κρατάει
     ακμές. Με BOX οι λεπτομέρειες (πρόσωπα, σημαία, γράμματα) γίνονταν λάσπη.
     """
     im = Image.open(os.path.join(OUT, src)).convert('RGB')
-    assert abs(im.size[0] / im.size[1] - W * 2 / H) < 0.02, \
-        'η πηγή %s δεν έχει τον λόγο της οθόνης (%.3f)' % (im.size, W * 2 / H)
-    small = im.resize((W, H), Image.LANCZOS)
-    return [[small.getpixel((x, y)) for x in range(W)] for y in range(H)]
+    w = MODES[mode]['w']
+    assert abs(im.size[0] / im.size[1] - 320.0 / H) < 0.02, \
+        'η πηγή %s δεν έχει τον λόγο της οθόνης (%.3f)' % (im.size, 320.0 / H)
+    small = im.resize((w, H), Image.LANCZOS)
+    if grey:
+        # Πρώτα σε φωτεινότητα, ΜΕΤΑ κβαντισμός. Αν αφήσεις το χρώμα και
+        # αφήσεις την απόσταση να διαλέξει ανάμεσα σε γκρι, το κόκκινο και το
+        # μπλε του ίδιου τόνου καταλήγουν σε διαφορετικό γκρι: η φωτογραφία
+        # βγαίνει με λάθος τόνους εκεί που η πηγή είχε κορεσμένα χρώματα.
+        # Τα βάρη είναι τα φωτομετρικά, όχι ο μέσος όρος.
+        small = small.convert('L').convert('RGB')
+    return [[small.getpixel((x, y)) for x in range(w)] for y in range(H)]
 
 
 # ----------------------------------------------------------- παλέτα
@@ -233,10 +261,11 @@ def quant_fs(pix, pal, strength=FS_STRENGTH):
     χαθούν οι βαθμίδες.
     """
     buf = [[list(map(float, p)) for p in row] for row in pix]
+    w = len(pix[0])
     out = []
     for y in range(H):
-        line = [0] * W
-        xs = range(W) if y % 2 == 0 else range(W - 1, -1, -1)
+        line = [0] * w
+        xs = range(w) if y % 2 == 0 else range(w - 1, -1, -1)
         step = 1 if y % 2 == 0 else -1
         for x in xs:
             old = buf[y][x]
@@ -246,7 +275,7 @@ def quant_fs(pix, pal, strength=FS_STRENGTH):
             for dx, dy, f in ((step, 0, 7 / 16), (-step, 1, 3 / 16),
                               (0, 1, 5 / 16), (step, 1, 1 / 16)):
                 nx, ny = x + dx, y + dy
-                if 0 <= nx < W and ny < H:
+                if 0 <= nx < w and ny < H:
                     for c in range(3):
                         buf[ny][nx][c] += err[c] * f
         out.append(line)
@@ -258,30 +287,36 @@ QUANT = {'none': quant_none, 'ordered': quant_ordered, 'fs': quant_fs}
 
 # ------------------------------------------------------------- έξοδος
 
-def to_screen(pens):
-    """pens 160x200 -> 16384 bytes στη διάταξη της μνήμης οθόνης."""
+def to_screen(pens, mode):
+    """pens -> 16384 bytes στη διάταξη της μνήμης οθόνης."""
+    m = MODES[mode]
+    ppb, pack = m['ppb'], m['pack']
     buf = bytearray(SCREEN)
     for y in range(H):
-        for x in range(0, W, 2):
-            buf[offset(x, y)] = cpcimg.mode0_byte(pens[y][x], pens[y][x + 1])
+        row = pens[y]
+        for x in range(0, m['w'], ppb):
+            buf[offset(x, y, mode)] = pack(*row[x:x + ppb])
     return bytes(buf)
 
 
-def verify(pens, scr):
+def verify(pens, scr, mode):
     """Διαβάζει ΟΛΗ την οθόνη πίσω σε pens και τη συγκρίνει.
 
     Οι ισχυρισμοί του cpcimg δένουν ήδη κωδικοποιητή και αποκωδικοποιητή· αυτό
     εδώ πιάνει το άλλο λάθος που κάνει κανείς εδώ — λάθος τύπο διεύθυνσης.
     """
+    m = MODES[mode]
+    ppb, unpack = m['ppb'], m['unpack']
     bad = 0
     for y in range(H):
-        for x in range(0, W, 2):
-            a, b = cpcimg.mode0_pens(scr[offset(x, y)])
-            bad += (a != pens[y][x]) + (b != pens[y][x + 1])
+        row = pens[y]
+        for x in range(0, m['w'], ppb):
+            got = unpack(scr[offset(x, y, mode)])
+            bad += sum(1 for k in range(ppb) if got[k] != row[x + k])
     return bad
 
 
-def preview(path, pens, pal_rgb, zoom=2):
+def preview(path, pens, pal_rgb, aspect=2, zoom=2):
     """PNG με ΣΩΣΤΗ αναλογία: κάθε pixel 2 φορές φαρδύτερο από ψηλό.
 
     Το zoom είναι 2 και όχι 4 επίτηδες. Στο 4 κάθε pixel του CPC γίνεται
@@ -290,12 +325,13 @@ def preview(path, pens, pal_rgb, zoom=2):
     x4 ήμουν έτοιμος να ρίξω την ένταση του dither για να «καθαρίσει» μια
     εικόνα που δεν ήταν βρόμικη.
     """
-    im = Image.new('RGB', (W, H))
+    w = len(pens[0])
+    im = Image.new('RGB', (w, H))
     im.putdata([pal_rgb[p] for row in pens for p in row])
-    im.resize((W * 2 * zoom, H * zoom), Image.NEAREST).save(path)
+    im.resize((w * aspect * zoom, H * zoom), Image.NEAREST).save(path)
 
 
-def preview_crt(path, pens, pal_rgb):
+def preview_crt(path, pens, pal_rgb, aspect=2):
     """Πώς δείχνει σε οθόνη καθοδικού σωλήνα, κατά προσέγγιση.
 
     Το φωσφόρο απλώνει και το pixel του Mode 0 είναι διπλάσια φαρδύ, οπότε ο
@@ -303,30 +339,32 @@ def preview_crt(path, pens, pal_rgb):
     προσομοίωση — είναι υπενθύμιση ότι η σκληρή εικόνα του LCD δεν είναι ο
     προορισμός.
     """
-    im = Image.new('RGB', (W, H))
+    w = len(pens[0])
+    im = Image.new('RGB', (w, H))
     im.putdata([pal_rgb[p] for row in pens for p in row])
-    big = im.resize((W * 2, H), Image.NEAREST)
-    big.resize((W * 8, H * 4), Image.LANCZOS) \
-       .resize((W * 4, H * 2), Image.LANCZOS).save(path)
+    big = im.resize((w * aspect, H), Image.NEAREST)
+    big.resize((640 * 2, H * 4), Image.LANCZOS) \
+       .resize((640, H * 2), Image.LANCZOS).save(path)
 
 
 def sheet(path, pens, pal_rgb):
     """Το ακατέργαστο 160x200 με παλέτα, για Aseprite."""
-    im = Image.new('P', (W, H))
+    w = len(pens[0])
+    im = Image.new('P', (w, H))
     flat = []
     for rgb in pal_rgb:
         flat += list(rgb)
     im.putpalette(flat + [0] * (768 - len(flat)))
     px = im.load()
     for y in range(H):
-        for x in range(W):
+        for x in range(w):
             px[x, y] = pens[y][x]
     im.save(path)
 
 
-def write_palette(key, sel):
-    lines = ['GIMP Palette', 'Name: %s CPC Mode 0' % key, 'Columns: 4',
-             '# Τα 16 pens, από τα 27 χρώματα του firmware.',
+def write_palette(key, sel, mode=0):
+    lines = ['GIMP Palette', 'Name: %s CPC Mode %d' % (key, mode), 'Columns: 4',
+             '# Τα %d pens, από τα 27 χρώματα του firmware.' % len(sel),
              '# Η στήλη FW είναι ο αριθμός για INK / SCR SET INK.', '#']
     for pen, fw in enumerate(sel):
         r, g, b = cpcimg.FW_RGB[fw]
@@ -336,7 +374,7 @@ def write_palette(key, sel):
         f.write('\n'.join(lines) + '\n')
 
     # Εναλλακτικός δρόμος χωρίς assembler: η ίδια οθόνη από BASIC.
-    basic = ['10 MODE 0', '20 BORDER %d' % sel[0]]
+    basic = ['10 MODE %d' % mode, '20 BORDER %d' % sel[0]]
     n = 30
     for pen, fw in enumerate(sel):
         basic.append('%d INK %d,%d' % (n, pen, fw))
@@ -348,7 +386,7 @@ def write_palette(key, sel):
         f.write('\n'.join(basic) + '\n')
 
 
-def write_asm(key, sel):
+def write_asm(key, sel, mode=0):
     """Ο loader. Βάζει την παλέτα με SCR SET INK, που δέχεται αριθμούς FIRMWARE.
 
     ΟΧΙ απευθείας στον Gate Array. Οι τιμές υλικού είναι άλλος πίνακας και δεν
@@ -358,7 +396,7 @@ def write_asm(key, sel):
     δεν υπάρχει δεύτερος πίνακας να ξεστρατίσει.
     """
     lines = [
-        '; %s.asm — ολόκληρη οθόνη Mode 0 για Amstrad CPC 6128' % key,
+        '; %s.asm — ολόκληρη οθόνη Mode %d για Amstrad CPC 6128' % (key, mode),
         '; ΠΑΡΑΓΕΤΑΙ ΑΥΤΟΜΑΤΑ από src/make_screen.py — μην το πειράζεις.',
         ';',
         '; Δείχνει την εικόνα και περιμένει πλήκτρο. Τα δεδομένα είναι ήδη στη',
@@ -373,8 +411,9 @@ def write_asm(key, sel):
         '    run start',
         '',
         'start:',
-        '    ld a,0',
-        '    call SCR_SET_MODE          ; Mode 0, 160x200, 16 pens',
+        '    ld a,%d' % mode,
+        '    call SCR_SET_MODE          ; Mode %d, %dx200, %d pens'
+        % (mode, MODES[mode]['w'], MODES[mode]['pens']),
         '',
         '    ld hl,inks',
         '    ld e,0                     ; e = αριθμός pen',
@@ -391,7 +430,7 @@ def write_asm(key, sel):
         '    inc hl',
         '    inc e',
         '    ld a,e',
-        '    cp 16',
+        '    cp %d' % len(sel),
         '    jr nz,ink_loop',
         '',
         '    ld a,(inks)                ; το border στο ίδιο με το pen 0',
@@ -409,7 +448,7 @@ def write_asm(key, sel):
         '',
         'inks:',
         '    db ' + ','.join(str(f) for f in sel)
-        + '   ; firmware numbers, pen 0..15',
+        + '   ; firmware numbers, pen 0..%d' % (len(sel) - 1),
         '',
         'picture:',
         '    incbin "%s.scr"' % key,
@@ -448,19 +487,22 @@ def perceived(pix, pens, pal_rgb, radius=1.2):
     τίποτα, επειδή μετράει κάθε pixel χωριστά — ενώ ο dither δουλεύει ακριβώς
     στο ότι το μάτι ΔΕΝ τα μετράει χωριστά.
     """
-    a = Image.new('RGB', (W, H))
+    w = len(pens[0])
+    a = Image.new('RGB', (w, H))
     a.putdata([p for row in pix for p in row])
-    b = Image.new('RGB', (W, H))
+    b = Image.new('RGB', (w, H))
     b.putdata([pal_rgb[p] for row in pens for p in row])
     a = a.filter(ImageFilter.GaussianBlur(radius))
     b = b.filter(ImageFilter.GaussianBlur(radius))
     pa, pb = a.load(), b.load()
-    tot = sum(dist(pa[x, y], pb[x, y]) for y in range(H) for x in range(W))
-    return tot / (W * H) / sum(WEIGHT) ** 0.5
+    tot = sum(dist(pa[x, y], pb[x, y]) for y in range(H) for x in range(w))
+    return tot / (w * H) / sum(WEIGHT) ** 0.5
 
 
 def build(key, cfg):
-    pix = load(cfg['src'])
+    mode = cfg.get('mode', 0)
+    m = MODES[mode]
+    pix = load(cfg['src'], mode, cfg.get('grey', False))
     sel = cfg['palette']
     pal_rgb = [cpcimg.FW_RGB[i] for i in sel]
     hist = {}
@@ -472,33 +514,39 @@ def build(key, cfg):
               for p, w in hist.items()) / tot / sum(WEIGHT) ** 0.5
 
     pens = QUANT[DITHER](pix, pal_rgb)
-    scr = to_screen(pens)
-    bad = verify(pens, scr)
+    scr = to_screen(pens, mode)
+    bad = verify(pens, scr, mode)
     assert bad == 0, '%d pixels δεν γύρισαν σωστά από τη μνήμη οθόνης' % bad
     assert len(scr) == SCREEN
 
     with open(os.path.join(OUT, key + '.scr'), 'wb') as f:
         f.write(scr)
-    sheet(os.path.join(OUT, key + '_mode0.png'), pens, pal_rgb)
-    preview(os.path.join(OUT, key + '_preview.png'), pens, pal_rgb)
-    preview_crt(os.path.join(OUT, key + '_preview_crt.png'), pens, pal_rgb)
-    write_palette(key, sel)
-    write_asm(key, sel)
+    sheet(os.path.join(OUT, '%s_mode%d.png' % (key, mode)), pens, pal_rgb)
+    preview(os.path.join(OUT, key + '_preview.png'), pens, pal_rgb, m['aspect'])
+    preview_crt(os.path.join(OUT, key + '_preview_crt.png'), pens, pal_rgb,
+                m['aspect'])
+    write_palette(key, sel, mode)
+    write_asm(key, sel, mode)
 
     cnt = {}
     for row in pens:
         for p in row:
             cnt[p] = cnt.get(p, 0) + 1
-    dead = [i for i in range(16) if not cnt.get(i)]
+    # Η παλέτα επιτρέπεται να έχει ΛΙΓΟΤΕΡΕΣ πένες από όσες σηκώνει ο τρόπος:
+    # σε ασπρόμαυρο ο CPC έχει ακριβώς τρεις ουδέτερους τόνους (#000000,
+    # #808080, #FFFFFF) και τίποτα να βάλεις τέταρτο δεν είναι ουδέτερο.
+    dead = [i for i in range(len(sel)) if not cnt.get(i)]
     assert not dead, '%s: νεκρές πένες %s' % (key, dead)
 
-    print('%s — %s' % (key, cfg['src']))
+    print('%s — %s, Mode %d (%dx%d, %d pens)'
+          % (key, cfg['src'], mode, m['w'], H, m['pens']))
     print('   %d διαφορετικά χρώματα σε %d pixels' % (len(hist), tot))
     print('   παλέτα (firmware): %s' % ', '.join(str(f) for f in sel))
     print('   σφάλμα %.2f/255 πριν τον dither, %.2f μετά'
           % (err, perceived(pix, pens, pal_rgb)))
-    print('   16/16 πένες σε χρήση, η πιο σπάνια %.2f%%, %d bytes οθόνης'
-          % (100.0 * min(cnt.values()) / (W * H), len(scr)))
+    print('   %d/%d πένες σε χρήση, η πιο σπάνια %.2f%%, %d bytes οθόνης'
+          % (len(cnt), m['pens'], 100.0 * min(cnt.values()) / (m['w'] * H),
+             len(scr)))
     return sel
 
 
@@ -509,7 +557,9 @@ def main():
     if '--check-palette' in sys.argv:
         for key in keys:
             cfg = PICTURES[key]
-            auto, _ = choose_palette(load(cfg['src']))
+            mode = cfg.get('mode', 0)
+            auto, _ = choose_palette(load(cfg['src'], mode),
+                                     MODES[mode]['pens'])
             if cfg['palette'] is None:
                 print('%-16s %s   <-- γράψ' "'" 'το στο PICTURES' % (key, auto))
             else:
@@ -528,7 +578,7 @@ def main():
     pals = {}
     for key in keys:
         pals[key] = build(key, PICTURES[key])
-    if len(pals) > 1:
+    if len(pals) > 1 and len({PICTURES[k].get('mode', 0) for k in pals}) == 1:
         a, b = list(pals.values())[:2]
         same = sorted(set(a) & set(b))
         print('\nοι δύο παλέτες μοιράζονται %d/16 πένες' % len(same))

@@ -1,22 +1,9 @@
 GIMP Palette
-Name: panigiri CPC Mode 0
+Name: panigiri CPC Mode 1
 Columns: 4
-# Τα 16 pens, από τα 27 χρώματα του firmware.
+# Τα 3 pens, από τα 27 χρώματα του firmware.
 # Η στήλη FW είναι ο αριθμός για INK / SCR SET INK.
 #
   0   0   0	pen 00  FW 00  Black
-  0   0 128	pen 01  FW 01  Blue
-128   0   0	pen 02  FW 03  Red
-255   0   0	pen 03  FW 06  Bright red
-  0 128   0	pen 04  FW 09  Green
-  0 128 128	pen 05  FW 10  Cyan
-  0 128 255	pen 06  FW 11  Sky blue
-128 128   0	pen 07  FW 12  Yellow
-128 128 128	pen 08  FW 13  White
-128 128 255	pen 09  FW 14  Pastel blue
-255 128   0	pen 10  FW 15  Orange
-255 128 128	pen 11  FW 16  Pink
-128 255 128	pen 12  FW 22  Pastel green
-128 255 255	pen 13  FW 23  Pastel cyan
-255 255 128	pen 14  FW 25  Pastel yellow
-255 255 255	pen 15  FW 26  Bright white
+128 128 128	pen 01  FW 13  White
+255 255 255	pen 02  FW 26  Bright white
