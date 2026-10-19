@@ -26,7 +26,7 @@
 import os
 import sys
 
-from PIL import Image, ImageFilter
+from PIL import Image, ImageEnhance, ImageFilter
 
 import cpcimg
 
@@ -42,6 +42,7 @@ SCREEN = 0x4000                      # 16384 bytes, #C000-#FFFF
 #
 #   Mode 0  160x200 pixels, 16 pens, 2 px/byte, pixel 2:1
 #   Mode 1  320x200 pixels,  4 pens, 4 px/byte, pixel 1:1
+#   Mode 2  640x200 pixels,  2 pens, 8 px/byte, pixel 1:2 (μισό πλάτος)
 #
 # Η ΟΘΟΝΗ βγαίνει ίδια και στους δύο: 320x200 μονάδες, λόγος 1,600.
 MODES = {
@@ -49,6 +50,8 @@ MODES = {
             unpack=cpcimg.mode0_pens),
     1: dict(w=320, pens=4, ppb=4, aspect=1, pack=cpcimg.mode1_byte,
             unpack=cpcimg.mode1_pens),
+    2: dict(w=640, pens=2, ppb=8, aspect=0.5, pack=cpcimg.mode2_byte,
+            unpack=cpcimg.mode2_pens),
 }
 H = 200
 
@@ -107,8 +110,8 @@ PICTURES = {
     # έχει ορατή απόχρωση (#8080FF μπλε, #FFFF80 κίτρινο). Το Mode 1 σηκώνει
     # τέσσερις πένες· η τέταρτη μένει αχρησιμοποίητη και παίρνει μαύρο.
     'panigiri': dict(
-        src='panigiri_source.jpg', mode=1, grey=True,
-        palette=[0, 13, 26],
+        src='panigiri_source.jpg', mode=2, grey=True,
+        palette=[0, 26], dither='fs', strength=1.0,
     ),
     'panigiri_drone': dict(
         src='panigiri_drone_source.jpg', mode=0,
@@ -134,11 +137,39 @@ assert offset(159, 199, 0) == 16335, 'Mode 0: η τελευταία ορατή �
 assert offset(319, 199, 1) == 16335, 'Mode 1: η ίδια τελευταία θέση'
 assert offset(1, 0, 0) == 0 and offset(2, 0, 0) == 1, 'Mode 0: 2 pixels το byte'
 assert offset(3, 0, 1) == 0 and offset(4, 0, 1) == 1, 'Mode 1: 4 pixels το byte'
+assert offset(639, 199, 2) == 16335, 'Mode 2: η ίδια τελευταία θέση'
+assert offset(7, 0, 2) == 0 and offset(8, 0, 2) == 1, 'Mode 2: 8 pixels το byte'
 
 
 # ---------------------------------------------------------- εξαγωγή
 
-def load(src, mode=0, grey=False):
+# Πόσο ανεβαίνει η ΤΟΠΙΚΗ αντίθεση πριν τον κβαντισμό.
+#
+# Χωρίς αυτό, τα πρόσωπα εξαφανίζονται. Δεκαπέντε κεφάλια στη σειρά, το καθένα
+# ~20 pixels φαρδύ, και όλα τους σε παρόμοιο μεσαίο τόνο: ο κβαντισμός τα
+# ισοπεδώνει σε μία γκρι μάζα και η σκηνή χάνει το θέμα της. Το unsharp mask
+# ανεβάζει τη διαφορά ΑΝΑΜΕΣΑ σε γειτονικά pixels χωρίς να πειράζει τη
+# συνολική φωτεινότητα, οπότε μάτια, μουστάκια και περιγράμματα επιβιώνουν.
+#
+# Καθολική αντίθεση (ImageEnhance.Contrast) ΔΕΝ κάνει τη δουλειά: ανοίγει τα
+# φώτα και κλείνει τις σκιές, αλλά τα πρόσωπα είναι όλα στον ίδιο μεσαίο τόνο
+# και μένουν ίδια μεταξύ τους.
+# Όσο λιγότερες πένες, τόσο πιο δυνατό πρέπει να είναι. Σε 1 bit (Mode 2) ένα
+# πρόσωπο είναι ~12 pixels ψηλό και ο μεσαίος τόνος του γίνεται πεδίο θορύβου
+# 50/50 — εκεί που ο dither κάνει τον χειρότερο θόρυβο. Το unsharp το σπρώχνει
+# μακριά από το 50% και τα χαρακτηριστικά επιβιώνουν.
+UNSHARP = {
+    0: dict(radius=1.6, percent=160, threshold=2),
+    1: dict(radius=1.6, percent=160, threshold=2),
+    2: dict(radius=2.5, percent=260, threshold=1),
+}
+
+# Καθολική αντίθεση, ΜΕΤΑ το unsharp. Στο 1 bit βοηθάει επιπλέον: απλώνει τους
+# μεσαίους τόνους προς τα άκρα, όπου ο dither έχει λιγότερο να επινοήσει.
+CONTRAST = {0: 1.0, 1: 1.0, 2: 1.4}
+
+
+def load(src, mode=0, grey=False, sharpen=True):
     """Η πηγή σε 160x200 RGB.
 
     LANCZOS: η εικόνα σμικρύνεται 12,5 φορές και χρειάζεται φίλτρο που κρατάει
@@ -149,13 +180,18 @@ def load(src, mode=0, grey=False):
     assert abs(im.size[0] / im.size[1] - 320.0 / H) < 0.02, \
         'η πηγή %s δεν έχει τον λόγο της οθόνης (%.3f)' % (im.size, 320.0 / H)
     small = im.resize((w, H), Image.LANCZOS)
+    if sharpen:
+        small = small.filter(ImageFilter.UnsharpMask(**UNSHARP[mode]))
     if grey:
         # Πρώτα σε φωτεινότητα, ΜΕΤΑ κβαντισμός. Αν αφήσεις το χρώμα και
         # αφήσεις την απόσταση να διαλέξει ανάμεσα σε γκρι, το κόκκινο και το
         # μπλε του ίδιου τόνου καταλήγουν σε διαφορετικό γκρι: η φωτογραφία
         # βγαίνει με λάθος τόνους εκεί που η πηγή είχε κορεσμένα χρώματα.
         # Τα βάρη είναι τα φωτομετρικά, όχι ο μέσος όρος.
-        small = small.convert('L').convert('RGB')
+        small = small.convert('L')
+        if CONTRAST[mode] != 1.0:
+            small = ImageEnhance.Contrast(small).enhance(CONTRAST[mode])
+        small = small.convert('RGB')
     return [[small.getpixel((x, y)) for x in range(w)] for y in range(H)]
 
 
@@ -224,11 +260,11 @@ def nearest(p, pal):
     return min(range(len(pal)), key=lambda i: dist(p, pal[i]))
 
 
-def quant_none(pix, pal):
+def quant_none(pix, pal, strength=0.0):
     return [[nearest(p, pal) for p in row] for row in pix]
 
 
-def quant_ordered(pix, pal):
+def quant_ordered(pix, pal, strength=1.0):
     out = []
     for y, row in enumerate(pix):
         line = []
@@ -282,7 +318,36 @@ def quant_fs(pix, pal, strength=FS_STRENGTH):
     return out
 
 
-QUANT = {'none': quant_none, 'ordered': quant_ordered, 'fs': quant_fs}
+def quant_atkinson(pix, pal, strength=1.0):
+    """Atkinson: σκορπάει μόνο τα 6/8 του σφάλματος, σε έξι γείτονες.
+
+    Φτιάχτηκε για ασπρόμαυρες οθόνες ενός bit και είναι ακόμα ό,τι καλύτερο
+    γι' αυτές. Κρατώντας το ένα τέταρτο του σφάλματος για τον εαυτό του, δεν
+    «σέρνει» τους τόνους: τα λευκά μένουν λευκά και τα μαύρα μαύρα, οπότε τα
+    πρόσωπα και τα περιγράμματα δεν λιώνουν σε ομοιόμορφο γκρι. Σε αντάλλαγμα
+    χάνει λίγη πιστότητα στις μεγάλες βαθμίδες.
+    """
+    buf = [[list(map(float, p)) for p in row] for row in pix]
+    w = len(pix[0])
+    out = []
+    for y in range(H):
+        line = [0] * w
+        for x in range(w):
+            old = buf[y][x]
+            i = nearest(old, pal)
+            line[x] = i
+            err = [(o - n) * strength / 8.0 for o, n in zip(old, pal[i])]
+            for dx, dy in ((1, 0), (2, 0), (-1, 1), (0, 1), (1, 1), (0, 2)):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < w and ny < H:
+                    for c in range(3):
+                        buf[ny][nx][c] += err[c]
+        out.append(line)
+    return out
+
+
+QUANT = {'none': quant_none, 'ordered': quant_ordered, 'fs': quant_fs,
+         'atkinson': quant_atkinson}
 
 
 # ------------------------------------------------------------- έξοδος
@@ -325,10 +390,13 @@ def preview(path, pens, pal_rgb, aspect=2, zoom=2):
     x4 ήμουν έτοιμος να ρίξω την ένταση του dither για να «καθαρίσει» μια
     εικόνα που δεν ήταν βρόμικη.
     """
+    # Όλοι οι τρόποι γεμίζουν την ΙΔΙΑ οθόνη. Σχεδιάζοντας πάντα σε 640x400,
+    # κάθε pixel βγαίνει (640/w) x 2 και κανένα δεν χάνεται: Mode 0 -> 4x2,
+    # Mode 1 -> 2x2, Mode 2 -> 1x2. Έτσι οι τρεις συγκρίνονται δίκαια.
     w = len(pens[0])
     im = Image.new('RGB', (w, H))
     im.putdata([pal_rgb[p] for row in pens for p in row])
-    im.resize((w * aspect * zoom, H * zoom), Image.NEAREST).save(path)
+    im.resize((640, 400), Image.NEAREST).save(path)
 
 
 def preview_crt(path, pens, pal_rgb, aspect=2):
@@ -342,9 +410,8 @@ def preview_crt(path, pens, pal_rgb, aspect=2):
     w = len(pens[0])
     im = Image.new('RGB', (w, H))
     im.putdata([pal_rgb[p] for row in pens for p in row])
-    big = im.resize((w * aspect, H), Image.NEAREST)
-    big.resize((640 * 2, H * 4), Image.LANCZOS) \
-       .resize((640, H * 2), Image.LANCZOS).save(path)
+    im.resize((1280, 800), Image.NEAREST) \
+      .resize((640, 400), Image.LANCZOS).save(path)
 
 
 def sheet(path, pens, pal_rgb):
@@ -503,6 +570,8 @@ def build(key, cfg):
     mode = cfg.get('mode', 0)
     m = MODES[mode]
     pix = load(cfg['src'], mode, cfg.get('grey', False))
+    quant = QUANT[cfg.get('dither', DITHER)]
+    strength = cfg.get('strength', FS_STRENGTH)
     sel = cfg['palette']
     pal_rgb = [cpcimg.FW_RGB[i] for i in sel]
     hist = {}
@@ -513,7 +582,7 @@ def build(key, cfg):
     err = sum(w * min(dist(p, q) for q in pal_rgb)
               for p, w in hist.items()) / tot / sum(WEIGHT) ** 0.5
 
-    pens = QUANT[DITHER](pix, pal_rgb)
+    pens = quant(pix, pal_rgb, strength)
     scr = to_screen(pens, mode)
     bad = verify(pens, scr, mode)
     assert bad == 0, '%d pixels δεν γύρισαν σωστά από τη μνήμη οθόνης' % bad
@@ -542,8 +611,9 @@ def build(key, cfg):
           % (key, cfg['src'], mode, m['w'], H, m['pens']))
     print('   %d διαφορετικά χρώματα σε %d pixels' % (len(hist), tot))
     print('   παλέτα (firmware): %s' % ', '.join(str(f) for f in sel))
-    print('   σφάλμα %.2f/255 πριν τον dither, %.2f μετά'
-          % (err, perceived(pix, pens, pal_rgb)))
+    print('   dither %s %.2f — σφάλμα %.2f/255 πριν, %.2f μετά'
+          % (cfg.get('dither', DITHER), strength, err,
+             perceived(pix, pens, pal_rgb)))
     print('   %d/%d πένες σε χρήση, η πιο σπάνια %.2f%%, %d bytes οθόνης'
           % (len(cnt), m['pens'], 100.0 * min(cnt.values()) / (m['w'] * H),
              len(scr)))

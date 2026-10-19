@@ -33,6 +33,11 @@ MODE0_SHIFTS = ((7, 3, 5, 1), (6, 2, 4, 0))
 #   pixel i: bit0 -> b(7-i)   bit1 -> b(3-i)
 MODE1_SHIFTS = tuple((7 - i, 3 - i) for i in range(4))
 
+# Mode 2: 640x200, 2 pens, 8 pixels το byte, αναλογία pixel 1:2 (μισό πλάτος)
+#   pixel i: bit0 -> b(7-i).  Ένα bit, οπότε δεν υπάρχει σειρά να μπερδευτεί —
+#   αλλά ο αριστερότερος pixel πάει στο ΠΑΝΩ bit, όπως και στους άλλους δύο.
+MODE2_SHIFTS = tuple((7 - i,) for i in range(8))
+
 
 def _pack(pens, table):
     v = 0
@@ -68,18 +73,33 @@ def mode1_pens(byte):
     return _unpack(byte, MODE1_SHIFTS)
 
 
+def mode2_byte(*pens):
+    return _pack(pens, MODE2_SHIFTS)
+
+
+def mode2_pens(byte):
+    return _unpack(byte, MODE2_SHIFTS)
+
+
 assert all(mode0_pens(mode0_byte(a, b)) == (a, b)
            for a in range(16) for b in range(16)), 'Mode 0: όχι αντίστροφοι'
 assert all(mode1_pens(mode1_byte(*p)) == p
            for p in [(a, b, c, d) for a in range(4) for b in range(4)
                      for c in range(4) for d in range(4)]), 'Mode 1: όχι αντίστροφοι'
-# Τα τρία σημεία που προδίδουν αμέσως ανεστραμμένη σειρά bits.
+assert all(mode2_pens(mode2_byte(*p)) == p
+           for p in [tuple((n >> k) & 1 for k in range(8))
+                     for n in range(256)]), 'Mode 2: όχι αντίστροφοι'
+# Τα σημεία που προδίδουν αμέσως ανεστραμμένη σειρά bits.
 assert mode0_byte(1, 0) == 0x80 and mode0_byte(3, 3) == 0xCC
 assert mode1_byte(1, 0, 0, 0) == 0x80 and mode1_byte(3, 3, 3, 3) == 0xFF
+assert mode2_byte(1, 0, 0, 0, 0, 0, 0, 0) == 0x80
+assert mode2_byte(0, 0, 0, 0, 0, 0, 0, 1) == 0x01
+assert mode2_byte(*([1] * 8)) == 0xFF
 
 MODES = {
     0: dict(pens=16, px_per_byte=2, aspect=2, pack=mode0_byte),
     1: dict(pens=4, px_per_byte=4, aspect=1, pack=mode1_byte),
+    2: dict(pens=2, px_per_byte=8, aspect=0.5, pack=mode2_byte),
 }
 
 

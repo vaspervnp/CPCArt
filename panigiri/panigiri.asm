@@ -1,4 +1,4 @@
-; panigiri.asm — ολόκληρη οθόνη Mode 1 για Amstrad CPC 6128
+; panigiri.asm — ολόκληρη οθόνη Mode 2 για Amstrad CPC 6128
 ; ΠΑΡΑΓΕΤΑΙ ΑΥΤΟΜΑΤΑ από src/make_screen.py — μην το πειράζεις.
 ;
 ; Δείχνει την εικόνα και περιμένει πλήκτρο. Τα δεδομένα είναι ήδη στη
@@ -13,8 +13,8 @@ KM_WAIT_CHAR  equ #BB06
     run start
 
 start:
-    ld a,1
-    call SCR_SET_MODE          ; Mode 1, 320x200, 4 pens
+    ld a,2
+    call SCR_SET_MODE          ; Mode 2, 640x200, 2 pens
 
     ld hl,inks
     ld e,0                     ; e = αριθμός pen
@@ -31,7 +31,7 @@ ink_loop:
     inc hl
     inc e
     ld a,e
-    cp 3
+    cp 2
     jr nz,ink_loop
 
     ld a,(inks)                ; το border στο ίδιο με το pen 0
@@ -48,7 +48,7 @@ ink_loop:
     jp #0000                   ; και μετά reset
 
 inks:
-    db 0,13,26   ; firmware numbers, pen 0..2
+    db 0,26   ; firmware numbers, pen 0..1
 
 picture:
     incbin "panigiri.scr"
