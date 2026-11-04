@@ -39,6 +39,7 @@ STRUCTURES = [
     ("airlock",   "airlock",         SIZES_1M, True,  "αεροθάλαμος — ένα μέγεθος"),
     ("pad",       "landing_pad",     SIZES_1,  False, "πλατφόρμα — ΑΔΙΑΦΑΝΗΣ"),
     ("ship",      "ship",            SIZES_1M, True,  "σκάφος — κάτοψη"),
+    ("crates",    "crates",          SIZES_1M, True,  "τα κιβώτια του σκάφους που γκρεμίστηκε"),
 ]
 
 
@@ -337,7 +338,31 @@ def _ship_shape(w, h, span):
     return pens
 
 
+def crates(w, h):
+    """Ό,τι αφήνει το σκάφος όταν γκρεμιστεί (βήμα 181 του HabitatCPC): ένας
+    σωρός από τέσσερα κιβώτια σε κάτοψη, στο ίδιο πλαίσιο 16x32 με το σκάφος,
+    γιατί κάθεται στη θέση του. Δύο λευκά με γκρι ακμές, όπως το λευκό
+    μέταλλο των δομών — το μέταλλο· και δύο πράσινα με κυανές ακμές — το
+    βιοπλαστικό. Εναλλάξ και κλιμακωτά, ώστε να διαβάζονται σωρός και όχι
+    πλέγμα. Το σκούρο περίγραμμα του σκάφους (outline, pen 1) τα κρατά ορατά σε
+    κάθε έδαφος, και το κενό ανάμεσά τους γίνεται κι αυτό περίγραμμα.
+
+    Κάθε κιβώτιο είναι 6 pixels x 12 γραμμές, οπτικά τετράγωνο: ακμή ενός
+    pixel και ένας ιμάντας δύο γραμμών στη μέση, το καπάκι του."""
+    MET = (PEN_WHITE, PEN_GREY)
+    BIO = (9, PEN_CYAN)                 # pen 9: το έντονο πράσινο των εικονιδίων
+    boxes = [(1, 3, MET), (8, 5, BIO), (2, 17, BIO), (9, 18, MET)]
+    pens = [[PEN_OUTSIDE] * w for _ in range(h)]
+    for x0, y0, (body, edge) in boxes:
+        for y in range(12):
+            for x in range(6):
+                rim = x in (0, 5) or y in (0, 11) or y in (5, 6)
+                pens[y0 + y][x0 + x] = edge if rim else body
+    return outline(pens, PEN_SHADOW)
+
+
 BUILDERS = {
+    "crates": crates,
     "mine": mine,
     "landing_pad": landing_pad,
     "ship": ship,
