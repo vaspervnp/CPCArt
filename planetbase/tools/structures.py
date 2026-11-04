@@ -12,7 +12,7 @@
 import math
 
 from palette import (PEN_OUTSIDE, PEN_SHADOW, PEN_DOME_FLOOR, PEN_DOME_EDGE,
-                     PEN_CORR_FLOOR, PEN_CORR_EDGE, PEN_COLONIST)
+                     PEN_CORR_FLOOR, PEN_CORR_EDGE, PEN_COLONIST, PEN_GREY, PEN_WHITE)
 
 # Τα pens 7, 11, 12, 14 ανήκουν στο έδαφος και αλλάζουν ανά πλανήτη· οι δομές
 # δεν τα αγγίζουν, αλλιώς θα άλλαζαν χρώμα μαζί με τον πλανήτη.
@@ -145,7 +145,9 @@ def water_extractor(w, h):
 
 
 def mine(w, h):
-    """Ορυχείο: οκταγωνικό κτίσμα με κεντρικό φρέαρ και ταινίες μεταφοράς.
+    """Γκρι τσιμέντο, όπως η πλατφόρμα: ρητά pens, όχι οι ρόλοι (βήμα 178).
+
+    Ορυχείο: οκταγωνικό κτίσμα με κεντρικό φρέαρ και ταινίες μεταφοράς.
 
     Οκτάγωνο επίτηδες — οι άλλες δομές είναι στρογγυλές, οπότε ξεχωρίζει αμέσως
     ακόμη και στο μικρότερο μέγεθος.
@@ -161,10 +163,10 @@ def mine(w, h):
                 row.append(PEN_OUTSIDE)
                 continue
             if oct_d > R - 2:
-                row.append(PEN_CORR_FLOOR)                  # εξωτερικός τοίχος
+                row.append(PEN_GREY)                  # εξωτερικός τοίχος
                 continue
             if oct_d > R - 3:
-                row.append(PEN_CORR_EDGE)
+                row.append(PEN_WHITE)
                 continue
             r = math.hypot(vx, vy)
             belt = max(R * 0.10, 1.4)
@@ -175,7 +177,7 @@ def mine(w, h):
             elif abs(vx) <= belt or abs(vy) <= belt:
                 row.append(PEN_PINK)                      # ταινίες μεταφοράς
             else:
-                row.append(PEN_CORR_FLOOR)
+                row.append(PEN_GREY)
         pens.append(row)
     return pens
 
@@ -245,20 +247,20 @@ def landing_pad(w, h):
                 # εδώ θα ανταγωνιζόταν τα σημάδια· μόνο το χείλος της πλάκας
                 # είναι σκούρο, ώστε να ορίζεται πάνω στο έδαφος.
                 edge = x == 0 or x == w - 1 or y < 2 or y >= h - 2
-                row.append(PEN_SHADOW if edge else PEN_CORR_FLOOR)
+                row.append(PEN_SHADOW if edge else PEN_GREY)
             elif oct_d > R - 2:
                 # χείλος με φώτα προσέγγισης στις τέσσερις διαγωνίους
                 lit = abs(abs(vx) - abs(vy)) < 3
-                row.append(PEN_YELLOW if lit else PEN_CORR_EDGE)
+                row.append(PEN_YELLOW if lit else PEN_WHITE)
             elif oct_d > R - 4:
                 row.append(PEN_SHADOW)              # σκοτεινή ζώνη ασφαλείας
             elif cross:
                 row.append(PEN_YELLOW)
             elif oct_d > R - 6:
                 # ρίγες πρόσδεσης, 1 px x 2 γραμμές ώστε να είναι οπτικά τετράγωνες
-                row.append(PEN_CORR_EDGE if ((x + y // 2) & 1) else PEN_CORR_FLOOR)
+                row.append(PEN_WHITE if ((x + y // 2) & 1) else PEN_GREY)
             else:
-                row.append(PEN_CORR_FLOOR)          # το δάπεδο
+                row.append(PEN_GREY)          # το δάπεδο
         pens.append(row)
     return pens
 

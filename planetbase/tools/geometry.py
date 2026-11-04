@@ -7,7 +7,7 @@
 import math
 
 from palette import (PEN_OUTSIDE, PEN_DOME_FLOOR, PEN_DOME_EDGE,
-                     PEN_CORR_FLOOR, PEN_CORR_EDGE)
+                     PEN_CORR_FLOOR, PEN_CORR_EDGE, PEN_WHITE)
 
 # Κατηγορίες pixel
 OUTSIDE, DOME, CORRIDOR = 0, 1, 2
@@ -83,6 +83,46 @@ def _edges(cls, fw, fh, keep):
 def dome_pens(cls, fw, fh):
     """Μόνο ο θόλος. Ο δακτύλιος και το έξω είναι διαφανή."""
     return _edges(cls, fw, fh, DOME)
+
+
+# Το γυαλί του θόλου (βήμα 178): φως από πάνω, άρα σκουραίνει προς το χείλος,
+# γύρω γύρω, και τέσσερις λάμψεις στις διαγώνιους. ΜΟΝΟ ΣΥΜΜΕΤΡΙΚΑ: η μηχανή
+# αποθηκεύει το βορειοδυτικό τεταρτημόριο και καθρεφτίζει τα άλλα τρία, οπότε
+# φως από μία μεριά (πάνω αριστερά) θα ήθελε τέσσερα τεταρτημόρια, ~22 KB.
+# Οπτικές μονάδες από το χείλος προς τα μέσα:
+GLASS_BAND = 3.0                   # συμπαγής λωρίδα στο pen του χείλους
+GLASS_DITHER = 6.0                 # και ως εδώ σκακιέρα
+GLASS_GLINT = (5.0, 10.0)          # οι λάμψεις (όπου πέφτει κουτί, κρύβονται)
+GLASS_DIAG = 0.12                  # πόσο κοντά στη διαγώνιο (κλάσμα της ακτίνας)
+
+
+def dome_glass(code, diameter, fw, fh):
+    """Ο θόλος με το γυαλί του. Το απλό δάπεδο (dome_pens) μένει για τη
+    διάταξη: τα κουτιά των εικονιδίων και των μηχανών μπαίνουν όπου είναι
+    δάπεδο, και ζωγραφίζονται αδιαφανή από πάνω — ό,τι γυαλί και λάμψη έχουν
+    από κάτω απλώς κρύβεται. Ο κωδικός του μεγέθους δεν χρειάζεται εδώ· μένει
+    στην υπογραφή για να ταιριάζει με το interior()."""
+    cls = classify_frame(diameter, fw, fh)
+    dp = dome_pens(cls, fw, fh)
+    cx, cy = fw / 2, fh / 2
+    rd = diameter / 2
+    out = [row[:] for row in dp]
+    for y in range(fh):
+        for x in range(fw):
+            if dp[y][x] != PEN_DOME_FLOOR:
+                continue
+            vx, vy = (x + 0.5) * 2 - 2 * cx, (y + 0.5) - cy
+            r = math.hypot(vx, vy)
+            depth = rd - r
+            xs, ys = min(x, fw - 1 - x), min(y, fh - 1 - y)
+            if depth < GLASS_BAND:
+                out[y][x] = PEN_DOME_EDGE
+            elif depth < GLASS_DITHER and (xs + ys // 2) % 2 == 0:
+                out[y][x] = PEN_DOME_EDGE
+            elif (GLASS_GLINT[0] <= depth <= GLASS_GLINT[1]
+                  and abs(abs(vx) - abs(vy)) <= GLASS_DIAG * r):
+                out[y][x] = PEN_WHITE
+    return out
 
 
 def ring_pens(cls, fw, fh):

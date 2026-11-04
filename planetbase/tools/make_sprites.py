@@ -147,7 +147,7 @@ def build_domes(uniform):
     for code, d in geo.DOME_SIZES:
         fw, fh = geo.frame_size(d, uniform)
         cls = geo.classify_frame(d, fw, fh)
-        dp, rp = geo.dome_pens(cls, fw, fh), geo.ring_pens(cls, fw, fh)
+        dp, rp = geo.dome_glass(code, d, fw, fh), geo.ring_pens(cls, fw, fh)
         frames[code] = (d, fw, fh, cls, dp, rp)
         for corner, pens in geo.quadrants(dp, fw, fh):
             domes.append(Sprite(f"dome_{code}_{corner}", pens, "θόλοι", True))
@@ -266,10 +266,20 @@ def build_corridor_slots(frames):
             empty = [row[x:x + geo.SLOT_W] for row in full[y:y + geo.SLOT_H]]
             for fig in icons.SLOT_FIGURES:
                 pens = [r[:] for r in empty]
+                body = set()
                 for j, frow in enumerate(figures[fig] if fig else []):
                     for i, pen in enumerate(frow):
                         if pen is not None:
                             pens[oy + j][ox + i] = pen
+                            body.add((ox + i, oy + j))
+                # Η ΣΚΙΑ (βήμα 178): ένα μαύρο pixel κάτω δεξιά από τη φιγούρα,
+                # όπως έχουν ήδη οι φιγούρες έξω (fig_gfx του HabitatCPC, ίδιος
+                # κανόνας). Πάνω στο λευκό μέταλλο ο κίτρινος άποικος αλλιώς
+                # χάνεται: αντίθεση 1,07 προς 1.
+                for (i, j) in body:
+                    u, v = i + 1, j + 1
+                    if u < geo.SLOT_W and v < geo.SLOT_H and (u, v) not in body:
+                        pens[v][u] = PEN_OUTSIDE
                 suffix = fig or "empty"
                 out.append(Sprite(f"slot_{code}_{k}_{suffix}", pens,
                                   "θέσεις διαδρόμου", False))
@@ -366,8 +376,10 @@ def verify(frames, domes, rings, corr, conns, icon_sprites, slots, machines,
                       f"{code}: κενό ανάμεσα σε θόλο και δακτύλιο στο ({x},{y})")
 
     # 8. εικονίδιο, μηχανήματα και επικάλυμμα: μέσα στον θόλο, όχι σε άκρη,
-    #    χωρίς επικαλύψεις μεταξύ τους
-    for code, (d, fw, fh, cls, dp, rp) in frames.items():
+    #    χωρίς επικαλύψεις μεταξύ τους. Πάνω στο ΑΠΛΟ δάπεδο: το γυαλί
+    #    (geo.dome_glass) ζωγραφίζεται και κάτω από τα κουτιά, που το κρύβουν.
+    for code, (d, fw, fh, cls, _, rp) in frames.items():
+        dp = geo._floor(d, fw, fh)
         taken = {}
         for what, px, py, w, h in geo.interior(code, d, fw, fh):
             check(px % 2 == 0, f"{code}/{what}: μονό x = {px}")

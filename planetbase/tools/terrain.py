@@ -16,7 +16,7 @@ DITHER: στο Mode 0 το pixel είναι διπλάσιο σε πλάτος, 
 που βγαίνει οπτικά τετράγωνη.
 """
 
-from palette import (PEN_OUTSIDE, PEN_SHADOW, PEN_CORR_FLOOR, PEN_CORR_EDGE,
+from palette import (PEN_OUTSIDE, PEN_SHADOW, PEN_GREY, PEN_WHITE,
                      PEN_TERRAIN, PEN_TER_DARK, PEN_TER_HIGH, PEN_WATER)
 
 TILE_W, TILE_H = 8, 16          # pixels, γραμμές
@@ -82,26 +82,47 @@ def _speckle(pens, pen, seed, count, w=1, h=DITHER_H):
 # Απλές παραλλαγές
 # --------------------------------------------------------------------------
 
+# Βήμα 178: ήσυχο έδαφος, όπως του Planetbase. Ως τότε χώμα, σκόνη και πέτρα
+# ήταν τυχαίος θόρυβος σε όλο το tile· τώρα σχέδια με λίγα σημάδια, σε
+# τετράγωνες ψηφίδες (1 px x 2 γραμμές), και φως από πάνω: η πέτρα έχει το
+# φωτεινό από πάνω και το σκούρο από κάτω. «.» βάση, «d» σκούρο, «h» φωτεινό.
+# Οκτώ σειρές ψηφίδων, οκτώ στήλες: το tile.
+GROUND_ART = [
+    ["........", "........", "........", "........", "........", "........", "........", "........"],
+    ["........", "........", "...h....", "...dd...", "........", "........", "........", "........"],
+    ["........", "........", "........", "....d...", "...d.d..", "....d...", "........", "........"],
+    ["........", ".d......", "........", "........", "........", "......h.", "......d.", "........"],
+]
+DUST_ART = [
+    ["........", "..h.....", ".h.h....", "..h.....", "......h.", ".....h.h", "......h.", "........"],
+    ["........", ".....h..", "....h.h.", ".....h..", "........", ".h......", "h.h.....", ".h......"],
+    ["...h....", "..h.h...", "...h....", "........", "........", "....h...", "...h.h..", "....h..."],
+    ["........", "h.......", ".h......", "........", "....h...", "...h.h..", "..h.h.h.", "...h.h.."],
+]
+ROCK_ART = [
+    ["........", ".h......", ".dd..h..", ".....dd.", "........", "..h.....", "..dd....", "........"],
+    ["....h...", "....dd..", "........", ".h......", ".dd...h.", "......dd", "........", "...h...."],
+    ["........", "......h.", ".h....dd", ".dd.....", "........", "...h....", "...dd...", "........"],
+    ["..h.....", "..dd....", "......h.", "......dd", ".h......", ".dd.....", "....h...", "....dd.."],
+]
+_ART_PEN = {".": PEN_TERRAIN, "d": PEN_TER_DARK, "h": PEN_TER_HIGH}
+
+
+def _art(rows):
+    assert len(rows) == TILE_H // DITHER_H and all(len(r) == TILE_W for r in rows)
+    return [[_ART_PEN[rows[y // DITHER_H][x]] for x in range(TILE_W)] for y in range(TILE_H)]
+
+
 def ground(v):
-    p = _blank(PEN_TERRAIN)
-    _dither(p, PEN_TER_DARK, 100 + v, 6)
-    _dither(p, PEN_TER_HIGH, 200 + v, 4)
-    return p
+    return _art(GROUND_ART[v])
 
 
 def dust(v):
-    p = _blank(PEN_TERRAIN)
-    _dither(p, PEN_TER_HIGH, 300 + v, 20)
-    _dither(p, PEN_TER_DARK, 400 + v, 6)
-    return p
+    return _art(DUST_ART[v])
 
 
 def rock(v):
-    p = _blank(PEN_TERRAIN)
-    _speckle(p, PEN_TER_DARK, 500 + v, 5, w=2, h=4)
-    _speckle(p, PEN_TER_HIGH, 600 + v, 3, w=2, h=2)
-    _dither(p, PEN_TER_DARK, 700 + v, 12)
-    return p
+    return _art(ROCK_ART[v])
 
 
 def deepwater(v):
@@ -128,19 +149,20 @@ def crater(v):
 
 
 def foundation(v):
-    """Κατασκευή, όχι φυσικό έδαφος — γι' αυτό σε pens δομής που δεν αλλάζουν."""
-    p = _blank(PEN_CORR_FLOOR)
+    """Κατασκευή, όχι φυσικό έδαφος — γι' αυτό σε pens δομής που δεν αλλάζουν.
+    Γκρι τσιμέντο: ρητά pens, όχι οι ρόλοι του διαδρόμου (βήμα 178)."""
+    p = _blank(PEN_GREY)
     for x in range(TILE_W):
-        p[0][x] = PEN_CORR_EDGE
+        p[0][x] = PEN_WHITE
     for y in range(TILE_H):
-        p[y][0] = PEN_CORR_EDGE
+        p[y][0] = PEN_WHITE
     for x in range(TILE_W):
         p[TILE_H - 1][x] = PEN_SHADOW
     for y in range(TILE_H):
         p[y][TILE_W - 1] = PEN_SHADOW
     for (rx, ry) in (((2, 3), (5, 11)) if v == 0 else ((5, 3), (2, 11))):
-        p[ry][rx] = PEN_CORR_EDGE
-        p[ry + 1][rx] = PEN_CORR_EDGE
+        p[ry][rx] = PEN_WHITE
+        p[ry + 1][rx] = PEN_WHITE
     return p
 
 
@@ -151,20 +173,24 @@ def foundation(v):
 def mountain(mask):
     """Γεμίζει πάντα το κελί του· η παραλλαγή αλλάζει μόνο τη σκίαση των άκρων.
 
-    Όπου ο γείτονας ΔΕΝ είναι βουνό, μπαίνει σκοτεινή λωρίδα — η όψη του γκρεμού.
+    Όπου ο γείτονας ΔΕΝ είναι βουνό, μπαίνει σκοτεινή λωρίδα — το χείλος.
     mask 15 (παντού βουνό) δεν έχει καμία, και είναι το γέμισμα του εσωτερικού.
+    Βήμα 178, φως από πάνω: λιγότερες ρωγμές, και στο ΝΟΤΙΟ χείλος φαίνεται ο
+    γκρεμός — τέσσερις γραμμές στη βάση του εδάφους πάνω από τη σκιά του.
     """
     p = _blank(PEN_TER_HIGH)
-    _dither(p, PEN_TER_DARK, 1100 + mask, 22)
+    _dither(p, PEN_TER_DARK, 1100 + mask, 7)
     _speckle(p, PEN_TER_DARK, 1200 + mask, 2, w=2, h=2)
 
-    def band(cells):
+    def band(cells, pen=PEN_TER_DARK):
         for x, y in cells:
-            p[y][x] = PEN_TER_DARK
+            p[y][x] = pen
 
     if not mask & N:
         band([(x, y) for x in range(TILE_W) for y in range(2)])
     if not mask & S:
+        band([(x, y) for x in range(TILE_W) for y in range(TILE_H - 6, TILE_H - 2)],
+             PEN_TERRAIN)
         band([(x, y) for x in range(TILE_W) for y in range(TILE_H - 2, TILE_H)])
     if not mask & W:
         band([(0, y) for y in range(TILE_H)])
