@@ -12,6 +12,16 @@
 το μπλε της νύχτας (#000080): περνάει για μαύρο σε οθόνη και κρατάει το 0
 ελεύθερο για τη μάσκα.
 
+ΓΙΑΤΙ ΚΥΑΝΟ ΚΑΙ ΟΧΙ ΜΩΒ
+
+Η πρώτη παλέτα είχε μωβ στη θέση 15. Όταν ήρθε το έδαφος φάνηκε ότι ΔΕΝ
+υπάρχει μπλε για νερό: τα pens 2 και 3 είναι της ομάδας και αλλάζουν ανά
+παίκτη, οπότε θάλασσα σε αυτά θα άλλαζε χρώμα ανάλογα με το ποιος παίζει.
+
+Το μωβ ζωγραφιζόταν σε **0,33%** των pixels — δύο χρήσεις σε όλο το σετ. Η
+ανταλλαγή κοστίζει σχεδόν τίποτα και δίνει τη ράμπα του νερού: pen 1 βαθύ,
+pen 15 ρηχό, pen 9 αφρός.
+
 ΤΑ ΧΡΩΜΑΤΑ ΤΗΣ ΟΜΑΔΑΣ
 
 Τα pens 2 και 3 είναι ΤΟ ΧΡΩΜΑ ΤΟΥ ΠΑΙΚΤΗ, φωτεινό και σκιά. Στα δεδομένα
@@ -43,7 +53,7 @@ PALETTE = [
     ('g', 'Bright green',  18,  'πράσινο φωτεινό: φυτά, λοφίο'),
     ('n', 'Green',          9,  'πράσινο σκούρο'),
     ('r', 'Bright red',     6,  'κόκκινο: αίμα, λάβαρο, φωτιά'),
-    ('m', 'Magenta',        4,  'μωβ σκούρο: σκιά υφάσματος, πορφύρα'),
+    ('c', 'Bright cyan',   20,  'ΝΕΡΟ, πάγος, γυαλί, γαλάζιο στολίδι'),
 ]
 
 PEN = {p[0]: i for i, p in enumerate(PALETTE)}
@@ -84,14 +94,27 @@ def blank(w, h, pen=None):
     return [[pen] * w for _ in range(h)]
 
 
-def parse_art(text, transparent='-'):
-    """ASCII -> γραμμές pens. Το '-' είναι διάφανο, τα υπόλοιπα της παλέτας."""
+def parse_art(text, transparent='-.'):
+    """ASCII -> γραμμές pens. Το '-' ΚΑΙ το '.' είναι διάφανα.
+
+    ΤΟ '.' ΕΙΝΑΙ ΤΟ PEN 0 ΚΑΙ ΤΟ PEN 0 ΕΙΝΑΙ Η ΜΑΣΚΑ
+
+    Για ένα διάστημα το '.' γινόταν pen 0 ως ΤΙΜΗ, και το `encode_masked`
+    μασκάριζε μόνο το `None`. Αποτέλεσμα: κάθε φιγούρα έβγαινε με αδιαφανές
+    μαύρο κουτί γύρω της. Στα contact sheets δεν φαινόταν — το φόντο τους
+    είναι κι αυτό σχεδόν μαύρο. Φάνηκε μόνο όταν μπήκε μια μονάδα πάνω σε
+    γρασίδι.
+
+    Τα δύο σύμβολα μένουν και τα δύο επειδή λένε διαφορετικό πράγμα στο
+    μάτι: το '-' είναι «έξω από τη φιγούρα», το '.' είναι «μέσα στο πλαίσιο
+    αλλά κενό». Στα δεδομένα είναι το ίδιο.
+    """
     rows = []
     for line in text.strip('\n').splitlines():
         line = line.strip()
         if not line:
             continue
-        rows.append([None if ch == transparent else PEN[ch] for ch in line])
+        rows.append([None if ch in transparent else PEN[ch] for ch in line])
     return rows
 
 
@@ -152,6 +175,8 @@ def encode_masked(img):
     out = bytearray()
     for row in img:
         assert len(row) % 2 == 0, 'το πλάτος πρέπει να είναι ζυγό'
+        assert PEN_MASK not in row, \
+            'pen 0 ως χρώμα σε sprite με μάσκα — το 0 σημαίνει ΔΙΑΦΑΝΟ'
         for i in range(0, len(row), 2):
             a, b = row[i], row[i + 1]
             out.append(cpcimg.mode0_byte(15 if a is None else 0,
@@ -170,6 +195,17 @@ def encode_opaque(img):
             out.append(cpcimg.mode0_byte(0 if a is None else a,
                                          0 if b is None else b))
     return bytes(out)
+
+
+def decode_opaque(data, w, h):
+    img, k = [], 0
+    for _ in range(h):
+        row = []
+        for _ in range(w // 2):
+            row.extend(cpcimg.mode0_pens(data[k]))
+            k += 1
+        img.append(row)
+    return img
 
 
 def decode_masked(data, w, h):

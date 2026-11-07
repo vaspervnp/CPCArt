@@ -122,11 +122,11 @@
   },
   {
    "pen": 15,
-   "char": "m",
-   "firmware": 4,
-   "name": "Magenta",
-   "rgb": "#800080",
-   "use": "μωβ σκούρο: σκιά υφάσματος, πορφύρα"
+   "char": "c",
+   "firmware": 20,
+   "name": "Bright cyan",
+   "rgb": "#00FFFF",
+   "use": "ΝΕΡΟ, πάγος, γυαλί, γαλάζιο στολίδι"
   }
  ],
  "teams": [

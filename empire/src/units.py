@@ -33,7 +33,7 @@ W, H = figures.W, figures.H
 # Οι βαφές αλλάζουν χαρακτήρες της ΒΑΣΙΚΗΣ φιγούρας: 'd' είναι τα πόδια/βρακί.
 FOOT = [
     ('villager_m', 'χωρικοί',  'cap',   'tool',  None,    {}),
-    ('villager_f', 'χωρικοί',  'scarf', 'tool',  None,    {'d': 'm'}),
+    ('villager_f', 'χωρικοί',  'scarf', 'tool',  None,    {'d': 'o'}),
     ('clubman',    'πεζικό',   None,    'club',  None,    {}),
     ('axeman',     'πεζικό',   'helm',  'axe',   'small', {}),
     ('swordsman',  'πεζικό',   'helm',  'sword', 'small', {'d': 'i'}),
